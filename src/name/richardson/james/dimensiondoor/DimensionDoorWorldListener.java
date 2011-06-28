@@ -18,17 +18,26 @@ public class DimensionDoorWorldListener extends WorldListener {
 	}
 	
 	// when a world is initialised, check to see if we know about it
+	// causing double checks on first start up for some reason so we
+	// will ignore it for now
 	public void onWorldInit(WorldInitEvent event) {
+		/*
 		String worldName = event.getWorld().getName();
-		log.info("[DimensionDoor] " + worldName + " is initialising!");
 		if (DimensionDoorWorld.isManaged(event.getWorld())) return;
 		// create new world configuration
 		log.warning("[DimensionDoor] - No configuration found for " + worldName);
 		DimensionDoorWorld.manageWorld(event.getWorld());
+		*/
+		return;
 	}
-
+	
 	public void onWorldLoad(WorldLoadEvent event) {
-		DimensionDoorWorld.find(event.getWorld()).applyAttributes();
+		if (!DimensionDoorWorld.isManaged(event.getWorld())) {
+			log.warning(String.format("[DimensionDoor] - No configuration found for %s", event.getWorld().getName()));
+			DimensionDoorWorld.manageWorld(event.getWorld());
+		}
+		DimensionDoorWorld world = DimensionDoorWorld.find(event.getWorld());
+		world.applyAttributes();
 	}
 
 }

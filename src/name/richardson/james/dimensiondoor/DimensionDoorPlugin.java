@@ -2,6 +2,7 @@ package name.richardson.james.dimensiondoor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -29,7 +30,7 @@ public class DimensionDoorPlugin extends JavaPlugin {
 	
 	static Logger log = Logger.getLogger("Minecraft");
 	static PermissionHandler CurrentPermissions = null;
-	static final List<String> commands = Arrays.asList("create", "teleport");
+	static final List<String> commands = Arrays.asList("create", "teleport", "unload", "remove", "modify", "info", "list", "load");
 	PluginDescriptionFile info = null;
 	
 	// Listeners
@@ -47,22 +48,27 @@ public class DimensionDoorPlugin extends JavaPlugin {
 		setupDatabase();
 		setupPermissions();
 		
+		// register events
+		PluginManager pm = this.getServer().getPluginManager();
+		pm.registerEvent(Event.Type.WORLD_LOAD, WorldListener, Event.Priority.Monitor, this);
+		pm.registerEvent(Event.Type.WORLD_INIT, WorldListener, Event.Priority.Monitor, this);
+		pm.registerEvent(Event.Type.PLAYER_RESPAWN, PlayerListener, Event.Priority.Normal, this);
+		
 		// register existing worlds
 		for (World world : plugin.getServer().getWorlds()) {
 			if (DimensionDoorWorld.isManaged(world.getName())) {
 				DimensionDoorWorld.find(world.getName()).applyAttributes();
 			} else {
 				log.warning(String.format("[DimensionDoor] - No configuration found for %s", world.getName()));
-				DimensionDoorWorld.manageWorld(world.getName());
+				DimensionDoorWorld.manageWorld(world);
 				DimensionDoorWorld.find(world.getName()).applyAttributes();
 			}
 		}
 		
-		// register event
-		PluginManager pm = this.getServer().getPluginManager();
-		pm.registerEvent(Event.Type.WORLD_LOAD, WorldListener, Event.Priority.Monitor, this);
-		pm.registerEvent(Event.Type.WORLD_UNLOAD, WorldListener, Event.Priority.Monitor, this);
-		pm.registerEvent(Event.Type.PLAYER_RESPAWN, PlayerListener, Event.Priority.Normal, this);
+		// load managed worlds if they are not already loaded
+		for (DimensionDoorWorld world : DimensionDoorWorld.findAll())
+			if (!world.isLoaded())
+				world.loadWorld();
 		
 		log.info(String.format("[DimensionDoor] %d worlds configured!", plugin.getServer().getWorlds().size()));
 	}
@@ -80,7 +86,13 @@ public class DimensionDoorPlugin extends JavaPlugin {
 			if (!playerHasPermission(sender, "dd." + command)) return false;
 			// execute the right command
 			if (command.equalsIgnoreCase("create")) return createWorld(sender, args);
-			if (command.equalsIgnoreCase("teleport")) return teleportToWorld(sender, args);       
+			if (command.equalsIgnoreCase("teleport")) return teleportToWorld(sender, args);
+			if (command.equalsIgnoreCase("unload")) return unloadWorld(sender, args); 
+			if (command.equalsIgnoreCase("load")) return loadWorld(sender, args);
+			if (command.equalsIgnoreCase("remove")) return removeWorld(sender, args);
+			if (command.equalsIgnoreCase("modify")) return modifyWorld(sender, args);
+			if (command.equalsIgnoreCase("info")) return infoWorld(sender, args);
+			if (command.equalsIgnoreCase("list")) return listWorlds(sender, args);
 		}
 		return false; 
 	}
@@ -102,9 +114,10 @@ public class DimensionDoorPlugin extends JavaPlugin {
 		// check the type is valid
 		if (!DimensionDoorWorld.isEnvironmentValid(args[2])) { sender.sendMessage(ChatColor.RED + args[2].toUpperCase() + " is not a valid environment type."); return true; }
 		// actually create the world
-		sender.sendMessage(ChatColor.GREEN + "Creating world (this may take a while)");
+		sender.sendMessage(ChatColor.GREEN + "Creating " + args[1] + " (this may take a while)");
 		DimensionDoorWorld.createWorld(args[1], args[2], DimensionDoorWorld.defaultAttributes);
 		sender.sendMessage(ChatColor.GREEN + "Creation complete!");
+		log.info(String.format("[DimensionDoor] %s created a new world called %s", getName(sender), args[1]));
 		return true;
 	}
 	
@@ -112,13 +125,111 @@ public class DimensionDoorPlugin extends JavaPlugin {
 		// check if we have enough arguments
 		if (args.length != 2) { sender.sendMessage(ChatColor.RED + "/dd teleport [world]"); return true; }
 		// check to see if destination world is loaded
-		if (!DimensionDoorWorld.isLoaded(args[1])) { sender.sendMessage(ChatColor.RED + "That world is not loaded!"); return true; }
+		if (!DimensionDoorWorld.isLoaded(args[1])) { sender.sendMessage(ChatColor.RED + args[1] + " is not loaded!"); return true; }
 		// check player is not console
 		if (getName(sender).equals("console")) { sender.sendMessage(ChatColor.RED + "Console can not use this command"); return true; }
 		// teleport the player
 		World destinationWorld = DimensionDoorWorld.getWorld(args[1]);
 		Player player = getPlayerFromName(getName(sender));
 		player.teleport(destinationWorld.getSpawnLocation());
+		return true;
+	}
+	
+	private boolean loadWorld(CommandSender sender, String[] args) {
+		// check if we have enough arguments
+		if (args.length != 2) { sender.sendMessage(ChatColor.RED + "/dd load [world]"); return true; }
+		// check to see if destination world is loaded
+		if (DimensionDoorWorld.isLoaded(args[1])) { sender.sendMessage(ChatColor.RED + args[1] + " is already loaded!"); return true; }
+		if (!DimensionDoorWorld.isManaged(args[1])) { sender.sendMessage(ChatColor.RED + args[1] + " is not managed by DimensionDoor!"); return true; }
+		DimensionDoorWorld world = DimensionDoorWorld.find(args[1]);
+		world.loadWorld();
+		log.info(String.format("[DimensionDoor] %s loaded %s", getName(sender), args[1]));
+		sender.sendMessage(ChatColor.GREEN + args[1] + " loaded");
+		return true;
+	}
+	
+	private boolean unloadWorld(CommandSender sender, String[] args) {
+		// check if we have enough arguments
+		if (args.length != 2) { sender.sendMessage(ChatColor.RED + "/dd unload [world]"); return true; }
+		// check to see if destination world is loaded
+		if (!DimensionDoorWorld.isLoaded(args[1])) { sender.sendMessage(ChatColor.RED + args[1] + " is not loaded!"); return true; }
+		DimensionDoorWorld world = DimensionDoorWorld.find(args[1]);
+		world.unloadWorld();
+		log.info(String.format("[DimensionDoor] %s unloaded %s", getName(sender), args[1]));
+		sender.sendMessage(ChatColor.GREEN + "World unloaded");
+		return true;
+	}
+	
+	private boolean removeWorld(CommandSender sender, String[] args) {
+		// check if we have enough arguments
+		if (args.length != 2) { sender.sendMessage(ChatColor.RED + "/dd remove [world]"); return true; }
+		// check to see if destination world is loaded
+		if (!DimensionDoorWorld.isManaged(args[1])) { sender.sendMessage(ChatColor.RED + args[1] + " is not managed by DimensionDoor!"); return true; }
+		DimensionDoorWorld world = DimensionDoorWorld.find(args[1]);
+		if (DimensionDoorWorld.isLoaded(args[1])) world.unloadWorld();
+		world.removeWorld();
+		log.info(String.format("[DimensionDoor] %s removed %s", getName(sender), args[1]));
+		sender.sendMessage(ChatColor.GREEN + "World unloaded");
+		return true;
+	}
+	
+	private boolean modifyWorld(CommandSender sender, String[] args) {
+		// check if we have enough arguments
+		if (args.length != 4) { sender.sendMessage(ChatColor.RED + "/dd modify [world] [attribute] [value]"); return true; }
+		// check to see if destination world is loaded
+		if (!DimensionDoorWorld.isManaged(args[1])) { sender.sendMessage(ChatColor.RED + args[1] + " is not managed by DimensionDoor!"); return true; }
+		DimensionDoorWorld world = DimensionDoorWorld.find(args[1]);
+		boolean newValue = Boolean.parseBoolean(args[3]);
+		HashMap<String, Boolean> attributes = world.getAttributes();
+		
+		// check to see if the attribute is valid
+		if (!attributes.containsKey(args[2])) {
+			sender.sendMessage(ChatColor.RED + "Unknown attribute: " + args[2]);
+			sender.sendMessage(ChatColor.YELLOW + "Valid attributes: pvp, spawnAnimals, spawnMonsters");
+			return true;
+		}
+		
+		// save world and apply attributes
+		attributes.put(args[2], newValue);
+		world.setAttributes(attributes);
+		world.applyAttributes();
+		log.info(String.format("[DimensionDoor] %s changed %s to %s on %s", getName(sender), args[2], Boolean.toString(newValue), world.getName()));
+		sender.sendMessage(ChatColor.GREEN + args[2] + " on " + args[1] + " changed to " + Boolean.toString(newValue));
+		return true;
+	}
+	
+	private boolean infoWorld(CommandSender sender, String[] args) {
+		// check if we have enough arguments
+		if (args.length != 2) { sender.sendMessage(ChatColor.RED + "/dd info [world]"); return true; }
+		if (!DimensionDoorWorld.isManaged(args[1])) { sender.sendMessage(ChatColor.RED + args[1] + " is not managed by DimensionDoor!"); return true; }
+		DimensionDoorWorld world = DimensionDoorWorld.find(args[1]);
+		// check to see if destination world is loaded
+		if (!DimensionDoorWorld.isLoaded(args[1]))
+			sender.sendMessage(ChatColor.RED + args[1] + " is not loaded!");
+		else
+			sender.sendMessage(ChatColor.GREEN + args[1] + " is loaded!");
+		sender.sendMessage(ChatColor.YELLOW + " - environment: " + world.getEnvironment().name());
+		sender.sendMessage(ChatColor.YELLOW + " - pvp: " + Boolean.toString(world.isPvp()));
+		sender.sendMessage(ChatColor.YELLOW + " - spawnAnimals: " + Boolean.toString(world.isSpawnAnimals()));
+		sender.sendMessage(ChatColor.YELLOW + " - spawnMonsters: " + Boolean.toString(world.isSpawnMonsters()));
+		return true;
+	}
+	
+	private boolean listWorlds(CommandSender sender, String[] args) {
+		// get all the worlds
+		List<DimensionDoorWorld> worlds = DimensionDoorWorld.findAll();
+		StringBuilder message = new StringBuilder();
+		// Build the message
+		for (DimensionDoorWorld world : worlds) {
+			if (world.isLoaded()) { 
+				message.append(ChatColor.GREEN + world.getName() + ", ");
+			} else {
+				message.append(ChatColor.RED + world.getName() + ", ");
+			}
+		}
+		// get rid of the trailing comma
+		message.deleteCharAt(message.length() - 2);
+		sender.sendMessage(message.toString());
 		return true;
 	}
 	

@@ -94,8 +94,6 @@ public class DimensionDoorWorld {
 		createdWorld.setName(worldName);
 		createdWorld.setEnvironment(environmentType);
 		createdWorld.setAttributes(combinedAttributes);
-		// Save and create the world
-		plugin.getDatabase().save(createdWorld);
 		log.info(String.format("[DimensionDoor] Creating new world '%s' (%s)", worldName, environmentType.name()));
 		plugin.getServer().createWorld(worldName, environmentType);
 	}
@@ -110,6 +108,12 @@ public class DimensionDoorWorld {
 		List<DimensionDoorWorld> worlds = plugin.getDatabase().find(DimensionDoorWorld.class).where().ieq("name", world.getName()).findList();
 		return worlds.get(0);
 	}
+	
+	static public List<DimensionDoorWorld> findAll() {
+		List<DimensionDoorWorld> worlds = plugin.getDatabase().find(DimensionDoorWorld.class).findList();
+		return worlds;
+	}
+	
 	
 	static public boolean isEnvironmentValid(String environment) {
 		for (Environment type : World.Environment.values())
@@ -136,8 +140,7 @@ public class DimensionDoorWorld {
 		managedWorld.setEnvironment(world.getEnvironment());
 		managedWorld.setName(world.getName());
 		managedWorld.setAttributes(attributes);
-		plugin.getDatabase().save(managedWorld);
-		log.info(String.format("[DimensionDoor] -- Creating default configuation: %s", managedWorld.getName()));
+		log.info(String.format("[DimensionDoor] - Creating default configuation: %s", managedWorld.getName()));
 	}
 	
 	static public void manageWorld(World world) {
@@ -146,11 +149,10 @@ public class DimensionDoorWorld {
 		managedWorld.setEnvironment(world.getEnvironment());
 		managedWorld.setName(world.getName());
 		managedWorld.setAttributes(attributes);
-		plugin.getDatabase().save(managedWorld);
-		log.info(String.format("[DimensionDoor] -- Creating default configuation: %s", managedWorld.getName()));
+		log.info(String.format("[DimensionDoor] - Creating default configuation: %s", managedWorld.getName()));
 	}
 	
-	static private HashMap<String, Boolean> getAttributes(World world) {
+	static public HashMap<String, Boolean> getAttributes(World world) {
 		HashMap<String, Boolean> attributes = new HashMap<String, Boolean>();
 		attributes.put("pvp", world.getPVP());
 		attributes.put("spawnMonsters", world.getAllowMonsters());
@@ -158,11 +160,20 @@ public class DimensionDoorWorld {
 		return attributes;
 	}
 	
+	public HashMap<String, Boolean> getAttributes() {
+		HashMap<String, Boolean> attributes = new HashMap<String, Boolean>();
+		attributes.put("pvp", this.isPvp());
+		attributes.put("spawnMonsters", this.isSpawnMonsters());
+		attributes.put("spawnAnimals", this.isSpawnAnimals());
+		return attributes;
+	}
+	
 	public void loadWorld() {
-		if (!isLoaded(this.getName()))
+		if (!isLoaded(this.getName())) {
 			plugin.getServer().createWorld(this.getName(), this.getEnvironment());
-		else
-			log.warning(String.format("Attempted to load %s but it was loaded", this.getName()));
+		} else {
+			log.warning(String.format("[DimensionDoor] Attempted to load %s but it was loaded", this.getName()));
+		}
 	}
 	
 	static private HashMap<String, Boolean> mergeDefaultAttributes(HashMap<String, Boolean> attributes) {
@@ -174,10 +185,11 @@ public class DimensionDoorWorld {
 		return attributes;	
 	}
 	
-	private void setAttributes(HashMap<String, Boolean> attributes) {
+	public void setAttributes(HashMap<String, Boolean> attributes) {
 		this.setPvp(attributes.get("pvp"));
 		this.setSpawnMonsters(attributes.get("spawnMonsters"));
 		this.setSpawnAnimals(attributes.get("spawnAnimals"));
+		plugin.getDatabase().save(this);
 	}
 	
 	public static void setDefaultAttributes() {
@@ -197,10 +209,11 @@ public class DimensionDoorWorld {
 	}
 	
 	public void unloadWorld() {
-		if (isLoaded(this.getName()))
+		if (isLoaded(this.getName())) {
 			plugin.getServer().unloadWorld(this.getName(), true);
-		else
-			log.warning(String.format("Attempted to unload %s but it was not loaded", this.getName()));
+		} else {
+			log.warning(String.format("[DimensionDoor] Attempted to unload %s but it was not loaded", this.getName()));
+		}
 	}
 	
 	static public World getWorld(String worldName) {
@@ -214,6 +227,12 @@ public class DimensionDoorWorld {
 	
 	static boolean isLoaded (String worldName) {
 		if (plugin.getServer().getWorld(worldName.toLowerCase()) != null)
+			return true;
+		return false;
+	}
+	
+	boolean isLoaded () {
+		if (plugin.getServer().getWorld(this.getName()) != null)
 			return true;
 		return false;
 	}
