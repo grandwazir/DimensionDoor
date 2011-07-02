@@ -1,8 +1,8 @@
 name: DimensionDoor
 main: name.richardson.james.dimensiondoor.DimensionDoorPlugin
-version: 1.1.1
+version: 1.2.0
 database: true
 commands:
   dd:
     description: 'Main command for dimension door'
-    usage: '/dd [create|teleport|unload|remove|modify|info|list|load]'
+    usage: '/dd [create|teleport|unload|remove|modify|info|list|load|spawn]'
