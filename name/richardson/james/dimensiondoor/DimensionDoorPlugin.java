@@ -30,7 +30,7 @@ public class DimensionDoorPlugin extends JavaPlugin {
 	
 	static Logger log = Logger.getLogger("Minecraft");
 	static PermissionHandler CurrentPermissions = null;
-	static final List<String> commands = Arrays.asList("create", "teleport", "unload", "remove", "modify", "info", "list", "load");
+	static final List<String> commands = Arrays.asList("create", "teleport", "unload", "remove", "modify", "info", "list", "load", "spawn");
 	PluginDescriptionFile info = null;
 	
 	// Listeners
@@ -93,6 +93,7 @@ public class DimensionDoorPlugin extends JavaPlugin {
 			if (command.equalsIgnoreCase("modify")) return modifyWorld(sender, args);
 			if (command.equalsIgnoreCase("info")) return infoWorld(sender, args);
 			if (command.equalsIgnoreCase("list")) return listWorlds(sender, args);
+			if (command.equalsIgnoreCase("spawn")) return setWorldSpawn(sender, args);
 		}
 		return false; 
 	}
@@ -230,6 +231,22 @@ public class DimensionDoorPlugin extends JavaPlugin {
 		// get rid of the trailing comma
 		message.deleteCharAt(message.length() - 2);
 		sender.sendMessage(message.toString());
+		return true;
+	}
+	
+	private boolean setWorldSpawn(CommandSender sender, String[] args) {
+		// check we are not doing this from console
+		if (getName(sender).equalsIgnoreCase("console")) { sender.sendMessage(ChatColor.RED + "You can not use this command from the console!"); return true; }
+		// get parameters
+		Player player = getPlayerFromName(getName(sender));
+		World world = player.getWorld();
+		// set the new location
+		final Integer x = (int)player.getLocation().getX();
+		final Integer y = (int)player.getLocation().getY();
+		final Integer z = (int)player.getLocation().getZ();
+		world.setSpawnLocation(x, y, z);
+		sender.sendMessage(ChatColor.GREEN + "New spawn location set for " + world.getName());
+		log.info(String.format("[DimensionDoor] %s set a new spawn location on %s", player.getName(), world.getName()));
 		return true;
 	}
 	
