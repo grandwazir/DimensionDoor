@@ -39,6 +39,9 @@ public class DimensionDoorWorld {
 
     @NotNull
     private boolean spawnMonsters;
+    
+    @NotNull
+    private boolean isolatedChat;
 
 	public void setName(String name) {
 		this.name = name.toLowerCase();
@@ -80,6 +83,14 @@ public class DimensionDoorWorld {
 		return spawnMonsters;
 	}
 	
+	public void setIsolatedChat(boolean isolatedChat) {
+		this.isolatedChat = isolatedChat;
+	}
+
+	public boolean isIsolatedChat() {
+		return isolatedChat;
+	}
+
 	public void applyAttributes() {
 		World world = plugin.getServer().getWorld(name);
 		world.setPVP(pvp);
@@ -196,6 +207,7 @@ public class DimensionDoorWorld {
 		defaultAttributes.put("pvp", false);
 		defaultAttributes.put("spawnAnimals", true);
 		defaultAttributes.put("spawnMonsters", true);
+		defaultAttributes.put("isolatedChat", false);
 	}
 	
 	static public void setPlugin(DimensionDoorPlugin plugin) {

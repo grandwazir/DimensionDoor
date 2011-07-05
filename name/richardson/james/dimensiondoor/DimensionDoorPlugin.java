@@ -298,9 +298,16 @@ public class DimensionDoorPlugin extends JavaPlugin {
 	private void setupDatabase() {
 		try {
             getDatabase().find(DimensionDoorWorld.class).findRowCount();
+            getDatabase().find(DimensionDoorWorld.class).findList();
         } catch (PersistenceException ex) {
-        	log.warning("[DimensionDoor] - No database found, creating table.");
-        	installDDL();
+        	if (ex.getMessage().contains("isolated_chat")) {
+        		log.warning("[DimensionDoor] - Database schema out of date!");
+        	    log.info("[DimensionDoor] -- Updating to version 1.3.0");
+        		getDatabase().createSqlUpdate("ALTER TABLE dd_worlds ADD isolated_chat tinyint(1) not null DEFAULT 0").execute();
+        	} else {
+        		log.warning("[DimensionDoor] - No database found, creating table.");
+        		installDDL();
+        	}
         }
 	}
 	
