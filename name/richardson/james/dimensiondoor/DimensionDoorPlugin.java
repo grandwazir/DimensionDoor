@@ -53,6 +53,7 @@ public class DimensionDoorPlugin extends JavaPlugin {
 		pm.registerEvent(Event.Type.WORLD_LOAD, WorldListener, Event.Priority.Monitor, this);
 		pm.registerEvent(Event.Type.WORLD_INIT, WorldListener, Event.Priority.Monitor, this);
 		pm.registerEvent(Event.Type.PLAYER_RESPAWN, PlayerListener, Event.Priority.Normal, this);
+		pm.registerEvent(Event.Type.PLAYER_CHAT, PlayerListener, Event.Priority.Highest, this);
 		
 		// register existing worlds
 		for (World world : plugin.getServer().getWorlds()) {
@@ -186,7 +187,7 @@ public class DimensionDoorPlugin extends JavaPlugin {
 		// check to see if the attribute is valid
 		if (!attributes.containsKey(args[2])) {
 			sender.sendMessage(ChatColor.RED + "Unknown attribute: " + args[2]);
-			sender.sendMessage(ChatColor.YELLOW + "Valid attributes: pvp, spawnAnimals, spawnMonsters");
+			sender.sendMessage(ChatColor.YELLOW + "Valid attributes: pvp, spawnAnimals, spawnMonsters, isolatedChat");
 			return true;
 		}
 		
@@ -213,6 +214,7 @@ public class DimensionDoorPlugin extends JavaPlugin {
 		sender.sendMessage(ChatColor.YELLOW + " - pvp: " + Boolean.toString(world.isPvp()));
 		sender.sendMessage(ChatColor.YELLOW + " - spawnAnimals: " + Boolean.toString(world.isSpawnAnimals()));
 		sender.sendMessage(ChatColor.YELLOW + " - spawnMonsters: " + Boolean.toString(world.isSpawnMonsters()));
+		sender.sendMessage(ChatColor.YELLOW + " - isolatedChat: " + Boolean.toString(world.isIsolatedChat()));
 		return true;
 	}
 	

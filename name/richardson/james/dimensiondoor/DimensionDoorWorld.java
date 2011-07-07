@@ -21,7 +21,8 @@ import name.richardson.james.dimensiondoor.DimensionDoorPlugin;
 
 public class DimensionDoorWorld {
 	
-	public static HashMap<String, Boolean> defaultAttributes = new HashMap<String, Boolean>(3);
+	public static HashMap<String, Boolean> defaultAttributes = new HashMap<String, Boolean>();
+	public static HashMap<String, Boolean> chatAttributes = new HashMap<String, Boolean>();
 	private static DimensionDoorPlugin plugin;
 	private final static Logger log = Logger.getLogger("Minecraft");
 	
@@ -95,6 +96,7 @@ public class DimensionDoorWorld {
 		World world = plugin.getServer().getWorld(name);
 		world.setPVP(pvp);
 		world.setSpawnFlags(spawnAnimals, spawnMonsters);
+		chatAttributes.put(world.getName(), isIsolatedChat());
 		log.info(String.format("[DimensionDoor] - Applying configuration for %s", world.getName()));
 	}
 	
@@ -149,6 +151,7 @@ public class DimensionDoorWorld {
 		World world = getWorld(worldName);
 		HashMap<String, Boolean> attributes = getAttributes(world);
 		managedWorld.setEnvironment(world.getEnvironment());
+		managedWorld.setIsolatedChat(false);
 		managedWorld.setName(world.getName());
 		managedWorld.setAttributes(attributes);
 		log.info(String.format("[DimensionDoor] - Creating default configuation: %s", managedWorld.getName()));
@@ -157,6 +160,7 @@ public class DimensionDoorWorld {
 	static public void manageWorld(World world) {
 		DimensionDoorWorld managedWorld = new DimensionDoorWorld();
 		HashMap<String, Boolean> attributes = getAttributes(world);
+		attributes.put("isolatedChat", false);
 		managedWorld.setEnvironment(world.getEnvironment());
 		managedWorld.setName(world.getName());
 		managedWorld.setAttributes(attributes);
@@ -176,6 +180,7 @@ public class DimensionDoorWorld {
 		attributes.put("pvp", this.isPvp());
 		attributes.put("spawnMonsters", this.isSpawnMonsters());
 		attributes.put("spawnAnimals", this.isSpawnAnimals());
+		attributes.put("isolatedChat", this.isIsolatedChat());
 		return attributes;
 	}
 	
@@ -200,6 +205,7 @@ public class DimensionDoorWorld {
 		this.setPvp(attributes.get("pvp"));
 		this.setSpawnMonsters(attributes.get("spawnMonsters"));
 		this.setSpawnAnimals(attributes.get("spawnAnimals"));
+		this.setIsolatedChat(attributes.get("isolatedChat"));
 		plugin.getDatabase().save(this);
 	}
 	
