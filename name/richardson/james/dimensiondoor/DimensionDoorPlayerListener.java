@@ -29,19 +29,28 @@ public class DimensionDoorPlayerListener extends PlayerListener {
 	}
 	
 	public void onPlayerChat(PlayerChatEvent event) {
-		if (event.isCancelled())
-			return;
-		World world = event.getPlayer().getWorld();
-		if (DimensionDoorWorld.chatAttributes.get(world.getName())) {
-			event.setCancelled(true);
-			String message = event.getFormat();
-			message = message.replace("%1$s", event.getPlayer().getDisplayName());
-			message = message.replace("%2$s", event.getMessage());
-			for (Player player : world.getPlayers()) 
+		if (event.isCancelled()) return;
+		if (!DimensionDoorWorld.chatAttributes.containsValue(true)) return;
+		World originWorld = event.getPlayer().getWorld();
+		// We send all the messages seperatly to avoid a situation where chat 'leaks'
+		// from non isolated worlds into isolated worlds. This can lead to situations
+		// where players can see chat messages but not reply.
+		event.setCancelled(true);
+		String message = event.getFormat();
+		message = message.replace("%1$s", event.getPlayer().getDisplayName());
+		message = message.replace("%2$s", event.getMessage());
+		for (Player player : plugin.getServer().getOnlinePlayers()) {
+			World recipentWorld = player.getWorld();
+			// if the origin world is isolated send message only to people on the same world
+			if (DimensionDoorWorld.chatAttributes.get(originWorld.getName()) && originWorld.getName().equalsIgnoreCase(recipentWorld.getName())) {
 				player.sendMessage(message);
-			// Emulate Minecraft chat logging
-			log.info(message);
+			// else if the origin world is not isolated send to all players (except the ones on isolated worlds)
+			} else if (!DimensionDoorWorld.chatAttributes.get(recipentWorld.getName()) && !DimensionDoorWorld.chatAttributes.get(recipentWorld.getName())) {
+				player.sendMessage(message);
+			}
 		}
+		// Emulate Minecraft chat logging
+		log.info(message);
 	}
 	
 }
