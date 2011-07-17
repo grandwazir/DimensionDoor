@@ -100,7 +100,7 @@ public class DimensionDoorWorld {
 		log.info(String.format("[DimensionDoor] - Applying configuration for %s", world.getName()));
 	}
 	
-	static public void createWorld(String worldName, String environment, HashMap<String, Boolean> attributes) {
+	static public void createWorld(String worldName, String environment, Long worldSeed, HashMap<String, Boolean> attributes) {
 		DimensionDoorWorld createdWorld = new DimensionDoorWorld();
 		World.Environment environmentType = Enum.valueOf(World.Environment.class, environment.toUpperCase());
 		HashMap<String, Boolean> combinedAttributes = mergeDefaultAttributes(attributes);
@@ -108,7 +108,11 @@ public class DimensionDoorWorld {
 		createdWorld.setEnvironment(environmentType);
 		createdWorld.setAttributes(combinedAttributes);
 		log.info(String.format("[DimensionDoor] Creating new world '%s' (%s)", worldName, environmentType.name()));
-		plugin.getServer().createWorld(worldName, environmentType);
+		if (worldSeed == null) {
+		    plugin.getServer().createWorld(worldName, environmentType);
+		} else {
+		    plugin.getServer().createWorld(worldName, environmentType, worldSeed);
+		}
 	}
 	
 	

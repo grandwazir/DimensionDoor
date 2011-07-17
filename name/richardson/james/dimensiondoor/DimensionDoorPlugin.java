@@ -103,7 +103,7 @@ public class DimensionDoorPlugin extends JavaPlugin {
 	
 	private boolean createWorld(CommandSender sender, String[] args) {
 		// check we have enough arguments
-		if (args.length != 3) { sender.sendMessage(ChatColor.RED + "/dd create [world] [type]"); return true; }
+		if (args.length < 3) { sender.sendMessage(ChatColor.RED + "/dd create [world] [type] <seed>"); return true; }
 		// check the world is not already loaded
 		if (DimensionDoorWorld.isLoaded(args[1])) { sender.sendMessage(ChatColor.RED + "A world is already loaded with that name!"); return true; }
 		// check if we are already managing this world, if so load it instead of creating it
@@ -113,11 +113,21 @@ public class DimensionDoorPlugin extends JavaPlugin {
 			sender.sendMessage(ChatColor.GREEN + "Loading complete!");
 			return true; 
 		}
+		
+		Long worldSeed = null;
+		if (args.length == 4) {
+		    try {
+		        worldSeed = Long.parseLong(args[3]);
+		    } catch (NumberFormatException e) {
+		        worldSeed = (long)args[3].hashCode();
+		    }
+		}
+		
 		// check the type is valid
 		if (!DimensionDoorWorld.isEnvironmentValid(args[2])) { sender.sendMessage(ChatColor.RED + args[2].toUpperCase() + " is not a valid environment type."); return true; }
 		// actually create the world
 		sender.sendMessage(ChatColor.GREEN + "Creating " + args[1] + " (this may take a while)");
-		DimensionDoorWorld.createWorld(args[1], args[2], DimensionDoorWorld.defaultAttributes);
+		DimensionDoorWorld.createWorld(args[1], args[2], worldSeed, DimensionDoorWorld.defaultAttributes);
 		sender.sendMessage(ChatColor.GREEN + "Creation complete!");
 		log.info(String.format("[DimensionDoor] %s created a new world called %s", getName(sender), args[1]));
 		return true;
@@ -210,6 +220,7 @@ public class DimensionDoorPlugin extends JavaPlugin {
 			sender.sendMessage(ChatColor.RED + args[1] + " is not loaded!");
 		else
 			sender.sendMessage(ChatColor.GREEN + args[1] + " is loaded!");
+		sender.sendMessage(ChatColor.YELLOW + " - seed: " + Long.toString(getServer().getWorld(world.getName()).getSeed()));
 		sender.sendMessage(ChatColor.YELLOW + " - environment: " + world.getEnvironment().name());
 		sender.sendMessage(ChatColor.YELLOW + " - pvp: " + Boolean.toString(world.isPvp()));
 		sender.sendMessage(ChatColor.YELLOW + " - spawnAnimals: " + Boolean.toString(world.isSpawnAnimals()));
