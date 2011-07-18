@@ -104,7 +104,7 @@ public class DimensionDoorPlugin extends JavaPlugin {
 			if (args.length == 0) return false;
 			String command = args[0];
 			if (!commands.contains(command)) return false;
-			if (!playerHasPermission(sender, "dd." + command)) return true;
+			if (!playerHasPermission(sender, "dimensiondoor." + command)) return true;
 			// execute the right command
 			if (command.equalsIgnoreCase("create")) return createWorld(sender, args);
 			if (command.equalsIgnoreCase("teleport")) return teleportToWorld(sender, args);
