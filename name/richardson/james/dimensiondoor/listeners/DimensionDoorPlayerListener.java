@@ -17,9 +17,12 @@ You should have received a copy of the GNU General Public License
 along with DimensionDoor.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package name.richardson.james.dimensiondoor;
+package name.richardson.james.dimensiondoor.listeners;
 
 import java.util.logging.Logger;
+
+import name.richardson.james.dimensiondoor.DimensionDoorPlugin;
+import name.richardson.james.dimensiondoor.persistent.WorldRecord;
 
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -39,7 +42,7 @@ public class DimensionDoorPlayerListener extends PlayerListener {
   public void onPlayerChat(PlayerChatEvent event) {
     if (event.isCancelled())
       return;
-    if (!DimensionDoorWorld.chatAttributes.containsValue(true))
+    if (!WorldRecord.chatAttributes.containsValue(true))
       return;
     World originWorld = event.getPlayer().getWorld();
     // We send all the messages seperatly to avoid a situation where chat
@@ -55,11 +58,11 @@ public class DimensionDoorPlayerListener extends PlayerListener {
       World recipentWorld = player.getWorld();
       // if the origin world is isolated send message only to people on the same
       // world
-      if (DimensionDoorWorld.chatAttributes.get(originWorld.getName()) && originWorld.getName().equalsIgnoreCase(recipentWorld.getName())) {
+      if (WorldRecord.chatAttributes.get(originWorld.getName()) && originWorld.getName().equalsIgnoreCase(recipentWorld.getName())) {
         player.sendMessage(message);
         // else if the origin world is not isolated send to all players (except
         // the ones on isolated worlds)
-      } else if (!DimensionDoorWorld.chatAttributes.get(recipentWorld.getName()) && !DimensionDoorWorld.chatAttributes.get(recipentWorld.getName())) {
+      } else if (!WorldRecord.chatAttributes.get(recipentWorld.getName()) && !WorldRecord.chatAttributes.get(recipentWorld.getName())) {
         player.sendMessage(message);
       }
     }

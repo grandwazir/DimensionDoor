@@ -17,9 +17,12 @@ You should have received a copy of the GNU General Public License
 along with DimensionDoor.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package name.richardson.james.dimensiondoor;
+package name.richardson.james.dimensiondoor.listeners;
 
 import java.util.logging.Logger;
+
+import name.richardson.james.dimensiondoor.DimensionDoorPlugin;
+import name.richardson.james.dimensiondoor.persistent.WorldRecord;
 
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldListener;
@@ -50,11 +53,11 @@ public class DimensionDoorWorldListener extends WorldListener {
   }
 
   public void onWorldLoad(WorldLoadEvent event) {
-    if (!DimensionDoorWorld.isManaged(event.getWorld())) {
+    if (!WorldRecord.isManaged(event.getWorld())) {
       log.warning(String.format("[DimensionDoor] - No configuration found for %s", event.getWorld().getName()));
-      DimensionDoorWorld.manageWorld(event.getWorld());
+      WorldRecord.manageWorld(event.getWorld());
     }
-    DimensionDoorWorld world = DimensionDoorWorld.find(event.getWorld());
+    WorldRecord world = WorldRecord.find(event.getWorld());
     world.applyAttributes();
   }
 

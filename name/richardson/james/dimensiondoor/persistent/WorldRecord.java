@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with DimensionDoor.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package name.richardson.james.dimensiondoor;
+package name.richardson.james.dimensiondoor.persistent;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +37,7 @@ import name.richardson.james.dimensiondoor.DimensionDoorPlugin;
 
 @Entity()
 @Table(name = "dd_worlds")
-public class DimensionDoorWorld {
+public class WorldRecord {
 
   public static HashMap<String, Boolean> defaultAttributes = new HashMap<String, Boolean>();
   public static HashMap<String, Boolean> chatAttributes = new HashMap<String, Boolean>();
@@ -63,7 +63,7 @@ public class DimensionDoorWorld {
   private boolean isolatedChat;
 
   static public void createWorld(String worldName, String environment, Long worldSeed, HashMap<String, Boolean> attributes) {
-    DimensionDoorWorld createdWorld = new DimensionDoorWorld();
+    WorldRecord createdWorld = new WorldRecord();
     World.Environment environmentType = Enum.valueOf(World.Environment.class, environment.toUpperCase());
     HashMap<String, Boolean> combinedAttributes = mergeDefaultAttributes(attributes);
     createdWorld.setName(worldName);
@@ -77,18 +77,18 @@ public class DimensionDoorWorld {
     }
   }
 
-  static public DimensionDoorWorld find(String worldName) {
-    List<DimensionDoorWorld> worlds = plugin.getDatabase().find(DimensionDoorWorld.class).where().ieq("name", worldName).findList();
+  static public WorldRecord find(String worldName) {
+    List<WorldRecord> worlds = plugin.getDatabase().find(WorldRecord.class).where().ieq("name", worldName).findList();
     return worlds.get(0);
   }
 
-  static public DimensionDoorWorld find(World world) {
-    List<DimensionDoorWorld> worlds = plugin.getDatabase().find(DimensionDoorWorld.class).where().ieq("name", world.getName()).findList();
+  static public WorldRecord find(World world) {
+    List<WorldRecord> worlds = plugin.getDatabase().find(WorldRecord.class).where().ieq("name", world.getName()).findList();
     return worlds.get(0);
   }
 
-  static public List<DimensionDoorWorld> findAll() {
-    List<DimensionDoorWorld> worlds = plugin.getDatabase().find(DimensionDoorWorld.class).findList();
+  static public List<WorldRecord> findAll() {
+    List<WorldRecord> worlds = plugin.getDatabase().find(WorldRecord.class).findList();
     return worlds;
   }
 
@@ -116,19 +116,19 @@ public class DimensionDoorWorld {
   }
 
   static public boolean isManaged(String worldName) {
-    if (plugin.getDatabase().find(DimensionDoorWorld.class).where().ieq("name", worldName).findRowCount() == 1)
+    if (plugin.getDatabase().find(WorldRecord.class).where().ieq("name", worldName).findRowCount() == 1)
       return true;
     return false;
   }
 
   static public boolean isManaged(World world) {
-    if (plugin.getDatabase().find(DimensionDoorWorld.class).where().ieq("name", world.getName()).findRowCount() == 1)
+    if (plugin.getDatabase().find(WorldRecord.class).where().ieq("name", world.getName()).findRowCount() == 1)
       return true;
     return false;
   }
 
   static public void manageWorld(String worldName) {
-    DimensionDoorWorld managedWorld = new DimensionDoorWorld();
+    WorldRecord managedWorld = new WorldRecord();
     World world = getWorld(worldName);
     HashMap<String, Boolean> attributes = getAttributes(world);
     managedWorld.setEnvironment(world.getEnvironment());
@@ -139,7 +139,7 @@ public class DimensionDoorWorld {
   }
 
   static public void manageWorld(World world) {
-    DimensionDoorWorld managedWorld = new DimensionDoorWorld();
+    WorldRecord managedWorld = new WorldRecord();
     HashMap<String, Boolean> attributes = getAttributes(world);
     attributes.put("isolatedChat", false);
     managedWorld.setEnvironment(world.getEnvironment());
@@ -159,7 +159,7 @@ public class DimensionDoorWorld {
   }
 
   static public void setPlugin(DimensionDoorPlugin plugin) {
-    DimensionDoorWorld.plugin = plugin;
+    WorldRecord.plugin = plugin;
   }
 
   static private HashMap<String, Boolean> mergeDefaultAttributes(HashMap<String, Boolean> attributes) {
@@ -171,7 +171,7 @@ public class DimensionDoorWorld {
     return attributes;
   }
 
-  static boolean isLoaded(String worldName) {
+  public static boolean isLoaded(String worldName) {
     if (plugin.getServer().getWorld(worldName.toLowerCase()) != null)
       return true;
     return false;
@@ -272,7 +272,7 @@ public class DimensionDoorWorld {
     }
   }
 
-  boolean isLoaded() {
+  public boolean isLoaded() {
     if (plugin.getServer().getWorld(this.getName()) != null)
       return true;
     return false;

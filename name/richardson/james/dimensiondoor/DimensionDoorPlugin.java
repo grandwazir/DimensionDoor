@@ -27,9 +27,10 @@ import java.util.logging.Logger;
 
 import javax.persistence.PersistenceException;
 
-import name.richardson.james.dimensiondoor.DimensionDoorWorldListener;
 import name.richardson.james.dimensiondoor.DimensionDoorPlugin;
-import name.richardson.james.dimensiondoor.DimensionDoorWorld;
+import name.richardson.james.dimensiondoor.listeners.DimensionDoorPlayerListener;
+import name.richardson.james.dimensiondoor.listeners.DimensionDoorWorldListener;
+import name.richardson.james.dimensiondoor.persistent.WorldRecord;
 
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -59,7 +60,7 @@ public class DimensionDoorPlugin extends JavaPlugin {
   @Override
   public List<Class<?>> getDatabaseClasses() {
     List<Class<?>> list = new ArrayList<Class<?>>();
-    list.add(DimensionDoorWorld.class);
+    list.add(WorldRecord.class);
     return list;
   }
 
@@ -115,8 +116,8 @@ public class DimensionDoorPlugin extends JavaPlugin {
   public void onEnable() {
     info = this.getDescription();
     final DimensionDoorPlugin plugin = this;
-    DimensionDoorWorld.setPlugin(plugin);
-    DimensionDoorWorld.setDefaultAttributes();
+    WorldRecord.setPlugin(plugin);
+    WorldRecord.setDefaultAttributes();
     log.info(String.format("[DimensionDoor] %s is enabled!", info.getFullName()));
 
     // setup environment
@@ -132,17 +133,17 @@ public class DimensionDoorPlugin extends JavaPlugin {
 
     // register existing worlds
     for (World world : plugin.getServer().getWorlds()) {
-      if (DimensionDoorWorld.isManaged(world.getName())) {
-        DimensionDoorWorld.find(world.getName()).applyAttributes();
+      if (WorldRecord.isManaged(world.getName())) {
+        WorldRecord.find(world.getName()).applyAttributes();
       } else {
         log.warning(String.format("[DimensionDoor] - No configuration found for %s", world.getName()));
-        DimensionDoorWorld.manageWorld(world);
-        DimensionDoorWorld.find(world.getName()).applyAttributes();
+        WorldRecord.manageWorld(world);
+        WorldRecord.find(world.getName()).applyAttributes();
       }
     }
 
     // load managed worlds if they are not already loaded
-    for (DimensionDoorWorld world : DimensionDoorWorld.findAll())
+    for (WorldRecord world : WorldRecord.findAll())
       if (!world.isLoaded())
         world.loadWorld();
 
@@ -156,15 +157,15 @@ public class DimensionDoorPlugin extends JavaPlugin {
       return true;
     }
     // check the world is not already loaded
-    if (DimensionDoorWorld.isLoaded(args[1])) {
+    if (WorldRecord.isLoaded(args[1])) {
       sender.sendMessage(ChatColor.RED + "A world is already loaded with that name!");
       return true;
     }
     // check if we are already managing this world, if so load it instead of
     // creating it
-    if (DimensionDoorWorld.isManaged(args[1])) {
+    if (WorldRecord.isManaged(args[1])) {
       sender.sendMessage(ChatColor.GREEN + "Loading " + args[1]);
-      DimensionDoorWorld.find(args[1]).loadWorld();
+      WorldRecord.find(args[1]).loadWorld();
       sender.sendMessage(ChatColor.GREEN + "Loading complete!");
       return true;
     }
@@ -179,13 +180,13 @@ public class DimensionDoorPlugin extends JavaPlugin {
     }
 
     // check the type is valid
-    if (!DimensionDoorWorld.isEnvironmentValid(args[2])) {
+    if (!WorldRecord.isEnvironmentValid(args[2])) {
       sender.sendMessage(ChatColor.RED + args[2].toUpperCase() + " is not a valid environment type.");
       return true;
     }
     // actually create the world
     sender.sendMessage(ChatColor.GREEN + "Creating " + args[1] + " (this may take a while)");
-    DimensionDoorWorld.createWorld(args[1], args[2], worldSeed, DimensionDoorWorld.defaultAttributes);
+    WorldRecord.createWorld(args[1], args[2], worldSeed, WorldRecord.defaultAttributes);
     sender.sendMessage(ChatColor.GREEN + "Creation complete!");
     log.info(String.format("[DimensionDoor] %s created a new world called %s", getName(sender), args[1]));
     return true;
@@ -202,13 +203,13 @@ public class DimensionDoorPlugin extends JavaPlugin {
       sender.sendMessage(ChatColor.RED + "/dd info [world]");
       return true;
     }
-    if (!DimensionDoorWorld.isManaged(args[1])) {
+    if (!WorldRecord.isManaged(args[1])) {
       sender.sendMessage(ChatColor.RED + args[1] + " is not managed by DimensionDoor!");
       return true;
     }
-    DimensionDoorWorld world = DimensionDoorWorld.find(args[1]);
+    WorldRecord world = WorldRecord.find(args[1]);
     // check to see if destination world is loaded
-    if (!DimensionDoorWorld.isLoaded(args[1]))
+    if (!WorldRecord.isLoaded(args[1]))
       sender.sendMessage(ChatColor.RED + args[1] + " is not loaded!");
     else sender.sendMessage(ChatColor.GREEN + args[1] + " is loaded!");
     sender.sendMessage(ChatColor.YELLOW + " - seed: " + Long.toString(getServer().getWorld(world.getName()).getSeed()));
@@ -222,10 +223,10 @@ public class DimensionDoorPlugin extends JavaPlugin {
 
   private boolean listWorlds(CommandSender sender, String[] args) {
     // get all the worlds
-    List<DimensionDoorWorld> worlds = DimensionDoorWorld.findAll();
+    List<WorldRecord> worlds = WorldRecord.findAll();
     StringBuilder message = new StringBuilder();
     // Build the message
-    for (DimensionDoorWorld world : worlds) {
+    for (WorldRecord world : worlds) {
       if (world.isLoaded()) {
         message.append(ChatColor.GREEN + world.getName() + ", ");
       } else {
@@ -245,15 +246,15 @@ public class DimensionDoorPlugin extends JavaPlugin {
       return true;
     }
     // check to see if destination world is loaded
-    if (DimensionDoorWorld.isLoaded(args[1])) {
+    if (WorldRecord.isLoaded(args[1])) {
       sender.sendMessage(ChatColor.RED + args[1] + " is already loaded!");
       return true;
     }
-    if (!DimensionDoorWorld.isManaged(args[1])) {
+    if (!WorldRecord.isManaged(args[1])) {
       sender.sendMessage(ChatColor.RED + args[1] + " is not managed by DimensionDoor!");
       return true;
     }
-    DimensionDoorWorld world = DimensionDoorWorld.find(args[1]);
+    WorldRecord world = WorldRecord.find(args[1]);
     world.loadWorld();
     log.info(String.format("[DimensionDoor] %s loaded %s", getName(sender), args[1]));
     sender.sendMessage(ChatColor.GREEN + args[1] + " loaded");
@@ -267,11 +268,11 @@ public class DimensionDoorPlugin extends JavaPlugin {
       return true;
     }
     // check to see if destination world is loaded
-    if (!DimensionDoorWorld.isManaged(args[1])) {
+    if (!WorldRecord.isManaged(args[1])) {
       sender.sendMessage(ChatColor.RED + args[1] + " is not managed by DimensionDoor!");
       return true;
     }
-    DimensionDoorWorld world = DimensionDoorWorld.find(args[1]);
+    WorldRecord world = WorldRecord.find(args[1]);
     boolean newValue = Boolean.parseBoolean(args[3]);
     HashMap<String, Boolean> attributes = world.getAttributes();
 
@@ -313,12 +314,12 @@ public class DimensionDoorPlugin extends JavaPlugin {
       return true;
     }
     // check to see if destination world is loaded
-    if (!DimensionDoorWorld.isManaged(args[1])) {
+    if (!WorldRecord.isManaged(args[1])) {
       sender.sendMessage(ChatColor.RED + args[1] + " is not managed by DimensionDoor!");
       return true;
     }
-    DimensionDoorWorld world = DimensionDoorWorld.find(args[1]);
-    if (DimensionDoorWorld.isLoaded(args[1]))
+    WorldRecord world = WorldRecord.find(args[1]);
+    if (WorldRecord.isLoaded(args[1]))
       world.unloadWorld();
     world.removeWorld();
     log.info(String.format("[DimensionDoor] %s removed %s", getName(sender), args[1]));
@@ -328,8 +329,8 @@ public class DimensionDoorPlugin extends JavaPlugin {
 
   private void setupDatabase() {
     try {
-      getDatabase().find(DimensionDoorWorld.class).findRowCount();
-      getDatabase().find(DimensionDoorWorld.class).findList();
+      getDatabase().find(WorldRecord.class).findRowCount();
+      getDatabase().find(WorldRecord.class).findList();
     } catch (PersistenceException ex) {
       if (ex.getMessage().contains("isolated_chat")) {
         log.warning("[DimensionDoor] - Database schema out of date!");
@@ -382,7 +383,7 @@ public class DimensionDoorPlugin extends JavaPlugin {
       return true;
     }
     // check to see if destination world is loaded
-    if (!DimensionDoorWorld.isLoaded(args[1])) {
+    if (!WorldRecord.isLoaded(args[1])) {
       sender.sendMessage(ChatColor.RED + args[1] + " is not loaded!");
       return true;
     }
@@ -392,7 +393,7 @@ public class DimensionDoorPlugin extends JavaPlugin {
       return true;
     }
     // teleport the player
-    World destinationWorld = DimensionDoorWorld.getWorld(args[1]);
+    World destinationWorld = WorldRecord.getWorld(args[1]);
     Player player = getPlayerFromName(getName(sender));
     player.teleport(destinationWorld.getSpawnLocation());
     return true;
@@ -405,11 +406,11 @@ public class DimensionDoorPlugin extends JavaPlugin {
       return true;
     }
     // check to see if destination world is loaded
-    if (!DimensionDoorWorld.isLoaded(args[1])) {
+    if (!WorldRecord.isLoaded(args[1])) {
       sender.sendMessage(ChatColor.RED + args[1] + " is not loaded!");
       return true;
     }
-    DimensionDoorWorld world = DimensionDoorWorld.find(args[1]);
+    WorldRecord world = WorldRecord.find(args[1]);
     world.unloadWorld();
     log.info(String.format("[DimensionDoor] %s unloaded %s", getName(sender), args[1]));
     sender.sendMessage(ChatColor.GREEN + "World unloaded");
