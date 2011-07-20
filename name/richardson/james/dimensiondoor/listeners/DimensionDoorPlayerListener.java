@@ -32,19 +32,20 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class DimensionDoorPlayerListener extends PlayerListener {
 
-  private Logger log = Logger.getLogger("Minecraft");
-  private DimensionDoor plugin;
+  private final Logger log = Logger.getLogger("Minecraft");
+  private final DimensionDoor plugin;
 
-  public DimensionDoorPlayerListener(DimensionDoor plugin) {
+  public DimensionDoorPlayerListener(final DimensionDoor plugin) {
     this.plugin = plugin;
   }
 
-  public void onPlayerChat(PlayerChatEvent event) {
+  @Override
+  public void onPlayerChat(final PlayerChatEvent event) {
     if (event.isCancelled())
       return;
     if (!WorldRecord.chatAttributes.containsValue(true))
       return;
-    World originWorld = event.getPlayer().getWorld();
+    final World originWorld = event.getPlayer().getWorld();
     // We send all the messages seperatly to avoid a situation where chat
     // 'leaks'
     // from non isolated worlds into isolated worlds. This can lead to
@@ -54,8 +55,8 @@ public class DimensionDoorPlayerListener extends PlayerListener {
     String message = event.getFormat();
     message = message.replace("%1$s", event.getPlayer().getDisplayName());
     message = message.replace("%2$s", event.getMessage());
-    for (Player player : plugin.getServer().getOnlinePlayers()) {
-      World recipentWorld = player.getWorld();
+    for (final Player player : plugin.getServer().getOnlinePlayers()) {
+      final World recipentWorld = player.getWorld();
       // if the origin world is isolated send message only to people on the same
       // world
       if (WorldRecord.chatAttributes.get(originWorld.getName()) && originWorld.getName().equalsIgnoreCase(recipentWorld.getName())) {
@@ -70,10 +71,11 @@ public class DimensionDoorPlayerListener extends PlayerListener {
     log.info(message);
   }
 
-  public void onPlayerRespawn(PlayerRespawnEvent event) {
-    Player player = event.getPlayer();
-    String currentWorld = player.getWorld().getName();
-    String destinationWorld = event.getRespawnLocation().getWorld().getName();
+  @Override
+  public void onPlayerRespawn(final PlayerRespawnEvent event) {
+    final Player player = event.getPlayer();
+    final String currentWorld = player.getWorld().getName();
+    final String destinationWorld = event.getRespawnLocation().getWorld().getName();
     // if the respawn location is not in the current world, set a new one
     if (!currentWorld.equals(destinationWorld))
       event.setRespawnLocation(plugin.getServer().getWorld(currentWorld).getSpawnLocation());

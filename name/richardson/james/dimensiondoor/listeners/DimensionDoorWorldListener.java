@@ -32,16 +32,17 @@ public class DimensionDoorWorldListener extends WorldListener {
 
   static Logger log = Logger.getLogger("Minecraft");
   @SuppressWarnings("unused")
-  private DimensionDoor plugin;
+  private final DimensionDoor plugin;
 
-  public DimensionDoorWorldListener(DimensionDoor plugin) {
+  public DimensionDoorWorldListener(final DimensionDoor plugin) {
     this.plugin = plugin;
   }
 
   // when a world is initialised, check to see if we know about it
   // causing double checks on first start up for some reason so we
   // will ignore it for now
-  public void onWorldInit(WorldInitEvent event) {
+  @Override
+  public void onWorldInit(final WorldInitEvent event) {
     /*
      * String worldName = event.getWorld().getName(); if
      * (DimensionDoorWorld.isManaged(event.getWorld())) return; // create new
@@ -52,12 +53,13 @@ public class DimensionDoorWorldListener extends WorldListener {
     return;
   }
 
-  public void onWorldLoad(WorldLoadEvent event) {
+  @Override
+  public void onWorldLoad(final WorldLoadEvent event) {
     if (!WorldRecord.isManaged(event.getWorld())) {
       log.warning(String.format("[DimensionDoor] - No configuration found for %s", event.getWorld().getName()));
       WorldRecord.manageWorld(event.getWorld());
     }
-    WorldRecord world = WorldRecord.find(event.getWorld());
+    final WorldRecord world = WorldRecord.find(event.getWorld());
     world.applyAttributes();
   }
 

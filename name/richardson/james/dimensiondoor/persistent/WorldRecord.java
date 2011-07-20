@@ -28,27 +28,30 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import name.richardson.james.dimensiondoor.DimensionDoor;
+
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 
 import com.avaje.ebean.validation.NotNull;
 
-import name.richardson.james.dimensiondoor.DimensionDoor;
-
 @Entity()
 @Table(name = "dd_worlds")
 public class WorldRecord {
 
-  public static HashMap<String, Boolean> defaultAttributes = new HashMap<String, Boolean>();
   public static HashMap<String, Boolean> chatAttributes = new HashMap<String, Boolean>();
-  private static DimensionDoor plugin;
+  public static HashMap<String, Boolean> defaultAttributes = new HashMap<String, Boolean>();
   private final static Logger log = Logger.getLogger("Minecraft");
-
-  @Id
-  private String name;
+  private static DimensionDoor plugin;
 
   @NotNull
   private World.Environment environment;
+
+  @NotNull
+  private boolean isolatedChat;
+
+  @Id
+  private String name;
 
   @NotNull
   private boolean pvp;
@@ -59,13 +62,10 @@ public class WorldRecord {
   @NotNull
   private boolean spawnMonsters;
 
-  @NotNull
-  private boolean isolatedChat;
-
-  static public void createWorld(String worldName, String environment, Long worldSeed, HashMap<String, Boolean> attributes) {
-    WorldRecord createdWorld = new WorldRecord();
-    World.Environment environmentType = Enum.valueOf(World.Environment.class, environment.toUpperCase());
-    HashMap<String, Boolean> combinedAttributes = mergeDefaultAttributes(attributes);
+  static public void createWorld(final String worldName, final String environment, final Long worldSeed, final HashMap<String, Boolean> attributes) {
+    final WorldRecord createdWorld = new WorldRecord();
+    final World.Environment environmentType = Enum.valueOf(World.Environment.class, environment.toUpperCase());
+    final HashMap<String, Boolean> combinedAttributes = mergeDefaultAttributes(attributes);
     createdWorld.setName(worldName);
     createdWorld.setEnvironment(environmentType);
     createdWorld.setAttributes(combinedAttributes);
@@ -77,23 +77,23 @@ public class WorldRecord {
     }
   }
 
-  static public WorldRecord find(String worldName) {
-    List<WorldRecord> worlds = plugin.getDatabase().find(WorldRecord.class).where().ieq("name", worldName).findList();
+  static public WorldRecord find(final String worldName) {
+    final List<WorldRecord> worlds = plugin.getDatabase().find(WorldRecord.class).where().ieq("name", worldName).findList();
     return worlds.get(0);
   }
 
-  static public WorldRecord find(World world) {
-    List<WorldRecord> worlds = plugin.getDatabase().find(WorldRecord.class).where().ieq("name", world.getName()).findList();
+  static public WorldRecord find(final World world) {
+    final List<WorldRecord> worlds = plugin.getDatabase().find(WorldRecord.class).where().ieq("name", world.getName()).findList();
     return worlds.get(0);
   }
 
   static public List<WorldRecord> findAll() {
-    List<WorldRecord> worlds = plugin.getDatabase().find(WorldRecord.class).findList();
+    final List<WorldRecord> worlds = plugin.getDatabase().find(WorldRecord.class).findList();
     return worlds;
   }
 
-  static public HashMap<String, Boolean> getAttributes(World world) {
-    HashMap<String, Boolean> attributes = new HashMap<String, Boolean>();
+  static public HashMap<String, Boolean> getAttributes(final World world) {
+    final HashMap<String, Boolean> attributes = new HashMap<String, Boolean>();
     attributes.put("pvp", world.getPVP());
     attributes.put("spawnMonsters", world.getAllowMonsters());
     attributes.put("spawnAnimals", world.getAllowAnimals());
@@ -104,33 +104,39 @@ public class WorldRecord {
     return plugin.getServer().getWorlds().get(0);
   }
 
-  static public World getWorld(String worldName) {
+  static public World getWorld(final String worldName) {
     return plugin.getServer().getWorld(worldName.toLowerCase());
   }
 
-  static public boolean isEnvironmentValid(String environment) {
-    for (Environment type : World.Environment.values())
+  static public boolean isEnvironmentValid(final String environment) {
+    for (final Environment type : World.Environment.values())
       if (type.name().equalsIgnoreCase(environment))
         return true;
     return false;
   }
 
-  static public boolean isManaged(String worldName) {
+  public static boolean isLoaded(final String worldName) {
+    if (plugin.getServer().getWorld(worldName.toLowerCase()) != null)
+      return true;
+    return false;
+  }
+
+  static public boolean isManaged(final String worldName) {
     if (plugin.getDatabase().find(WorldRecord.class).where().ieq("name", worldName).findRowCount() == 1)
       return true;
     return false;
   }
 
-  static public boolean isManaged(World world) {
+  static public boolean isManaged(final World world) {
     if (plugin.getDatabase().find(WorldRecord.class).where().ieq("name", world.getName()).findRowCount() == 1)
       return true;
     return false;
   }
 
-  static public void manageWorld(String worldName) {
-    WorldRecord managedWorld = new WorldRecord();
-    World world = getWorld(worldName);
-    HashMap<String, Boolean> attributes = getAttributes(world);
+  static public void manageWorld(final String worldName) {
+    final WorldRecord managedWorld = new WorldRecord();
+    final World world = getWorld(worldName);
+    final HashMap<String, Boolean> attributes = getAttributes(world);
     managedWorld.setEnvironment(world.getEnvironment());
     managedWorld.setIsolatedChat(false);
     managedWorld.setName(world.getName());
@@ -138,9 +144,9 @@ public class WorldRecord {
     log.info(String.format("[DimensionDoor] - Creating default configuation: %s", managedWorld.getName()));
   }
 
-  static public void manageWorld(World world) {
-    WorldRecord managedWorld = new WorldRecord();
-    HashMap<String, Boolean> attributes = getAttributes(world);
+  static public void manageWorld(final World world) {
+    final WorldRecord managedWorld = new WorldRecord();
+    final HashMap<String, Boolean> attributes = getAttributes(world);
     attributes.put("isolatedChat", false);
     managedWorld.setEnvironment(world.getEnvironment());
     managedWorld.setName(world.getName());
@@ -149,36 +155,30 @@ public class WorldRecord {
   }
 
   public static void setDefaultAttributes() {
-    boolean pvp = plugin.getServer().getWorlds().get(0).getPVP();
-    boolean allowAnimals = plugin.getServer().getWorlds().get(0).getAllowAnimals();
-    boolean allowMonsters = plugin.getServer().getWorlds().get(0).getAllowMonsters();
+    final boolean pvp = plugin.getServer().getWorlds().get(0).getPVP();
+    final boolean allowAnimals = plugin.getServer().getWorlds().get(0).getAllowAnimals();
+    final boolean allowMonsters = plugin.getServer().getWorlds().get(0).getAllowMonsters();
     defaultAttributes.put("pvp", pvp);
     defaultAttributes.put("spawnAnimals", allowAnimals);
     defaultAttributes.put("spawnMonsters", allowMonsters);
     defaultAttributes.put("isolatedChat", false);
   }
 
-  static public void setPlugin(DimensionDoor plugin) {
+  static public void setPlugin(final DimensionDoor plugin) {
     WorldRecord.plugin = plugin;
   }
 
-  static private HashMap<String, Boolean> mergeDefaultAttributes(HashMap<String, Boolean> attributes) {
-    Set<String> keys = attributes.keySet();
-    for (String key : keys) {
+  static private HashMap<String, Boolean> mergeDefaultAttributes(final HashMap<String, Boolean> attributes) {
+    final Set<String> keys = attributes.keySet();
+    for (final String key : keys) {
       if (!attributes.containsKey(key))
         attributes.put(key, defaultAttributes.get(key));
     }
     return attributes;
   }
 
-  public static boolean isLoaded(String worldName) {
-    if (plugin.getServer().getWorld(worldName.toLowerCase()) != null)
-      return true;
-    return false;
-  }
-
   public void applyAttributes() {
-    World world = plugin.getServer().getWorld(name);
+    final World world = plugin.getServer().getWorld(name);
     world.setPVP(pvp);
     world.setSpawnFlags(spawnMonsters, spawnAnimals);
     chatAttributes.put(world.getName(), isIsolatedChat());
@@ -186,11 +186,11 @@ public class WorldRecord {
   }
 
   public HashMap<String, Boolean> getAttributes() {
-    HashMap<String, Boolean> attributes = new HashMap<String, Boolean>();
-    attributes.put("pvp", this.isPvp());
-    attributes.put("spawnMonsters", this.isSpawnMonsters());
-    attributes.put("spawnAnimals", this.isSpawnAnimals());
-    attributes.put("isolatedChat", this.isIsolatedChat());
+    final HashMap<String, Boolean> attributes = new HashMap<String, Boolean>();
+    attributes.put("pvp", isPvp());
+    attributes.put("spawnMonsters", isSpawnMonsters());
+    attributes.put("spawnAnimals", isSpawnAnimals());
+    attributes.put("isolatedChat", isIsolatedChat());
     return attributes;
   }
 
@@ -206,6 +206,12 @@ public class WorldRecord {
     return isolatedChat;
   }
 
+  public boolean isLoaded() {
+    if (plugin.getServer().getWorld(getName()) != null)
+      return true;
+    return false;
+  }
+
   public boolean isPvp() {
     return pvp;
   }
@@ -219,62 +225,56 @@ public class WorldRecord {
   }
 
   public void loadWorld() {
-    if (!isLoaded(this.getName())) {
-      plugin.getServer().createWorld(this.getName(), this.getEnvironment());
+    if (!isLoaded(getName())) {
+      plugin.getServer().createWorld(getName(), getEnvironment());
     } else {
-      log.warning(String.format("[DimensionDoor] Attempted to load %s but it was loaded", this.getName()));
+      log.warning(String.format("[DimensionDoor] Attempted to load %s but it was loaded", getName()));
     }
   }
 
   public void removeWorld() {
-    if (isLoaded(this.getName()))
+    if (isLoaded(getName()))
       unloadWorld();
     plugin.getDatabase().delete(this);
   }
 
-  public void setAttributes(HashMap<String, Boolean> attributes) {
-    this.setPvp(attributes.get("pvp"));
-    this.setSpawnMonsters(attributes.get("spawnMonsters"));
-    this.setSpawnAnimals(attributes.get("spawnAnimals"));
-    this.setIsolatedChat(attributes.get("isolatedChat"));
+  public void setAttributes(final HashMap<String, Boolean> attributes) {
+    setPvp(attributes.get("pvp"));
+    setSpawnMonsters(attributes.get("spawnMonsters"));
+    setSpawnAnimals(attributes.get("spawnAnimals"));
+    setIsolatedChat(attributes.get("isolatedChat"));
     plugin.getDatabase().save(this);
   }
 
-  public void setEnvironment(World.Environment environment) {
+  public void setEnvironment(final World.Environment environment) {
     this.environment = environment;
   }
 
-  public void setIsolatedChat(boolean isolatedChat) {
+  public void setIsolatedChat(final boolean isolatedChat) {
     this.isolatedChat = isolatedChat;
   }
 
-  public void setName(String name) {
+  public void setName(final String name) {
     this.name = name.toLowerCase();
   }
 
-  public void setPvp(boolean pvp) {
+  public void setPvp(final boolean pvp) {
     this.pvp = pvp;
   }
 
-  public void setSpawnAnimals(boolean spawnAnimals) {
+  public void setSpawnAnimals(final boolean spawnAnimals) {
     this.spawnAnimals = spawnAnimals;
   }
 
-  public void setSpawnMonsters(boolean spawnMonsters) {
+  public void setSpawnMonsters(final boolean spawnMonsters) {
     this.spawnMonsters = spawnMonsters;
   }
 
   public void unloadWorld() {
-    if (isLoaded(this.getName())) {
-      plugin.getServer().unloadWorld(this.getName(), true);
+    if (isLoaded(getName())) {
+      plugin.getServer().unloadWorld(getName(), true);
     } else {
-      log.warning(String.format("[DimensionDoor] Attempted to unload %s but it was not loaded", this.getName()));
+      log.warning(String.format("[DimensionDoor] Attempted to unload %s but it was not loaded", getName()));
     }
-  }
-
-  public boolean isLoaded() {
-    if (plugin.getServer().getWorld(this.getName()) != null)
-      return true;
-    return false;
   }
 }
