@@ -19,9 +19,11 @@ along with DimensionDoor.  If not, see <http://www.gnu.org/licenses/>.
 
 package name.richardson.james.dimensiondoor;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.World;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerListener;
@@ -31,7 +33,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class DimensionDoorPlayerListener extends PlayerListener {
 	
-	static Logger log = Logger.getLogger("Minecraft");
+	private Logger log = Logger.getLogger("Minecraft");
 	private DimensionDoorPlugin plugin;
 	
 	public DimensionDoorPlayerListener(DimensionDoorPlugin plugin) {

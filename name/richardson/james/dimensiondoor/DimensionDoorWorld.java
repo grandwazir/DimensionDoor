@@ -114,7 +114,7 @@ public class DimensionDoorWorld {
 	public void applyAttributes() {
 		World world = plugin.getServer().getWorld(name);
 		world.setPVP(pvp);
-		world.setSpawnFlags(spawnAnimals, spawnMonsters);
+		world.setSpawnFlags(spawnMonsters, spawnAnimals);
 		chatAttributes.put(world.getName(), isIsolatedChat());
 		log.info(String.format("[DimensionDoor] - Applying configuration for %s", world.getName()));
 	}
@@ -233,13 +233,13 @@ public class DimensionDoorWorld {
 	}
 	
 	public static void setDefaultAttributes() {
-	    boolean pvp = plugin.getServer().getWorlds().get(0).getPVP();
-	    boolean allowAnimals = plugin.getServer().getWorlds().get(0).getAllowAnimals();
-	    boolean allowMonsters = plugin.getServer().getWorlds().get(0).getAllowMonsters();
-		defaultAttributes.put("pvp", pvp);
-		defaultAttributes.put("spawnAnimals", allowAnimals);
-		defaultAttributes.put("spawnMonsters", allowMonsters);
-		defaultAttributes.put("isolatedChat", false);
+	  boolean pvp = plugin.getServer().getWorlds().get(0).getPVP();
+	  boolean allowAnimals = plugin.getServer().getWorlds().get(0).getAllowAnimals();
+	  boolean allowMonsters = plugin.getServer().getWorlds().get(0).getAllowMonsters();
+    defaultAttributes.put("pvp", pvp);
+    defaultAttributes.put("spawnAnimals", allowAnimals);
+    defaultAttributes.put("spawnMonsters", allowMonsters);
+    defaultAttributes.put("isolatedChat", false);
 	}
 	
 	static public void setPlugin(DimensionDoorPlugin plugin) {
