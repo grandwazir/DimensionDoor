@@ -33,7 +33,7 @@ import org.bukkit.World.Environment;
 
 import com.avaje.ebean.validation.NotNull;
 
-import name.richardson.james.dimensiondoor.DimensionDoorPlugin;
+import name.richardson.james.dimensiondoor.DimensionDoor;
 
 @Entity()
 @Table(name = "dd_worlds")
@@ -41,7 +41,7 @@ public class WorldRecord {
 
   public static HashMap<String, Boolean> defaultAttributes = new HashMap<String, Boolean>();
   public static HashMap<String, Boolean> chatAttributes = new HashMap<String, Boolean>();
-  private static DimensionDoorPlugin plugin;
+  private static DimensionDoor plugin;
   private final static Logger log = Logger.getLogger("Minecraft");
 
   @Id
@@ -158,7 +158,7 @@ public class WorldRecord {
     defaultAttributes.put("isolatedChat", false);
   }
 
-  static public void setPlugin(DimensionDoorPlugin plugin) {
+  static public void setPlugin(DimensionDoor plugin) {
     WorldRecord.plugin = plugin;
   }
 

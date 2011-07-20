@@ -1,6 +1,6 @@
 name: DimensionDoor
-main: name.richardson.james.dimensiondoor.DimensionDoorPlugin
-version: 1.4.2
+main: name.richardson.james.dimensiondoor.DimensionDoor
+version: 1.5.0
 database: true
 commands:
   dd:

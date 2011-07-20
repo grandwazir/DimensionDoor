@@ -21,7 +21,7 @@ package name.richardson.james.dimensiondoor.listeners;
 
 import java.util.logging.Logger;
 
-import name.richardson.james.dimensiondoor.DimensionDoorPlugin;
+import name.richardson.james.dimensiondoor.DimensionDoor;
 import name.richardson.james.dimensiondoor.persistent.WorldRecord;
 
 import org.bukkit.World;
@@ -33,9 +33,9 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 public class DimensionDoorPlayerListener extends PlayerListener {
 
   private Logger log = Logger.getLogger("Minecraft");
-  private DimensionDoorPlugin plugin;
+  private DimensionDoor plugin;
 
-  public DimensionDoorPlayerListener(DimensionDoorPlugin plugin) {
+  public DimensionDoorPlayerListener(DimensionDoor plugin) {
     this.plugin = plugin;
   }
 

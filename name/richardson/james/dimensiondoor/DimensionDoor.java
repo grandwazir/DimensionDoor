@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 
 import javax.persistence.PersistenceException;
 
-import name.richardson.james.dimensiondoor.DimensionDoorPlugin;
+import name.richardson.james.dimensiondoor.DimensionDoor;
 import name.richardson.james.dimensiondoor.listeners.DimensionDoorPlayerListener;
 import name.richardson.james.dimensiondoor.listeners.DimensionDoorWorldListener;
 import name.richardson.james.dimensiondoor.persistent.WorldRecord;
@@ -46,7 +46,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
-public class DimensionDoorPlugin extends JavaPlugin {
+public class DimensionDoor extends JavaPlugin {
 
   static Logger log = Logger.getLogger("Minecraft");
   static PermissionHandler CurrentPermissions = null;
@@ -115,7 +115,7 @@ public class DimensionDoorPlugin extends JavaPlugin {
 
   public void onEnable() {
     info = this.getDescription();
-    final DimensionDoorPlugin plugin = this;
+    final DimensionDoor plugin = this;
     WorldRecord.setPlugin(plugin);
     WorldRecord.setDefaultAttributes();
     log.info(String.format("[DimensionDoor] %s is enabled!", info.getFullName()));
