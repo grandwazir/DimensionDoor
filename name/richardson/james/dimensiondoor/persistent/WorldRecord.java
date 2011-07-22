@@ -57,31 +57,40 @@ public class WorldRecord {
 
   @NotNull
   private boolean spawnMonsters;
-  
-  public static void setup(DimensionDoor plugin) {
-    WorldRecord.plugin = plugin.getInstance();
+
+  static public int count(String worldName) {
+    return plugin.getDatabase().find(WorldRecord.class).where().ieq("name", worldName.toLowerCase()).findRowCount();
   }
-  
+
+  static public int count(final World world) {
+    return plugin.getDatabase().find(WorldRecord.class).where().ieq("name", world.getName().toLowerCase()).findRowCount();
+  }
+
   static public void create(String worldName) {
     final WorldRecord managedWorld = new WorldRecord();
     final World world = plugin.getWorld(worldName);
     final HashMap<String, Boolean> attributes = plugin.getDefaultAttributes();
-    
+
     managedWorld.setEnvironment(world.getEnvironment());
     managedWorld.setIsolatedChat(false);
     managedWorld.setName(world.getName());
     managedWorld.setAttributes(attributes);
   }
-  
+
   static public void create(World world) {
     final WorldRecord managedWorld = new WorldRecord();
     final HashMap<String, Boolean> attributes = plugin.getWorldAttributes(world);
     attributes.put("isolatedChat", false);
-    
+
     managedWorld.setEnvironment(world.getEnvironment());
     managedWorld.setIsolatedChat(false);
     managedWorld.setName(world.getName());
     managedWorld.setAttributes(attributes);
+  }
+
+  static public List<WorldRecord> findAll() {
+    final List<WorldRecord> worlds = plugin.getDatabase().find(WorldRecord.class).findList();
+    return worlds;
   }
 
   static public WorldRecord findFirst(final String worldName) {
@@ -94,19 +103,6 @@ public class WorldRecord {
     return worlds.get(0);
   }
 
-  static public int count(final World world) {
-    return plugin.getDatabase().find(WorldRecord.class).where().ieq("name", world.getName().toLowerCase()).findRowCount();
-  }
-  
-  static public int count(String worldName) {
-    return plugin.getDatabase().find(WorldRecord.class).where().ieq("name", worldName.toLowerCase()).findRowCount();
-  }
-  
-  static public List<WorldRecord> findAll() {
-    final List<WorldRecord> worlds = plugin.getDatabase().find(WorldRecord.class).findList();
-    return worlds;
-  }
-
   static public boolean isEnvironmentValid(final String environment) {
     for (final Environment type : World.Environment.values())
       if (type.name().equalsIgnoreCase(environment))
@@ -114,11 +110,19 @@ public class WorldRecord {
     return false;
   }
 
+  public static void setup(DimensionDoor plugin) {
+    WorldRecord.plugin = plugin.getInstance();
+  }
+
   public void applyAttributes() {
     final World world = plugin.getServer().getWorld(name);
     world.setPVP(pvp);
     world.setSpawnFlags(spawnMonsters, spawnAnimals);
     chatAttributes.put(world.getName(), isIsolatedChat());
+  }
+
+  public void delete() {
+    plugin.getDatabase().delete(this);
   }
 
   public HashMap<String, Boolean> getAttributes() {
@@ -129,7 +133,7 @@ public class WorldRecord {
     m.put("isolatedChat", isIsolatedChat());
     return m;
   }
-  
+
   public Environment getEnvironment() {
     return environment;
   }
@@ -142,7 +146,6 @@ public class WorldRecord {
     return isolatedChat;
   }
 
-
   public boolean isPvp() {
     return pvp;
   }
@@ -153,10 +156,6 @@ public class WorldRecord {
 
   public boolean isSpawnMonsters() {
     return spawnMonsters;
-  }
-
-  public void delete() {
-    plugin.getDatabase().delete(this);
   }
 
   public void setAttributes(final HashMap<String, Boolean> attributes) {

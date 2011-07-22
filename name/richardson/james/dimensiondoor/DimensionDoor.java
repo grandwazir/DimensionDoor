@@ -66,6 +66,54 @@ public class DimensionDoor extends JavaPlugin {
     playerListener = new DimensionDoorPlayerListener(this);
   }
 
+  public static void log(final Level level, final String msg) {
+    logger.log(level, "[" + instance.getName() + "] " + msg);
+  }
+
+  public void applyWorldAttributes(WorldRecord worldRecord) {
+    final World world = getWorld(worldRecord.getName());
+
+    world.setPVP(worldRecord.isPvp());
+    world.setSpawnFlags(worldRecord.isSpawnMonsters(), worldRecord.isSpawnAnimals());
+    DimensionDoor.log(Level.INFO, String.format("Applying world configuration: %s", world.getName()));
+  }
+
+  public void createWorld(String worldName, String environmentName, String seedString) throws InvalidEnvironment {
+    final World.Environment environment;
+    long worldSeed = 0;
+
+    // check the environment is valid
+    try {
+      environment = Environment.valueOf(environmentName);
+    } catch (IllegalArgumentException e) {
+      throw new InvalidEnvironment(environmentName);
+    }
+
+    // convert the seed if necessary
+    if (seedString == null) {
+      getServer().createWorld(worldName, environment);
+    } else {
+      try {
+        worldSeed = Long.parseLong(seedString);
+      } catch (NumberFormatException e) {
+        worldSeed = (long) seedString.hashCode();
+      } finally {
+        getServer().createWorld(worldName, environment, worldSeed);
+      }
+    }
+  }
+
+  public void createWorld(WorldRecord world) {
+    getServer().createWorld(world.getName(), world.getEnvironment());
+  }
+
+  @Override
+  public List<Class<?>> getDatabaseClasses() {
+    final List<Class<?>> list = new ArrayList<Class<?>>();
+    list.add(WorldRecord.class);
+    return list;
+  }
+
   public HashMap<String, Boolean> getDefaultAttributes() {
     HashMap<String, Boolean> m = new HashMap<String, Boolean>();
     m.put("pvp", getMainWorld().getPVP());
@@ -75,15 +123,8 @@ public class DimensionDoor extends JavaPlugin {
     return m;
   }
 
-  public static void log(final Level level, final String msg) {
-    logger.log(level, "[" + instance.getName() + "] " + msg);
-  }
-
-  @Override
-  public List<Class<?>> getDatabaseClasses() {
-    final List<Class<?>> list = new ArrayList<Class<?>>();
-    list.add(WorldRecord.class);
-    return list;
+  public DimensionDoor getInstance() {
+    return instance;
   }
 
   public String getName() {
@@ -100,12 +141,56 @@ public class DimensionDoor extends JavaPlugin {
     }
   }
 
+  public World getWorld(String worldName) {
+    return getServer().getWorld(worldName);
+  }
+
+  public HashMap<String, Boolean> getWorldAttributes(final World world) {
+    final HashMap<String, Boolean> m = new HashMap<String, Boolean>();
+    m.put("pvp", world.getPVP());
+    m.put("spawnMonsters", world.getAllowMonsters());
+    m.put("spawnAnimals", world.getAllowAnimals());
+    return m;
+  }
+
+  public List<World> getWorlds() {
+    return getServer().getWorlds();
+  }
+
   public String getWorldSeed(String worldName) {
     if (isWorldLoaded(worldName)) {
       return Long.toString(getWorld(worldName).getSeed());
     } else {
       return "Unable to retrieve for unloaded worlds";
     }
+  }
+
+  public boolean isWorldLoaded(String worldName) {
+    if (getServer().getWorld(worldName) != null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public boolean isWorldManaged(String worldName) {
+    if (WorldRecord.count(worldName) == 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public boolean isWorldManaged(World world) {
+    if (WorldRecord.count(world) == 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public void loadWorld(WorldRecord worldRecord) {
+    getServer().createWorld(worldRecord.getName(), worldRecord.getEnvironment());
   }
 
   public void onDisable() {
@@ -151,87 +236,14 @@ public class DimensionDoor extends JavaPlugin {
 
   public void registerWorld(World world) {
     final String worldName = world.getName();
-    
+
     DimensionDoor.log(Level.INFO, String.format("Creating world configuration: %s", worldName));
     WorldRecord.create(world);
-  }
-  
-  public boolean isWorldLoaded(String worldName) {
-    if (getServer().getWorld(worldName) != null) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  public boolean isWorldManaged(String worldName) {
-    if (WorldRecord.count(worldName) == 1) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  public boolean isWorldManaged(World world) {
-    if (WorldRecord.count(world) == 1) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  public DimensionDoor getInstance() {
-    return instance;
-  }
-
-  public List<World> getWorlds() {
-    return getServer().getWorlds();
-  }
-
-  public void createWorld(WorldRecord world) {
-    getServer().createWorld(world.getName(), world.getEnvironment());
-  }
-
-  public void applyWorldAttributes(WorldRecord worldRecord) {
-    final World world = getWorld(worldRecord.getName());
-
-    world.setPVP(worldRecord.isPvp());
-    world.setSpawnFlags(worldRecord.isSpawnMonsters(), worldRecord.isSpawnAnimals());
-    DimensionDoor.log(Level.INFO, String.format("Applying world configuration: %s", world.getName()));
-  }
-
-  public void createWorld(String worldName, String environmentName, String seedString) throws InvalidEnvironment {
-    final World.Environment environment;
-    long worldSeed = 0;
-
-    // check the environment is valid
-    try {
-      environment = Environment.valueOf(environmentName);
-    } catch (IllegalArgumentException e) {
-      throw new InvalidEnvironment(environmentName);
-    }
-
-    // convert the seed if necessary
-    if (seedString == null) {
-      getServer().createWorld(worldName, environment);
-    } else {
-      try {
-        worldSeed = Long.parseLong(seedString);
-      } catch (NumberFormatException e) {
-        worldSeed = (long) seedString.hashCode();
-      } finally {
-        getServer().createWorld(worldName, environment, worldSeed);
-      }
-    }
-  }
-
-  public void loadWorld(WorldRecord worldRecord) {
-    getServer().createWorld(worldRecord.getName(), worldRecord.getEnvironment());
   }
 
   public void unloadWorld(String worldName) throws WorldIsNotEmpty {
     final World world = getWorld(worldName);
-    
+
     if (world.getPlayers().size() == 0) {
       getServer().unloadWorld(getWorld(worldName), true);
     } else {
@@ -239,23 +251,19 @@ public class DimensionDoor extends JavaPlugin {
     }
   }
 
-  private World getMainWorld() {
-    return getServer().getWorlds().get(0);
-  }
-
-  public World getWorld(String worldName) {
-    return getServer().getWorld(worldName);
-  }
-
-  public HashMap<String, Boolean> getWorldAttributes(final World world) {
-    final HashMap<String, Boolean> m = new HashMap<String, Boolean>();
-    m.put("pvp", world.getPVP());
-    m.put("spawnMonsters", world.getAllowMonsters());
-    m.put("spawnAnimals", world.getAllowAnimals());
-    return m;
+  private void connectPermissions() {
+    final Plugin permissionsPlugin = getServer().getPluginManager().getPlugin("Permissions");
+    if (permissionsPlugin != null) {
+      externalPermissions = ((Permissions) permissionsPlugin).getHandler();
+      log(Level.INFO, String.format("External permissions system found (%s)", ((Permissions) permissionsPlugin).getDescription().getFullName()));
+    }
   }
 
   // Utilities
+
+  private World getMainWorld() {
+    return getServer().getWorlds().get(0);
+  }
 
   private void setupDatabase() {
     WorldRecord.setup(this);
@@ -271,14 +279,6 @@ public class DimensionDoor extends JavaPlugin {
         log(Level.WARNING, "No database found, creating schema.");
         installDDL();
       }
-    }
-  }
-
-  private void connectPermissions() {
-    final Plugin permissionsPlugin = getServer().getPluginManager().getPlugin("Permissions");
-    if (permissionsPlugin != null) {
-      externalPermissions = ((Permissions) permissionsPlugin).getHandler();
-      log(Level.INFO, String.format("External permissions system found (%s)", ((Permissions) permissionsPlugin).getDescription().getFullName()));
     }
   }
 
