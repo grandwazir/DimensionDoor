@@ -19,9 +19,6 @@ along with DimensionDoor.  If not, see <http://www.gnu.org/licenses/>.
 
 package name.richardson.james.dimensiondoor.listeners;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import name.richardson.james.dimensiondoor.DimensionDoor;
 import name.richardson.james.dimensiondoor.persistent.WorldRecord;
 
@@ -38,17 +35,13 @@ public class DimensionDoorWorldListener extends WorldListener {
 
   public void onWorldInit(final WorldInitEvent event) {
     if (!plugin.isWorldManaged(event.getWorld())) {
-      final String worldName = event.getWorld().getName();
-      DimensionDoor.log(Level.WARNING, String.format("No configuration found for %s", worldName));
-      DimensionDoor.log(Level.INFO, String.format("Creating default configuation: %s", worldName));
-      WorldRecord.create(event.getWorld());
+      plugin.registerWorld(event.getWorld());
     }
   }
 
   public void onWorldLoad(final WorldLoadEvent event) {
     final WorldRecord world = WorldRecord.findFirst(event.getWorld());
-    DimensionDoor.log(Level.INFO, String.format("Applying configuration for %s", world.getName()));
-    world.applyAttributes();
+    plugin.applyWorldAttributes(world);
   }
 
 }

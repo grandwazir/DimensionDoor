@@ -21,8 +21,6 @@ package name.richardson.james.dimensiondoor.persistent;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Logger;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -40,7 +38,6 @@ import com.avaje.ebean.validation.NotNull;
 public class WorldRecord {
 
   public static HashMap<String, Boolean> chatAttributes = new HashMap<String, Boolean>();
-  public static HashMap<String, Boolean> defaultAttributes = new HashMap<String, Boolean>();
   private static DimensionDoor plugin;
 
   @NotNull
@@ -125,14 +122,14 @@ public class WorldRecord {
   }
 
   public HashMap<String, Boolean> getAttributes() {
-    final HashMap<String, Boolean> attributes = new HashMap<String, Boolean>();
-    attributes.put("pvp", isPvp());
-    attributes.put("spawnMonsters", isSpawnMonsters());
-    attributes.put("spawnAnimals", isSpawnAnimals());
-    attributes.put("isolatedChat", isIsolatedChat());
-    return attributes;
+    final HashMap<String, Boolean> m = new HashMap<String, Boolean>();
+    m.put("pvp", isPvp());
+    m.put("spawnMonsters", isSpawnMonsters());
+    m.put("spawnAnimals", isSpawnAnimals());
+    m.put("isolatedChat", isIsolatedChat());
+    return m;
   }
-
+  
   public Environment getEnvironment() {
     return environment;
   }
