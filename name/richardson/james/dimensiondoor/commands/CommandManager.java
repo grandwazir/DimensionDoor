@@ -121,9 +121,10 @@ public class CommandManager implements CommandExecutor {
       if (attributes.containsKey(attributeName)) {
         attributes.put(attributeName, attributeValue);
         world.setAttributes(attributes);
-        world.applyAttributes();
+        
         DimensionDoor.log(Level.INFO, String.format("%s has changed %s to %s for %s", getSenderName(sender), attributeName, Boolean.toString(attributeValue),
             worldName));
+        plugin.applyWorldAttributes(world);
         sender.sendMessage(String.format(ChatColor.GREEN + "Set %s to %s for %s", attributeName, Boolean.toString(attributeValue), worldName));
       } else {
         throw new InvalidAttribute(attributeName);

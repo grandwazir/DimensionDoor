@@ -37,7 +37,6 @@ import com.avaje.ebean.validation.NotNull;
 @Table(name = "dd_worlds")
 public class WorldRecord {
 
-  public static HashMap<String, Boolean> chatAttributes = new HashMap<String, Boolean>();
   private static DimensionDoor plugin;
 
   @NotNull
@@ -112,13 +111,6 @@ public class WorldRecord {
 
   public static void setup(DimensionDoor plugin) {
     WorldRecord.plugin = DimensionDoor.getInstance();
-  }
-
-  public void applyAttributes() {
-    final World world = plugin.getServer().getWorld(name);
-    world.setPVP(pvp);
-    world.setSpawnFlags(spawnMonsters, spawnAnimals);
-    chatAttributes.put(world.getName(), isIsolatedChat());
   }
 
   public void delete() {

@@ -50,7 +50,8 @@ import com.nijikokun.bukkit.Permissions.Permissions;
 public class DimensionDoor extends JavaPlugin {
 
   public static DimensionDoor instance;
-
+  public HashMap<String, Boolean> isolatedChatAttributes = new HashMap<String, Boolean>();
+  
   static Logger logger = Logger.getLogger("Minecraft");
   private final DimensionDoorPlayerListener playerListener;
   private final DimensionDoorWorldListener worldListener;
@@ -58,7 +59,7 @@ public class DimensionDoor extends JavaPlugin {
   public PermissionHandler externalPermissions = null;
   private PluginDescriptionFile desc;
   private PluginManager pm;
-
+  
   public DimensionDoor() {
     DimensionDoor.instance = this;
     cm = new CommandManager(this);
@@ -75,6 +76,7 @@ public class DimensionDoor extends JavaPlugin {
 
     world.setPVP(worldRecord.isPvp());
     world.setSpawnFlags(worldRecord.isSpawnMonsters(), worldRecord.isSpawnAnimals());
+    isolatedChatAttributes.put(world.getName(), worldRecord.isIsolatedChat());
     DimensionDoor.log(Level.INFO, String.format("Applying world configuration: %s", world.getName()));
   }
 
