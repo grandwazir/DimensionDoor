@@ -111,7 +111,7 @@ public class WorldRecord {
   }
 
   public static void setup(DimensionDoor plugin) {
-    WorldRecord.plugin = plugin.getInstance();
+    WorldRecord.plugin = DimensionDoor.getInstance();
   }
 
   public void applyAttributes() {

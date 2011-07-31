@@ -49,7 +49,7 @@ import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class DimensionDoor extends JavaPlugin {
 
-  private static DimensionDoor instance;
+  public static DimensionDoor instance;
 
   static Logger logger = Logger.getLogger("Minecraft");
   private final DimensionDoorPlayerListener playerListener;
@@ -123,7 +123,7 @@ public class DimensionDoor extends JavaPlugin {
     return m;
   }
 
-  public DimensionDoor getInstance() {
+  public static DimensionDoor getInstance() {
     return instance;
   }
 
