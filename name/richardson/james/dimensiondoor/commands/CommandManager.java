@@ -5,16 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
-import name.richardson.james.dimensiondoor.exceptions.CommandIsPlayerOnly;
-import name.richardson.james.dimensiondoor.exceptions.InvalidAttribute;
-import name.richardson.james.dimensiondoor.exceptions.InvalidEnvironment;
-import name.richardson.james.dimensiondoor.exceptions.NotEnoughArguments;
-import name.richardson.james.dimensiondoor.exceptions.WorldIsAlreadyLoaded;
-import name.richardson.james.dimensiondoor.exceptions.WorldIsNotEmpty;
-import name.richardson.james.dimensiondoor.exceptions.WorldIsNotLoaded;
-import name.richardson.james.dimensiondoor.exceptions.WorldIsNotManaged;
+import name.richardson.james.dimensiondoor.exceptions.CommandIsPlayerOnlyException;
+import name.richardson.james.dimensiondoor.exceptions.InvalidAttributeException;
+import name.richardson.james.dimensiondoor.exceptions.InvalidEnvironmentException;
+import name.richardson.james.dimensiondoor.exceptions.NotEnoughArgumentsException;
+import name.richardson.james.dimensiondoor.exceptions.WorldIsAlreadyLoadedException;
+import name.richardson.james.dimensiondoor.exceptions.WorldIsNotEmptyException;
+import name.richardson.james.dimensiondoor.exceptions.WorldIsNotLoadedException;
+import name.richardson.james.dimensiondoor.exceptions.WorldIsNotManagedException;
 import name.richardson.james.dimensiondoor.DimensionDoor;
-import name.richardson.james.dimensiondoor.exceptions.PlayerNotAuthorised;
+import name.richardson.james.dimensiondoor.exceptions.PlayerNotAuthorisedException;
 import name.richardson.james.dimensiondoor.persistent.WorldRecord;
 
 import org.bukkit.ChatColor;
@@ -33,9 +33,9 @@ public class CommandManager implements CommandExecutor {
     this.plugin = plugin;
   }
 
-  public boolean cloneWorld(CommandSender sender, String[] arguments) throws NotEnoughArguments, WorldIsNotManaged, InvalidAttribute {
+  public boolean cloneWorld(CommandSender sender, String[] arguments) throws NotEnoughArgumentsException, WorldIsNotManagedException, InvalidAttributeException {
     if (arguments.length < 3)
-      throw new NotEnoughArguments("dd template", "/dd template [sourceWorld] [targetWorld]");
+      throw new NotEnoughArgumentsException("dd template", "/dd template [sourceWorld] [targetWorld]");
 
     try {
       final WorldRecord sourceWorldRecord = WorldRecord.findFirst(arguments[1]);
@@ -44,20 +44,20 @@ public class CommandManager implements CommandExecutor {
       DimensionDoor.log(Level.INFO, String.format("%s has copied the attributes from %s to %s", getSenderName(sender), arguments[1], arguments[2]));
       sender.sendMessage(String.format(ChatColor.GREEN + "Settings copied from %s to %s", sourceWorldRecord.getName(), targetWorldRecord.getName()));
     } catch (IndexOutOfBoundsException e) {
-      throw new WorldIsNotManaged();
+      throw new WorldIsNotManagedException();
     }
 
     return true;
   }
 
-  public boolean createWorld(CommandSender sender, String[] arguments) throws NotEnoughArguments, InvalidEnvironment, WorldIsAlreadyLoaded {
+  public boolean createWorld(CommandSender sender, String[] arguments) throws NotEnoughArgumentsException, InvalidEnvironmentException, WorldIsAlreadyLoadedException {
     if (arguments.length < 3)
-      throw new NotEnoughArguments("dd create", "/dd create [name] [environment] <seed>");
+      throw new NotEnoughArgumentsException("dd create", "/dd create [name] [environment] <seed>");
     final String worldName = arguments[1];
     final String environment = arguments[2].toUpperCase();
 
     if (plugin.isWorldLoaded(worldName))
-      throw new WorldIsAlreadyLoaded();
+      throw new WorldIsAlreadyLoadedException();
 
     sender.sendMessage(String.format(ChatColor.YELLOW + "Creating %s (this may take a while)", worldName));
     DimensionDoor.log(Level.INFO, String.format("%s has created a new world called %s", getSenderName(sender), worldName));
@@ -90,15 +90,15 @@ public class CommandManager implements CommandExecutor {
     return true;
   }
 
-  public boolean loadWorld(CommandSender sender, String[] arguments) throws NotEnoughArguments, InvalidEnvironment, WorldIsAlreadyLoaded, WorldIsNotManaged {
+  public boolean loadWorld(CommandSender sender, String[] arguments) throws NotEnoughArgumentsException, InvalidEnvironmentException, WorldIsAlreadyLoadedException, WorldIsNotManagedException {
     if (arguments.length != 2)
-      throw new NotEnoughArguments("dd load", "/dd load [name]");
+      throw new NotEnoughArgumentsException("dd load", "/dd load [name]");
 
     final String worldName = arguments[1];
     if (plugin.isWorldLoaded(worldName))
-      throw new WorldIsAlreadyLoaded();
+      throw new WorldIsAlreadyLoadedException();
     if (!plugin.isWorldManaged(worldName))
-      throw new WorldIsNotManaged();
+      throw new WorldIsNotManagedException();
 
     final WorldRecord world = WorldRecord.findFirst(worldName);
     plugin.createWorld(world);
@@ -107,9 +107,9 @@ public class CommandManager implements CommandExecutor {
     return true;
   }
 
-  public boolean modifyWorld(CommandSender sender, String[] arguments) throws NotEnoughArguments, WorldIsNotManaged, InvalidAttribute {
+  public boolean modifyWorld(CommandSender sender, String[] arguments) throws NotEnoughArgumentsException, WorldIsNotManagedException, InvalidAttributeException {
     if (arguments.length < 4)
-      throw new NotEnoughArguments("dd modify", "/dd modify [name] [attribute] [value]");
+      throw new NotEnoughArgumentsException("dd modify", "/dd modify [name] [attribute] [value]");
     final String worldName = arguments[1];
     final String attributeName = arguments[2];
     final boolean attributeValue = Boolean.valueOf(arguments[3]);
@@ -127,10 +127,10 @@ public class CommandManager implements CommandExecutor {
         plugin.applyWorldAttributes(world);
         sender.sendMessage(String.format(ChatColor.GREEN + "Set %s to %s for %s", attributeName, Boolean.toString(attributeValue), worldName));
       } else {
-        throw new InvalidAttribute(attributeName);
+        throw new InvalidAttributeException(attributeName);
       }
     } catch (IndexOutOfBoundsException e) {
-      throw new WorldIsNotManaged();
+      throw new WorldIsNotManagedException();
     }
 
     return true;
@@ -169,38 +169,38 @@ public class CommandManager implements CommandExecutor {
       sender.sendMessage(ChatColor.YELLOW + "/dd [create|info|list|load|modify|template|remove|unload]");
       sender.sendMessage(ChatColor.YELLOW + "/dd [teleport|spawn]");
       return true;
-    } catch (PlayerNotAuthorised e) {
+    } catch (PlayerNotAuthorisedException e) {
       sender.sendMessage(ChatColor.RED + "You do not have permission to do that.");
-    } catch (NotEnoughArguments e) {
+    } catch (NotEnoughArgumentsException e) {
       sender.sendMessage(ChatColor.RED + "Not enough arguments!");
       sender.sendMessage(ChatColor.YELLOW + e.getUsage());
-    } catch (WorldIsNotManaged e) {
+    } catch (WorldIsNotManagedException e) {
       sender.sendMessage(ChatColor.RED + "That world is not managed by DimensionDoor!");
-    } catch (WorldIsAlreadyLoaded e) {
+    } catch (WorldIsAlreadyLoadedException e) {
       sender.sendMessage(ChatColor.RED + "World is already loaded!");
-    } catch (InvalidAttribute e) {
+    } catch (InvalidAttributeException e) {
       sender.sendMessage(ChatColor.RED + "Invalid attribute!");
       sender.sendMessage(ChatColor.YELLOW + "Valid attributes: pvp, spawnMonsters/Animals, isolatedChat");
-    } catch (InvalidEnvironment e) {
+    } catch (InvalidEnvironmentException e) {
       sender.sendMessage(ChatColor.RED + "Invalid environment type!");
       sender.sendMessage(ChatColor.YELLOW + "Valid types: NORMAL, NETHER, SKYLANDS");
-    } catch (WorldIsNotLoaded e) {
+    } catch (WorldIsNotLoadedException e) {
       sender.sendMessage(ChatColor.RED + "World is not loaded!");
-    } catch (WorldIsNotEmpty e) {
+    } catch (WorldIsNotEmptyException e) {
       sender.sendMessage(ChatColor.RED + "Can not unload worlds which contain players!");
-    } catch (CommandIsPlayerOnly e) {
+    } catch (CommandIsPlayerOnlyException e) {
       sender.sendMessage(ChatColor.RED + "You can not use this command from the console!");
     }
     return true;
   }
 
-  public boolean removeWorld(CommandSender sender, String[] arguments) throws NotEnoughArguments, WorldIsNotManaged, WorldIsNotEmpty {
+  public boolean removeWorld(CommandSender sender, String[] arguments) throws NotEnoughArgumentsException, WorldIsNotManagedException, WorldIsNotEmptyException {
     if (arguments.length != 2)
-      throw new NotEnoughArguments("dd remove", "/dd remove [name]");
+      throw new NotEnoughArgumentsException("dd remove", "/dd remove [name]");
     final String worldName = arguments[1];
 
     if (!plugin.isWorldManaged(worldName))
-      throw new WorldIsNotManaged();
+      throw new WorldIsNotManagedException();
     final WorldRecord world = WorldRecord.findFirst(worldName);
 
     plugin.unloadWorld(worldName);
@@ -211,9 +211,9 @@ public class CommandManager implements CommandExecutor {
     return true;
   }
 
-  public boolean setWorldSpawn(CommandSender sender, String[] arguments) throws CommandIsPlayerOnly {
+  public boolean setWorldSpawn(CommandSender sender, String[] arguments) throws CommandIsPlayerOnlyException {
     if (sender instanceof ConsoleCommandSender)
-      throw new CommandIsPlayerOnly();
+      throw new CommandIsPlayerOnlyException();
     final String playerName = getSenderName(sender);
     final Player player = getPlayerFromName(playerName);
     final String worldName = player.getWorld().getName();
@@ -228,15 +228,15 @@ public class CommandManager implements CommandExecutor {
     return true;
   }
 
-  public boolean teleportToWorld(CommandSender sender, String[] arguments) throws NotEnoughArguments, WorldIsNotLoaded, CommandIsPlayerOnly {
+  public boolean teleportToWorld(CommandSender sender, String[] arguments) throws NotEnoughArgumentsException, WorldIsNotLoadedException, CommandIsPlayerOnlyException {
     if (sender instanceof ConsoleCommandSender)
-      throw new CommandIsPlayerOnly();
+      throw new CommandIsPlayerOnlyException();
     if (arguments.length != 2)
-      throw new NotEnoughArguments("dd teleport", "/dd teleport [name]");
+      throw new NotEnoughArgumentsException("dd teleport", "/dd teleport [name]");
     final String worldName = arguments[1];
 
     if (!plugin.isWorldLoaded(worldName))
-      throw new WorldIsNotLoaded();
+      throw new WorldIsNotLoadedException();
     final String playerName = getSenderName(sender);
     final Player player = getPlayerFromName(playerName);
     final World targetWorld = plugin.getWorld(worldName);
@@ -245,15 +245,15 @@ public class CommandManager implements CommandExecutor {
     return true;
   }
 
-  public boolean unloadWorld(CommandSender sender, String[] arguments) throws NotEnoughArguments, WorldIsNotLoaded, WorldIsNotEmpty {
+  public boolean unloadWorld(CommandSender sender, String[] arguments) throws NotEnoughArgumentsException, WorldIsNotLoadedException, WorldIsNotEmptyException {
     if (arguments.length != 2)
-      throw new NotEnoughArguments("dd unload", "/dd unload [name]");
+      throw new NotEnoughArgumentsException("dd unload", "/dd unload [name]");
 
     final String worldName = arguments[1];
     if (plugin.isWorldLoaded(worldName)) {
       plugin.unloadWorld(worldName);
     } else {
-      throw new WorldIsNotLoaded();
+      throw new WorldIsNotLoadedException();
     }
 
     DimensionDoor.log(Level.INFO, String.format("%s has unloaded the world %s", getSenderName(sender), worldName));
@@ -261,13 +261,13 @@ public class CommandManager implements CommandExecutor {
     return true;
   }
 
-  public boolean worldInfo(CommandSender sender, String[] arguments) throws NotEnoughArguments, WorldIsNotManaged {
+  public boolean worldInfo(CommandSender sender, String[] arguments) throws NotEnoughArgumentsException, WorldIsNotManagedException {
     if (arguments.length != 2)
-      throw new NotEnoughArguments("dd info", "/dd info [name]");
+      throw new NotEnoughArgumentsException("dd info", "/dd info [name]");
     final String worldName = arguments[1];
 
     if (!plugin.isWorldManaged(worldName))
-      throw new WorldIsNotManaged();
+      throw new WorldIsNotManagedException();
 
     final WorldRecord world = WorldRecord.findFirst(worldName);
     HashMap<String, Boolean> attributes = world.getAttributes();
@@ -295,7 +295,7 @@ public class CommandManager implements CommandExecutor {
     }
   }
 
-  private boolean playerHasPermission(final String playerName, final String node) throws PlayerNotAuthorised {
+  private boolean playerHasPermission(final String playerName, final String node) throws PlayerNotAuthorisedException {
     if (playerName == "console") {
       return true;
     } else {
@@ -306,7 +306,7 @@ public class CommandManager implements CommandExecutor {
         if (plugin.externalPermissions.has(player, node)) { return true; }
       }
     }
-    throw new PlayerNotAuthorised();
+    throw new PlayerNotAuthorisedException();
   }
 
 }

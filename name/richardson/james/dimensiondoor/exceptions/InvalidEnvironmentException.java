@@ -1,12 +1,12 @@
 
 package name.richardson.james.dimensiondoor.exceptions;
 
-public class InvalidEnvironment extends Exception {
+public class InvalidEnvironmentException extends Exception {
 
   private static final long serialVersionUID = 430445873851296870L;
   private String environment;
 
-  public InvalidEnvironment(String environment) {
+  public InvalidEnvironmentException(String environment) {
     this.setEnvironment(environment);
   }
 

@@ -1,12 +1,12 @@
 
 package name.richardson.james.dimensiondoor.exceptions;
 
-public class InvalidAttribute extends Exception {
+public class InvalidAttributeException extends Exception {
 
   private static final long serialVersionUID = 430445873851296870L;
   private String attribute;
 
-  public InvalidAttribute(String attribute) {
+  public InvalidAttributeException(String attribute) {
     this.setAttribute(attribute);
   }
 

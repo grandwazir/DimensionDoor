@@ -1,13 +1,13 @@
 
 package name.richardson.james.dimensiondoor.exceptions;
 
-public class NotEnoughArguments extends Exception {
+public class NotEnoughArgumentsException extends Exception {
 
   private static final long serialVersionUID = 430445873851296870L;
   private String command;
   private String usage;
 
-  public NotEnoughArguments(String command, String usage) {
+  public NotEnoughArgumentsException(String command, String usage) {
     this.setUsage(usage);
     this.setCommand(command);
   }

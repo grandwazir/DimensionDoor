@@ -28,8 +28,8 @@ import java.util.logging.Logger;
 import javax.persistence.PersistenceException;
 
 import name.richardson.james.dimensiondoor.commands.CommandManager;
-import name.richardson.james.dimensiondoor.exceptions.InvalidEnvironment;
-import name.richardson.james.dimensiondoor.exceptions.WorldIsNotEmpty;
+import name.richardson.james.dimensiondoor.exceptions.InvalidEnvironmentException;
+import name.richardson.james.dimensiondoor.exceptions.WorldIsNotEmptyException;
 import name.richardson.james.dimensiondoor.listeners.DimensionDoorPlayerListener;
 import name.richardson.james.dimensiondoor.listeners.DimensionDoorWorldListener;
 import name.richardson.james.dimensiondoor.persistent.WorldRecord;
@@ -80,7 +80,7 @@ public class DimensionDoor extends JavaPlugin {
     DimensionDoor.log(Level.INFO, String.format("Applying world configuration: %s", world.getName()));
   }
 
-  public void createWorld(String worldName, String environmentName, String seedString) throws InvalidEnvironment {
+  public void createWorld(String worldName, String environmentName, String seedString) throws InvalidEnvironmentException {
     final World.Environment environment;
     long worldSeed = 0;
 
@@ -88,7 +88,7 @@ public class DimensionDoor extends JavaPlugin {
     try {
       environment = Environment.valueOf(environmentName);
     } catch (IllegalArgumentException e) {
-      throw new InvalidEnvironment(environmentName);
+      throw new InvalidEnvironmentException(environmentName);
     }
 
     // convert the seed if necessary
@@ -243,13 +243,13 @@ public class DimensionDoor extends JavaPlugin {
     WorldRecord.create(world);
   }
 
-  public void unloadWorld(String worldName) throws WorldIsNotEmpty {
+  public void unloadWorld(String worldName) throws WorldIsNotEmptyException {
     final World world = getWorld(worldName);
 
     if (world.getPlayers().size() == 0) {
       getServer().unloadWorld(getWorld(worldName), true);
     } else {
-      throw new WorldIsNotEmpty();
+      throw new WorldIsNotEmptyException();
     }
   }
 
