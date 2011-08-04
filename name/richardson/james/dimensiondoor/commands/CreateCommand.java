@@ -47,7 +47,7 @@ public class CreateCommand extends Command {
     final HashMap<String, String> m = new HashMap<String, String>();
     
     // create defaults
-    m.put("seed", "");
+    m.put("seed", Long.toString(System.currentTimeMillis()));
     m.put("generatorPlugin", "");
     m.put("generatorID", "");
 

@@ -103,22 +103,6 @@ public class DimensionDoor extends JavaPlugin {
     }
   }
 
-  public void createWorld(final String worldName, final String environmentName) throws InvalidEnvironmentException, WorldIsAlreadyLoadedException {
-    if (!isWorldLoaded(worldName)) {
-      final World.Environment environment;
-
-      try {
-        environment = Environment.valueOf(environmentName);
-      } catch (final IllegalArgumentException e) {
-        throw new InvalidEnvironmentException(environmentName);
-      }
-
-      getServer().createWorld(worldName, environment);
-    } else {
-      throw new WorldIsAlreadyLoadedException();
-    }
-  }
-
   public void createWorld(final String worldName, final String environmentName, final String seedString) throws InvalidEnvironmentException,
       WorldIsAlreadyLoadedException {
     if (!isWorldLoaded(worldName)) {
@@ -140,31 +124,6 @@ public class DimensionDoor extends JavaPlugin {
       }
 
       getServer().createWorld(worldName, environment);
-    } else {
-      throw new WorldIsAlreadyLoadedException();
-    }
-  }
-
-  public void createWorld(final String worldName, final String environmentName, final String generatorName, final String generatorID)
-      throws InvalidEnvironmentException, WorldIsAlreadyLoadedException, PluginNotFoundException, CustomChunkGeneratorNotFoundException {
-    if (!isWorldLoaded(worldName)) {
-      final World.Environment environment;
-      final ChunkGenerator generator = getCustomChunkGenerator(generatorName, generatorID, worldName);
-      final long worldSeed = System.currentTimeMillis();
-
-      try {
-        environment = Environment.valueOf(environmentName);
-      } catch (final IllegalArgumentException e) {
-        throw new InvalidEnvironmentException(environmentName);
-      }
-
-      try {
-        final World world = getServer().createWorld(worldName, environment, worldSeed, generator);
-        registerCustomWorld(world, generatorName, generatorID);
-      } catch (final WorldIsNotManagedException e) {
-        DimensionDoor.log(Level.SEVERE, String.format("Unable to register custom world: %s", worldName));
-      }
-
     } else {
       throw new WorldIsAlreadyLoadedException();
     }
