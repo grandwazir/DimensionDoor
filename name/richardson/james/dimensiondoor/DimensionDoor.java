@@ -42,7 +42,6 @@ import name.richardson.james.dimensiondoor.commands.TemplateCommand;
 import name.richardson.james.dimensiondoor.commands.UnloadCommand;
 import name.richardson.james.dimensiondoor.exceptions.CustomChunkGeneratorNotFoundException;
 import name.richardson.james.dimensiondoor.exceptions.InvalidEnvironmentException;
-import name.richardson.james.dimensiondoor.exceptions.PlayerNotAuthorisedException;
 import name.richardson.james.dimensiondoor.exceptions.PluginNotFoundException;
 import name.richardson.james.dimensiondoor.exceptions.WorldIsAlreadyLoadedException;
 import name.richardson.james.dimensiondoor.exceptions.WorldIsNotEmptyException;
@@ -54,9 +53,6 @@ import name.richardson.james.dimensiondoor.persistent.WorldRecord;
 
 import org.bukkit.World;
 import org.bukkit.World.Environment;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.Plugin;
@@ -105,23 +101,6 @@ public class DimensionDoor extends JavaPlugin {
     } catch (final WorldIsNotLoadedException e) {
       DimensionDoor.log(Level.WARNING, String.format("Attempted to apply configuration to unloaded world: %s", worldRecord.getName()));
     }
-  }
-
-  public void authorisePlayer(final CommandSender sender, final String node) throws PlayerNotAuthorisedException {
-    if (sender instanceof ConsoleCommandSender) {
-      return;
-    } else {
-      final Player player = (Player) sender;
-
-      if (player.hasPermission(node)) { return; }
-
-      if (externalPermissions != null) {
-        if (externalPermissions.has(player, node))
-          return;
-      }
-    }
-
-    throw new PlayerNotAuthorisedException();
   }
 
   public void createWorld(final String worldName, final String environmentName) throws InvalidEnvironmentException, WorldIsAlreadyLoadedException {
@@ -322,8 +301,7 @@ public class DimensionDoor extends JavaPlugin {
 
     // get external permissions if available
     connectPermissions();
-    
-    // setup database
+
     
     try {
       setupDatabase();
@@ -453,7 +431,6 @@ public class DimensionDoor extends JavaPlugin {
         log(Level.WARNING, "No database found, creating schema.");
         installDDL();
       } else if (ex.getMessage().contains("column")) {
-        ex.printStackTrace();
         log(Level.WARNING, "Database schema is out of date");
         upgradeDatabase(getDatabaseVersion());
       }
@@ -475,7 +452,6 @@ public class DimensionDoor extends JavaPlugin {
       statement.execute("SELECT generator_plugin FROM dd_worlds");
       connection.commit();
     } catch (SQLException e) {
-      e.printStackTrace();
       if (e.getMessage().contains("no such column: isolated_chat") || e.getMessage().contains("Unknown column 'isolated_chat'"))
         return version = 1.2;
       else if (e.getMessage().contains("no such column: generator_plugin") || e.getMessage().contains("Unknown column 'generator_plugin'")) 
@@ -510,7 +486,7 @@ public class DimensionDoor extends JavaPlugin {
       }
       connection.commit();
     } catch (SQLException e) {
-      log(Level.WARNING, "Error when upgrading!");
+      log(Level.WARNING, "Error when upgrading database!");
       e.printStackTrace();
     } finally {
       connection.close();

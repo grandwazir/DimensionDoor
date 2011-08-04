@@ -4,6 +4,7 @@ package name.richardson.james.dimensiondoor.commands;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 
 import name.richardson.james.dimensiondoor.DimensionDoor;
 import name.richardson.james.dimensiondoor.exceptions.CommandIsPlayerOnlyException;
@@ -45,7 +46,7 @@ public abstract class Command implements CommandExecutor {
     try {
       final List<String> arguments = new LinkedList<String>(Arrays.asList(args));
       arguments.remove(0);
-      plugin.authorisePlayer(sender, permission);
+      authorisePlayer(sender, permission);
       execute(sender, arguments);
     } catch (final CommandIsPlayerOnlyException e) {
       sender.sendMessage(ChatColor.RED + "You can not use this command from the console!");
@@ -83,6 +84,27 @@ public abstract class Command implements CommandExecutor {
       final Player player = (Player) sender;
       return player.getName();
     }
+  }
+  
+  protected void authorisePlayer(CommandSender sender, String node) throws PlayerNotAuthorisedException {
+    node = node.toLowerCase();
+    
+    if (sender instanceof ConsoleCommandSender) {
+      return;
+    } else {
+      final Player player = (Player) sender;
+      DimensionDoor.log(Level.INFO, node);
+      if (player.hasPermission(node) || player.hasPermission("dimensiondoor.*")) { 
+        return; 
+      }
+
+      if (plugin.externalPermissions != null) {
+        if (plugin.externalPermissions.has(player, node))
+          return;
+      }
+    }
+
+    throw new PlayerNotAuthorisedException();
   }
 
 }
