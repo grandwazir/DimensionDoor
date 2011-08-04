@@ -33,21 +33,23 @@ public class CreateCommand extends Command {
 
     sender.sendMessage(String.format(ChatColor.YELLOW + "Creating %s (this may take a while)", args.get(0)));
     
-    if (optionalArguments.containsKey("seed") && !optionalArguments.containsKey("generatorPlugin"))
+    if (optionalArguments.get("generatorPlugin").isEmpty())
       plugin.createWorld(args.get(0), args.get(1).toUpperCase(), optionalArguments.get("seed"));
-    else if (optionalArguments.containsKey("seed") && optionalArguments.containsKey("generatorPlugin"))
+    else
       plugin.createWorld(args.get(0), args.get(1).toUpperCase(), optionalArguments.get("seed"), optionalArguments.get("generatorPlugin"), optionalArguments.get("generatorID"));
-    else if (optionalArguments.containsKey("generatorPlugin"))
-      plugin.createWorld(args.get(0), args.get(1).toUpperCase(), optionalArguments.get("generatorPlugin"), null);
-    else 
-      plugin.createWorld(args.get(0), args.get(1).toUpperCase());
-    sender.sendMessage(String.format(ChatColor.GREEN + "has been created.", args.get(0)));
+    
+    sender.sendMessage(String.format(ChatColor.GREEN + "% shas been created.", args.get(0)));
     DimensionDoor.log(Level.INFO, String.format("%s has created a new world called %s", getSenderName(sender), args.get(0)));
 
   }
 
   private HashMap<String, String> getOptionalArguments(final List<String> args) {
     final HashMap<String, String> m = new HashMap<String, String>();
+    
+    // create defaults
+    m.put("seed", "");
+    m.put("generatorPlugin", "");
+    m.put("generatorID", "");
 
     for (String argument : args) {
       if (argument.startsWith("s:")) {
