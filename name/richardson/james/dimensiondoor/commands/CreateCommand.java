@@ -27,7 +27,7 @@ public class CreateCommand extends Command {
 
   @Override
   public void execute(final CommandSender sender, final List<String> args) throws NotEnoughArgumentsException, InvalidEnvironmentException, WorldIsAlreadyLoadedException, PluginNotFoundException, CustomChunkGeneratorNotFoundException {
-    if (args.size() < 3)
+    if (args.size() < 2)
       throw new NotEnoughArgumentsException(name, usage);
     final HashMap<String, String> optionalArguments = getOptionalArguments(args);
 
