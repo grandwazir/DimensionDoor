@@ -14,6 +14,7 @@ import name.richardson.james.dimensiondoor.exceptions.WorldIsAlreadyLoadedExcept
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
 
 public class CreateCommand extends Command {
 
@@ -23,6 +24,7 @@ public class CreateCommand extends Command {
     description = "create (or import) a new world";
     usage = "/dd create [world] [environment] <s:seed> <g:generatorPlugin:generatorID>";
     permission = plugin.getName() + "." + name;
+    
   }
 
   @Override
@@ -39,7 +41,7 @@ public class CreateCommand extends Command {
       plugin.createWorld(args.get(0), args.get(1).toUpperCase(), optionalArguments.get("seed"), optionalArguments.get("generatorPlugin"), optionalArguments.get("generatorID"));
     
     sender.sendMessage(String.format(ChatColor.GREEN + "%s has been created.", args.get(0)));
-    DimensionDoor.log(Level.INFO, String.format("%s has created a new world caled %s", getSenderName(sender), args.get(0)));
+    DimensionDoor.log(Level.INFO, String.format("%s has created a new world called %s", getSenderName(sender), args.get(0)));
 
   }
 
