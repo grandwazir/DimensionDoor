@@ -7,9 +7,9 @@ public class NotEnoughArgumentsException extends Exception {
   private String command;
   private String usage;
 
-  public NotEnoughArgumentsException(String command, String usage) {
-    this.setUsage(usage);
-    this.setCommand(command);
+  public NotEnoughArgumentsException(final String command, final String usage) {
+    setUsage(usage);
+    setCommand(command);
   }
 
   public String getCommand() {
@@ -20,11 +20,11 @@ public class NotEnoughArgumentsException extends Exception {
     return usage;
   }
 
-  public void setCommand(String command) {
+  public void setCommand(final String command) {
     this.command = command;
   }
 
-  public void setUsage(String usage) {
+  public void setUsage(final String usage) {
     this.usage = usage;
   }
 

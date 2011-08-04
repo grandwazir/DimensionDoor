@@ -19,7 +19,10 @@ along with DimensionDoor.  If not, see <http://www.gnu.org/licenses/>.
 
 package name.richardson.james.dimensiondoor.listeners;
 
+import java.util.logging.Level;
+
 import name.richardson.james.dimensiondoor.DimensionDoor;
+import name.richardson.james.dimensiondoor.exceptions.WorldIsNotManagedException;
 import name.richardson.james.dimensiondoor.persistent.WorldRecord;
 
 import org.bukkit.event.world.WorldInitEvent;
@@ -34,15 +37,22 @@ public class DimensionDoorWorldListener extends WorldListener {
     this.plugin = plugin;
   }
 
+  @Override
   public void onWorldInit(final WorldInitEvent event) {
     if (!plugin.isWorldManaged(event.getWorld())) {
       plugin.registerWorld(event.getWorld());
     }
   }
 
+  @Override
   public void onWorldLoad(final WorldLoadEvent event) {
-    final WorldRecord world = WorldRecord.findFirst(event.getWorld());
-    plugin.applyWorldAttributes(world);
+    WorldRecord world;
+    try {
+      world = WorldRecord.findFirst(event.getWorld());
+      plugin.applyWorldAttributes(world);
+    } catch (final WorldIsNotManagedException e) {
+      DimensionDoor.log(Level.SEVERE, String.format("A world has been loaded but has not been automatically registered: %s", event.getWorld().getName()));
+    }
   }
 
 }

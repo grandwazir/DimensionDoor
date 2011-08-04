@@ -44,17 +44,16 @@ public class DimensionDoorPlayerListener extends PlayerListener {
       return;
     if (!plugin.isolatedChatAttributes.containsValue(true))
       return;
-    
+
     final World originWorld = event.getPlayer().getWorld();
     String message = event.getFormat();
     message = message.replace("%1$s", event.getPlayer().getDisplayName());
     message = message.replace("%2$s", event.getMessage());
-    
+
     if (plugin.isolatedChatAttributes.get(originWorld.getName()))
       sendIsolatedMessage(message, originWorld);
-    else
-      sendNormalMessage(message);
-    
+    else sendNormalMessage(message);
+
     event.setCancelled(true);
     log.info(message);
   }
@@ -69,20 +68,20 @@ public class DimensionDoorPlayerListener extends PlayerListener {
       event.setRespawnLocation(plugin.getServer().getWorld(currentWorld).getSpawnLocation());
   }
 
-  private void sendIsolatedMessage(String message, World world) {
+  private void sendIsolatedMessage(final String message, final World world) {
     for (final Player player : plugin.getServer().getOnlinePlayers()) {
       if (player.getWorld().getName().equalsIgnoreCase(world.getName()) && player != null) {
         player.sendMessage(message);
       }
     }
-  }  
-  
-  private void sendNormalMessage(String message) {
+  }
+
+  private void sendNormalMessage(final String message) {
     for (final Player player : plugin.getServer().getOnlinePlayers()) {
       if (!plugin.isolatedChatAttributes.get(player.getWorld().getName()) && player != null) {
         player.sendMessage(message);
       }
     }
-  }  
-  
+  }
+
 }

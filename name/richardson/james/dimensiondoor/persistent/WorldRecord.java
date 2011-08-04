@@ -27,6 +27,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import name.richardson.james.dimensiondoor.DimensionDoor;
+import name.richardson.james.dimensiondoor.exceptions.WorldIsNotLoadedException;
+import name.richardson.james.dimensiondoor.exceptions.WorldIsNotManagedException;
 
 import org.bukkit.World;
 import org.bukkit.World.Environment;
@@ -41,6 +43,10 @@ public class WorldRecord {
 
   @NotNull
   private World.Environment environment;
+
+  private String generatorID;
+
+  private String generatorPlugin;
 
   @NotNull
   private boolean isolatedChat;
@@ -57,7 +63,7 @@ public class WorldRecord {
   @NotNull
   private boolean spawnMonsters;
 
-  static public int count(String worldName) {
+  static public int count(final String worldName) {
     return plugin.getDatabase().find(WorldRecord.class).where().ieq("name", worldName.toLowerCase()).findRowCount();
   }
 
@@ -65,7 +71,7 @@ public class WorldRecord {
     return plugin.getDatabase().find(WorldRecord.class).where().ieq("name", world.getName().toLowerCase()).findRowCount();
   }
 
-  static public void create(String worldName) {
+  static public void create(final String worldName) throws WorldIsNotLoadedException {
     final WorldRecord managedWorld = new WorldRecord();
     final World world = plugin.getWorld(worldName);
     final HashMap<String, Boolean> attributes = plugin.getDefaultAttributes();
@@ -76,7 +82,7 @@ public class WorldRecord {
     managedWorld.setAttributes(attributes);
   }
 
-  static public void create(World world) {
+  static public void create(final World world) {
     final WorldRecord managedWorld = new WorldRecord();
     final HashMap<String, Boolean> attributes = plugin.getWorldAttributes(world);
     attributes.put("isolatedChat", false);
@@ -92,13 +98,17 @@ public class WorldRecord {
     return worlds;
   }
 
-  static public WorldRecord findFirst(final String worldName) {
+  static public WorldRecord findFirst(final String worldName) throws WorldIsNotManagedException {
     final List<WorldRecord> worlds = plugin.getDatabase().find(WorldRecord.class).where().ieq("name", worldName).findList();
+    if (worlds.isEmpty())
+      throw new WorldIsNotManagedException();
     return worlds.get(0);
   }
 
-  static public WorldRecord findFirst(final World world) {
+  static public WorldRecord findFirst(final World world) throws WorldIsNotManagedException {
     final List<WorldRecord> worlds = plugin.getDatabase().find(WorldRecord.class).where().ieq("name", world.getName()).findList();
+    if (worlds.isEmpty())
+      throw new WorldIsNotManagedException();
     return worlds.get(0);
   }
 
@@ -109,7 +119,7 @@ public class WorldRecord {
     return false;
   }
 
-  public static void setup(DimensionDoor plugin) {
+  public static void setup(final DimensionDoor plugin) {
     WorldRecord.plugin = DimensionDoor.getInstance();
   }
 
@@ -128,6 +138,21 @@ public class WorldRecord {
 
   public Environment getEnvironment() {
     return environment;
+  }
+
+  public HashMap<String, String> getGeneratorAttributes() {
+    final HashMap<String, String> m = new HashMap<String, String>();
+    m.put("generatorPlugin", getGeneratorPlugin());
+    m.put("generatorID", getGeneratorID());
+    return m;
+  }
+
+  public String getGeneratorID() {
+    return generatorID;
+  }
+
+  public String getGeneratorPlugin() {
+    return generatorPlugin;
   }
 
   public String getName() {
@@ -160,6 +185,20 @@ public class WorldRecord {
 
   public void setEnvironment(final World.Environment environment) {
     this.environment = environment;
+  }
+
+  public void setGeneratorAttributes(final HashMap<String, String> attributes) {
+    setGeneratorPlugin(attributes.get("generatorPlugin"));
+    setGeneratorID(attributes.get("generatorID"));
+    plugin.getDatabase().save(this);
+  }
+
+  public void setGeneratorID(final String generatorID) {
+    this.generatorID = generatorID;
+  }
+
+  public void setGeneratorPlugin(final String generatorPlugin) {
+    this.generatorPlugin = generatorPlugin;
   }
 
   public void setIsolatedChat(final boolean isolatedChat) {
