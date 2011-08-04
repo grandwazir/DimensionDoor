@@ -4,7 +4,6 @@ package name.richardson.james.dimensiondoor.commands;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 
 import name.richardson.james.dimensiondoor.DimensionDoor;
 import name.richardson.james.dimensiondoor.exceptions.CommandIsPlayerOnlyException;
@@ -93,7 +92,6 @@ public abstract class Command implements CommandExecutor {
       return;
     } else {
       final Player player = (Player) sender;
-      DimensionDoor.log(Level.INFO, node);
       if (player.hasPermission(node) || player.hasPermission("dimensiondoor.*")) { 
         return; 
       }
