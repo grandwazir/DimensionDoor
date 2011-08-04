@@ -367,7 +367,6 @@ public class DimensionDoor extends JavaPlugin {
     final Plugin generatorPlugin = pm.getPlugin(generator);
     ChunkGenerator customChunkGenerator = null;
     
-    log(Level.INFO, generator + ":" + generatorID);
     if (generatorPlugin != null) {
       customChunkGenerator = generatorPlugin.getDefaultWorldGenerator(worldName, generatorID);
       

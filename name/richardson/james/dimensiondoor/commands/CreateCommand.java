@@ -38,8 +38,8 @@ public class CreateCommand extends Command {
     else
       plugin.createWorld(args.get(0), args.get(1).toUpperCase(), optionalArguments.get("seed"), optionalArguments.get("generatorPlugin"), optionalArguments.get("generatorID"));
     
-    sender.sendMessage(String.format(ChatColor.GREEN + "% shas been created.", args.get(0)));
-    DimensionDoor.log(Level.INFO, String.format("%s has created a new world called %s", getSenderName(sender), args.get(0)));
+    sender.sendMessage(String.format(ChatColor.GREEN + "%s has been created.", args.get(0)));
+    DimensionDoor.log(Level.INFO, String.format("%s has created a new world caled %s", getSenderName(sender), args.get(0)));
 
   }
 
