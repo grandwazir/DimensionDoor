@@ -382,12 +382,12 @@ public class DimensionDoor extends JavaPlugin {
   public World getMainWorld() {
     return getServer().getWorlds().get(0);
   }
-
+  
   private void setupDatabase() throws SQLException {
     try {
       getDatabase().find(WorldRecord.class).findList();
     } catch (final PersistenceException ex) {
-      if (ex.getMessage().contains("table")) {
+      if (ex.getMessage().contains("table") || ex.getMessage().contains("'minecraft_game.dd_worlds' doesn't exist") ) {
         log(Level.WARNING, "No database found, creating schema.");
         installDDL();
       } else if (ex.getMessage().contains("column")) {

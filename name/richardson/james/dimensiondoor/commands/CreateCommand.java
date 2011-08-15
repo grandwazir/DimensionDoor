@@ -14,7 +14,6 @@ import name.richardson.james.dimensiondoor.exceptions.WorldIsAlreadyLoadedExcept
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
 
 public class CreateCommand extends Command {
 
