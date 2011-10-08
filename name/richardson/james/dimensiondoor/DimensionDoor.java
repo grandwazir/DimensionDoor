@@ -52,7 +52,9 @@ import name.richardson.james.dimensiondoor.listeners.DimensionDoorWorldListener;
 import name.richardson.james.dimensiondoor.persistent.WorldRecord;
 
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.World.Environment;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.Plugin;
@@ -97,6 +99,14 @@ public class DimensionDoor extends JavaPlugin {
       world.setPVP(worldRecord.isPvp());
       world.setSpawnFlags(worldRecord.isSpawnMonsters(), worldRecord.isSpawnAnimals());
       isolatedChatAttributes.put(world.getName(), worldRecord.isIsolatedChat());
+      world.setDifficulty(worldRecord.getDifficulty());
+      
+      // set the game mode for all players
+      for (Player player : world.getPlayers()) {
+        if (player.isOnline()) {
+          player.setGameMode(worldRecord.getGamemode());
+        }
+      }
       DimensionDoor.log(Level.INFO, String.format("Applying world configuration: %s", world.getName()));
     } catch (final WorldIsNotLoadedException e) {
       DimensionDoor.log(Level.WARNING, String.format("Attempted to apply configuration to unloaded world: %s", worldRecord.getName()));
@@ -106,6 +116,9 @@ public class DimensionDoor extends JavaPlugin {
   public void createWorld(final String worldName, final String environmentName, final String seedString) throws InvalidEnvironmentException,
       WorldIsAlreadyLoadedException {
     if (!isWorldLoaded(worldName)) {
+      
+      WorldCreator world = new WorldCreator(worldName);
+      
       final World.Environment environment;
       long worldSeed = 0;
 
@@ -119,11 +132,12 @@ public class DimensionDoor extends JavaPlugin {
         worldSeed = Long.parseLong(seedString);
       } catch (final NumberFormatException e) {
         worldSeed = seedString.hashCode();
-      } finally {
-        getServer().createWorld(worldName, environment, worldSeed);
       }
+      
+      world.environment(environment);
+      world.seed(worldSeed);
+      world.createWorld();
 
-      getServer().createWorld(worldName, environment);
     } else {
       throw new WorldIsAlreadyLoadedException();
     }
@@ -132,6 +146,9 @@ public class DimensionDoor extends JavaPlugin {
   public void createWorld(final String worldName, final String environmentName, final String seedString, final String generatorName, final String generatorID)
       throws InvalidEnvironmentException, WorldIsAlreadyLoadedException, PluginNotFoundException, CustomChunkGeneratorNotFoundException {
     if (!isWorldLoaded(worldName)) {
+      
+      WorldCreator world = new WorldCreator(worldName);
+      
       final World.Environment environment;
       final ChunkGenerator generator = getCustomChunkGenerator(generatorName, generatorID, worldName);
       long worldSeed = System.currentTimeMillis();
@@ -149,8 +166,11 @@ public class DimensionDoor extends JavaPlugin {
       }
 
       try {
-        final World world = getServer().createWorld(worldName, environment, worldSeed, generator);
-        registerCustomWorld(world, generatorName, generatorID);
+        world.environment(environment);
+        world.seed(worldSeed);
+        world.generator(generator);
+        final World newWorld = world.createWorld();
+        registerCustomWorld(newWorld, generatorName, generatorID);
       } catch (final WorldIsNotManagedException e) {
         DimensionDoor.log(Level.SEVERE, String.format("Unable to register custom world: %s", worldName));
       }
@@ -160,8 +180,10 @@ public class DimensionDoor extends JavaPlugin {
     }
   }
 
-  public void createWorld(final WorldRecord world) {
-    getServer().createWorld(world.getName(), world.getEnvironment());
+  public void createWorld(final WorldRecord worldRecord) {
+    WorldCreator world = new WorldCreator(worldRecord.getName());
+    world.environment(worldRecord.getEnvironment());
+    world.createWorld();
   }
 
   @Override
@@ -239,14 +261,19 @@ public class DimensionDoor extends JavaPlugin {
     if (isWorldLoaded(worldRecord.getName()))
       throw new WorldIsAlreadyLoadedException();
     
+    WorldCreator world = new WorldCreator(worldRecord.getName()); 
+    
     if (worldRecord.getGeneratorPlugin() != null) {
       final ChunkGenerator generator = getCustomChunkGenerator(worldRecord.getGeneratorPlugin(), worldRecord.getGeneratorID(), worldRecord.getName());
       PluginDescriptionFile generatorDesc = getPluginDescription(worldRecord.getGeneratorPlugin());
-      getServer().createWorld(worldRecord.getName(), worldRecord.getEnvironment(), generator);
+      world.environment(worldRecord.getEnvironment());
+      world.generator(generator);
       log(Level.INFO, String.format("Using custom world generator: %s",generatorDesc.getFullName()));
     } else {
-      getServer().createWorld(worldRecord.getName(), worldRecord.getEnvironment());
+      world.environment(worldRecord.getEnvironment());
     }
+    
+    world.createWorld();
   }
 
   public void onDisable() {
@@ -286,7 +313,7 @@ public class DimensionDoor extends JavaPlugin {
       try {
         loadWorld(worldRecord);
       } catch (final WorldIsAlreadyLoadedException e) {
-        // we can safely ignore this
+        // we can safely ignore this one
       } catch (PluginNotFoundException e) {
         log(Level.WARNING, String.format("Unable to load %s as %s is not available", worldRecord.getName(), worldRecord.getGeneratorPlugin()));
       } catch (CustomChunkGeneratorNotFoundException e) {
@@ -301,7 +328,8 @@ public class DimensionDoor extends JavaPlugin {
     pm.registerEvent(Event.Type.WORLD_INIT, worldListener, Event.Priority.Monitor, this);
     pm.registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, Event.Priority.Normal, this);
     pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Event.Priority.Highest, this);
-
+    pm.registerEvent(Event.Type.PLAYER_CHANGED_WORLD, playerListener, Event.Priority.Highest, this);
+    
     // register commands
     getCommand("dd").setExecutor(cm);
     cm.registerCommand("create", new CreateCommand(this));
@@ -329,7 +357,6 @@ public class DimensionDoor extends JavaPlugin {
 
   public void registerWorld(final World world) {
     final String worldName = world.getName();
-
     DimensionDoor.log(Level.INFO, String.format("Creating world configuration: %s", worldName));
     WorldRecord.create(world);
   }
@@ -410,12 +437,15 @@ public class DimensionDoor extends JavaPlugin {
       Statement statement = connection.createStatement();
       statement.execute("SELECT isolated_chat FROM dd_worlds");
       statement.execute("SELECT generator_plugin FROM dd_worlds");
+      statement.execute("SELECT gamemode FROM dd_worlds");
       connection.commit();
     } catch (SQLException e) {
       if (e.getMessage().contains("no such column: isolated_chat") || e.getMessage().contains("Unknown column 'isolated_chat'"))
         return version = 1.2;
       else if (e.getMessage().contains("no such column: generator_plugin") || e.getMessage().contains("Unknown column 'generator_plugin'")) 
         return version = 1.5;
+      else if (e.getMessage().contains("no such column: gamemode") ||  e.getMessage().contains("Unknown column 'gamemode'"))
+        return version = 1.6;
     } finally {
       connection.close();
     }
@@ -443,6 +473,12 @@ public class DimensionDoor extends JavaPlugin {
         log(Level.INFO, "Updating schema to v1.6");
         statement.execute("ALTER TABLE dd_worlds ADD generator_plugin varchar(255)");
         statement.execute("ALTER TABLE dd_worlds ADD generator_id varchar(255)");
+      }
+      
+      if (version <= 1.6) {
+        log(Level.INFO, "Updating schema to v1.7");
+        statement.execute("ALTER TABLE dd_worlds ADD gamemode tinyint(1) DEFAULT 1 NOT NULL");
+        statement.execute("ALTER TABLE dd_worlds ADD difficulty tinyint(1) DEFAULT 2 NOT NULL");
       }
       connection.commit();
     } catch (SQLException e) {

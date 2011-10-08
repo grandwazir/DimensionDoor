@@ -60,7 +60,7 @@ public abstract class Command implements CommandExecutor {
       sender.sendMessage(ChatColor.RED + "World is already loaded!");
     } catch (final InvalidAttributeException e) {
       sender.sendMessage(ChatColor.RED + "Invalid attribute!");
-      sender.sendMessage(ChatColor.YELLOW + "Valid attributes: pvp, spawnMonsters/Animals, isolatedChat");
+      sender.sendMessage(ChatColor.YELLOW + "Valid attributes: pvp, spawnMonsters/Animals, isolatedChat, difficulty, gamemode");
     } catch (final InvalidEnvironmentException e) {
       sender.sendMessage(ChatColor.RED + "Invalid environment type!");
       sender.sendMessage(ChatColor.YELLOW + "Valid types: NORMAL, NETHER, SKYLANDS");

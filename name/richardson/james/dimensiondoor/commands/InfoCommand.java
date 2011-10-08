@@ -50,5 +50,7 @@ public class InfoCommand extends Command {
       if (generatorAttributes.get(key) != null)
         sender.sendMessage(String.format(ChatColor.YELLOW + "- %s: %s", key, generatorAttributes.get(key)));
     }
+    sender.sendMessage(String.format(ChatColor.YELLOW + "- %s: %s", "difficulty", worldRecord.getDifficulty().name()));
+    sender.sendMessage(String.format(ChatColor.YELLOW + "- %s: %s", "gamemode", worldRecord.getGamemode().name()));
   }
 }

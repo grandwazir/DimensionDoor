@@ -19,12 +19,16 @@ along with DimensionDoor.  If not, see <http://www.gnu.org/licenses/>.
 
 package name.richardson.james.dimensiondoor.listeners;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import name.richardson.james.dimensiondoor.DimensionDoor;
+import name.richardson.james.dimensiondoor.exceptions.WorldIsNotManagedException;
+import name.richardson.james.dimensiondoor.persistent.WorldRecord;
 
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -68,6 +72,17 @@ public class DimensionDoorPlayerListener extends PlayerListener {
       event.setRespawnLocation(plugin.getServer().getWorld(currentWorld).getSpawnLocation());
   }
 
+  public void onPlayerChangedWorld(final PlayerChangedWorldEvent event) {
+    final Player player = event.getPlayer();
+    final World world = event.getPlayer().getWorld();
+    try {
+      final WorldRecord worldRecord = WorldRecord.findFirst(world.getName());
+      player.setGameMode(worldRecord.getGamemode());
+    } catch (WorldIsNotManagedException e) {
+      DimensionDoor.log(Level.SEVERE, String.format("A world has been loaded but has not been automatically registered: %s", world.getName()));
+    }
+  }
+  
   private void sendIsolatedMessage(final String message, final World world) {
     for (final Player player : plugin.getServer().getOnlinePlayers()) {
       if (player.getWorld().getName().equalsIgnoreCase(world.getName()) && player != null) {
@@ -83,5 +98,7 @@ public class DimensionDoorPlayerListener extends PlayerListener {
       }
     }
   }
+  
+  
 
 }

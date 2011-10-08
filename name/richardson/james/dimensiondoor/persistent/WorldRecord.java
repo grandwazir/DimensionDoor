@@ -30,6 +30,8 @@ import name.richardson.james.dimensiondoor.DimensionDoor;
 import name.richardson.james.dimensiondoor.exceptions.WorldIsNotLoadedException;
 import name.richardson.james.dimensiondoor.exceptions.WorldIsNotManagedException;
 
+import org.bukkit.Difficulty;
+import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 
@@ -62,6 +64,12 @@ public class WorldRecord {
 
   @NotNull
   private boolean spawnMonsters;
+  
+  @NotNull
+  private GameMode gamemode;
+  
+  @NotNull
+  private Difficulty difficulty;
 
   static public int count(final String worldName) {
     return plugin.getDatabase().find(WorldRecord.class).where().ieq("name", worldName.toLowerCase()).findRowCount();
@@ -80,6 +88,7 @@ public class WorldRecord {
     managedWorld.setIsolatedChat(false);
     managedWorld.setName(world.getName());
     managedWorld.setAttributes(attributes);
+    managedWorld.setDifficulty(world.getDifficulty());
   }
 
   static public void create(final World world) {
@@ -91,6 +100,7 @@ public class WorldRecord {
     managedWorld.setIsolatedChat(false);
     managedWorld.setName(world.getName());
     managedWorld.setAttributes(attributes);
+    managedWorld.setDifficulty(world.getDifficulty());
   }
 
   static public List<WorldRecord> findAll() {
@@ -187,6 +197,26 @@ public class WorldRecord {
     this.environment = environment;
   }
 
+  public void setGamemode(GameMode gamemode) {
+    this.gamemode = gamemode;
+  }
+
+  public void save() {
+    plugin.getDatabase().save(this);
+  }
+  
+  public GameMode getGamemode() {
+    return gamemode;
+  }
+
+  public void setDifficulty(Difficulty difficulty) {
+    this.difficulty = difficulty;
+  }
+
+  public Difficulty getDifficulty() {
+    return difficulty;
+  }
+
   public void setGeneratorAttributes(final HashMap<String, String> attributes) {
     setGeneratorPlugin(attributes.get("generatorPlugin"));
     setGeneratorID(attributes.get("generatorID"));
@@ -219,6 +249,11 @@ public class WorldRecord {
 
   public void setSpawnMonsters(final boolean spawnMonsters) {
     this.spawnMonsters = spawnMonsters;
+  }
+  
+  public String toString() {
+    return "Name: " + getName() + "Attributes: " + getAttributes().toString() + " / " + getGeneratorAttributes().toString();
+    
   }
 
 }
