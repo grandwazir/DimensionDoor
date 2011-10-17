@@ -89,6 +89,9 @@ public class WorldRecord {
     managedWorld.setName(world.getName());
     managedWorld.setAttributes(attributes);
     managedWorld.setDifficulty(world.getDifficulty());
+    managedWorld.setGamemode(plugin.getServer().getDefaultGameMode());
+    managedWorld.save();
+    
   }
 
   static public void create(final World world) {
@@ -101,6 +104,9 @@ public class WorldRecord {
     managedWorld.setName(world.getName());
     managedWorld.setAttributes(attributes);
     managedWorld.setDifficulty(world.getDifficulty());
+    managedWorld.setGamemode(plugin.getServer().getDefaultGameMode());
+    managedWorld.save();
+    
   }
 
   static public List<WorldRecord> findAll() {
@@ -190,7 +196,6 @@ public class WorldRecord {
     setSpawnMonsters(attributes.get("spawnMonsters"));
     setSpawnAnimals(attributes.get("spawnAnimals"));
     setIsolatedChat(attributes.get("isolatedChat"));
-    plugin.getDatabase().save(this);
   }
 
   public void setEnvironment(final World.Environment environment) {
