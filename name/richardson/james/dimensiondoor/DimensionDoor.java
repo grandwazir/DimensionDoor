@@ -45,6 +45,7 @@ import name.richardson.james.dimensiondoor.exceptions.WorldIsAlreadyLoadedExcept
 import name.richardson.james.dimensiondoor.exceptions.WorldIsNotEmptyException;
 import name.richardson.james.dimensiondoor.exceptions.WorldIsNotLoadedException;
 import name.richardson.james.dimensiondoor.exceptions.WorldIsNotManagedException;
+import name.richardson.james.dimensiondoor.listeners.DimensionDoorEntityListener;
 import name.richardson.james.dimensiondoor.listeners.DimensionDoorPlayerListener;
 import name.richardson.james.dimensiondoor.listeners.DimensionDoorWorldListener;
 import name.richardson.james.dimensiondoor.persistent.WorldRecord;
@@ -74,13 +75,15 @@ public class DimensionDoor extends JavaPlugin {
   private CommandManager cm;
   private PluginDescriptionFile desc;
   private final DimensionDoorPlayerListener playerListener;
-  private PluginManager pm;
   private final DimensionDoorWorldListener worldListener;
+  private final DimensionDoorEntityListener entityListener;
+  private PluginManager pm;
 
   public DimensionDoor() {
     DimensionDoor.instance = this;
     worldListener = new DimensionDoorWorldListener(this);
     playerListener = new DimensionDoorPlayerListener(this);
+    entityListener = new DimensionDoorEntityListener(this);
   }
 
   public static DimensionDoor getInstance() {
@@ -105,6 +108,10 @@ public class DimensionDoor extends JavaPlugin {
           player.setGameMode(worldRecord.getGamemode());
         }
       }
+      
+      // this is temporary until we get a method to query gamemodes
+      entityListener.updateCache();
+      
       DimensionDoor.log(Level.INFO, String.format("Applying world configuration: %s", world.getName()));
     } catch (final WorldIsNotLoadedException e) {
       DimensionDoor.log(Level.WARNING, String.format("Attempted to apply configuration to unloaded world: %s", worldRecord.getName()));
@@ -326,7 +333,12 @@ public class DimensionDoor extends JavaPlugin {
     pm.registerEvent(Event.Type.WORLD_INIT, worldListener, Event.Priority.Monitor, this);
     pm.registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, Event.Priority.Normal, this);
     pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Event.Priority.Highest, this);
-    pm.registerEvent(Event.Type.PLAYER_CHANGED_WORLD, playerListener, Event.Priority.Highest, this);
+    pm.registerEvent(Event.Type.PLAYER_CHANGED_WORLD, playerListener, Event.Priority.High, this);
+    pm.registerEvent(Event.Type.ITEM_SPAWN, entityListener, Event.Priority.High, this);
+    
+    // update gamemode cache
+    // this is a workaround until we get a method to query gamemodes
+    entityListener.updateCache();
     
     // register commands
     getCommand("dd").setExecutor(cm);
