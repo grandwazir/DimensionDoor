@@ -72,7 +72,7 @@ public class DimensionDoorPlayerListener extends PlayerListener {
     if (!currentWorld.equals(destinationWorld))
       event.setRespawnLocation(plugin.getServer().getWorld(currentWorld).getSpawnLocation());
   }
-
+  
   public void onPlayerChangedWorld(final PlayerChangedWorldEvent event) {
     final Player player = event.getPlayer();
     final World world = event.getPlayer().getWorld();

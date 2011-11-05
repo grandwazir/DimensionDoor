@@ -48,6 +48,7 @@ import name.richardson.james.dimensiondoor.exceptions.WorldIsAlreadyLoadedExcept
 import name.richardson.james.dimensiondoor.exceptions.WorldIsNotEmptyException;
 import name.richardson.james.dimensiondoor.exceptions.WorldIsNotLoadedException;
 import name.richardson.james.dimensiondoor.exceptions.WorldIsNotManagedException;
+import name.richardson.james.dimensiondoor.listeners.DimensionDoorBlockListener;
 import name.richardson.james.dimensiondoor.listeners.DimensionDoorEntityListener;
 import name.richardson.james.dimensiondoor.listeners.DimensionDoorPlayerListener;
 import name.richardson.james.dimensiondoor.listeners.DimensionDoorWorldListener;
@@ -85,13 +86,16 @@ public class DimensionDoor extends JavaPlugin {
   private final DimensionDoorPlayerListener playerListener;
   private final DimensionDoorWorldListener worldListener;
   private final DimensionDoorEntityListener entityListener;
+  private final DimensionDoorBlockListener blockListener;
   private PluginManager pm;
+  
 
   public DimensionDoor() {
     DimensionDoor.instance = this;
     worldListener = new DimensionDoorWorldListener(this);
     playerListener = new DimensionDoorPlayerListener(this);
     entityListener = new DimensionDoorEntityListener(this);
+    blockListener = new DimensionDoorBlockListener(this);
   }
 
   public static DimensionDoor getInstance() {
@@ -354,6 +358,9 @@ public class DimensionDoor extends JavaPlugin {
     pm.registerEvent(Event.Type.PLAYER_CHANGED_WORLD, playerListener, Event.Priority.High, this);
     if (inventoryProtectionConfiguration.getBoolean("world-settings.preventItemsSpawning", true)) {
       pm.registerEvent(Event.Type.ITEM_SPAWN, entityListener, Event.Priority.High, this);
+    }
+    if (inventoryProtectionConfiguration.getBoolean("world-settings.preventContainerBlocks", true)) {
+      pm.registerEvent(Event.Type.BLOCK_PLACE, blockListener, Event.Priority.High, this);
     }
     
     // register commands

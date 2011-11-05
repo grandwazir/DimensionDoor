@@ -23,6 +23,7 @@ public class InventoryProtectionConfiguration extends Configuration {
       this.getBoolean("inventory-settings.deleteActionBarOnReturn", true);
       this.getString("world-settings", "");
       this.getBoolean("world-settings.preventItemsSpawning", true);
+      this.getBoolean("world-settings.preventContainerBlocks", true);
       this.save();
     } catch (final IOException e) {
       throw new UnableToCreateConfigurationException(file.getPath());
