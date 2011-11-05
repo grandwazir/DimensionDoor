@@ -83,7 +83,7 @@ public class DimensionDoor extends JavaPlugin {
     DimensionDoor.instance = this;
     worldListener = new DimensionDoorWorldListener(this);
     playerListener = new DimensionDoorPlayerListener(this);
-    entityListener = new DimensionDoorEntityListener(this);
+    entityListener = new DimensionDoorEntityListener();
   }
 
   public static DimensionDoor getInstance() {
