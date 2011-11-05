@@ -61,17 +61,25 @@ public class ModifyCommand extends Command {
       DimensionDoor.log(Level.INFO, String.format("%s has changed %s to %s for %s", getSenderName(sender), attributeName, Boolean.toString(attributeValue),args.get(0)));
       sender.sendMessage(String.format(ChatColor.GREEN + "Set %s to %s for %s", attributeName, Boolean.toString(attributeValue), args.get(0)));
     } else if (attributeName.equalsIgnoreCase("gamemode")) {
-      final GameMode gamemode = GameMode.valueOf(args.get(2).toUpperCase());
-      worldRecord.setGamemode(gamemode);
-      worldRecord.save();
-      DimensionDoor.log(Level.INFO, String.format("%s has changed %s to %s for %s", getSenderName(sender), attributeName, gamemode.name(), args.get(0)));
-      sender.sendMessage(String.format(ChatColor.GREEN + "Set %s to %s for %s", attributeName, gamemode.name(), args.get(0)));
+      try {
+        final GameMode gamemode = GameMode.valueOf(args.get(2).toUpperCase());
+        worldRecord.setGamemode(gamemode);
+        worldRecord.save();
+        DimensionDoor.log(Level.INFO, String.format("%s has changed %s to %s for %s", getSenderName(sender), attributeName, gamemode.name(), args.get(0)));
+        sender.sendMessage(String.format(ChatColor.GREEN + "Set %s to %s for %s", attributeName, gamemode.name(), args.get(0)));
+      } catch (IllegalArgumentException e) {
+        throw new InvalidAttributeException(attributeName);
+      } 
     } else if (attributeName.equalsIgnoreCase("difficulty")) {
-      final Difficulty difficulty = Difficulty.valueOf(args.get(2).toUpperCase());
-      worldRecord.setDifficulty(difficulty);
-      worldRecord.save();
-      DimensionDoor.log(Level.INFO, String.format("%s has changed %s to %s for %s", getSenderName(sender), attributeName, difficulty.name(), args.get(0)));
-      sender.sendMessage(String.format(ChatColor.GREEN + "Set %s to %s for %s", attributeName, difficulty.name(), args.get(0)));
+      try {
+        final Difficulty difficulty = Difficulty.valueOf(args.get(2).toUpperCase());
+        worldRecord.setDifficulty(difficulty);
+        worldRecord.save();
+        DimensionDoor.log(Level.INFO, String.format("%s has changed %s to %s for %s", getSenderName(sender), attributeName, difficulty.name(), args.get(0)));
+        sender.sendMessage(String.format(ChatColor.GREEN + "Set %s to %s for %s", attributeName, difficulty.name(), args.get(0)));
+      } catch (IllegalArgumentException e) {
+        throw new InvalidAttributeException(attributeName);
+      }   
     } else {
       throw new InvalidAttributeException(attributeName);
     }
