@@ -57,6 +57,7 @@ public class ModifyCommand extends Command {
       final boolean attributeValue = Boolean.valueOf(args.get(2));
       attributes.put(attributeName, attributeValue);
       worldRecord.setAttributes(attributes);
+      worldRecord.save();
       DimensionDoor.log(Level.INFO, String.format("%s has changed %s to %s for %s", getSenderName(sender), attributeName, Boolean.toString(attributeValue),args.get(0)));
       sender.sendMessage(String.format(ChatColor.GREEN + "Set %s to %s for %s", attributeName, Boolean.toString(attributeValue), args.get(0)));
     } else if (attributeName.equalsIgnoreCase("gamemode")) {
