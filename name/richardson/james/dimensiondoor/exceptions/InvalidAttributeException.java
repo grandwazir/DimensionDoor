@@ -21,9 +21,11 @@ public class InvalidAttributeException extends Exception {
 
   private static final long serialVersionUID = 430445873851296870L;
   private String attribute;
+  private String additionalHelp;
 
-  public InvalidAttributeException(final String attribute) {
+  public InvalidAttributeException(final String attribute, final String additionalHelp) {
     setAttribute(attribute);
+    setAdditionalHelp(additionalHelp);
   }
 
   public String getAttribute() {
@@ -32,6 +34,14 @@ public class InvalidAttributeException extends Exception {
 
   public void setAttribute(final String attribute) {
     this.attribute = attribute;
+  }
+
+  public String getAdditionalHelp() {
+    return additionalHelp;
+  }
+
+  public void setAdditionalHelp(String additionalHelp) {
+    this.additionalHelp = additionalHelp;
   }
 
 }

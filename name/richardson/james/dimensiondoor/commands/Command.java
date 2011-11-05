@@ -75,8 +75,16 @@ public abstract class Command implements CommandExecutor {
     } catch (final WorldIsAlreadyLoadedException e) {
       sender.sendMessage(ChatColor.RED + "World is already loaded!");
     } catch (final InvalidAttributeException e) {
-      sender.sendMessage(ChatColor.RED + "Invalid attribute!");
-      sender.sendMessage(ChatColor.YELLOW + "Valid attributes: pvp, spawnMonsters/Animals, isolatedChat, difficulty, gamemode");
+      if (e.getAttribute().equalsIgnoreCase("gamemode")) {
+        sender.sendMessage(ChatColor.RED + "Invalid gamemode!");
+        sender.sendMessage(ChatColor.YELLOW + e.getAdditionalHelp());
+      } else if (e.getAttribute().equalsIgnoreCase("difficulty")) {
+        sender.sendMessage(ChatColor.RED + "Invalid diffculty!");
+        sender.sendMessage(ChatColor.YELLOW + e.getAdditionalHelp());
+      } else {
+        sender.sendMessage(ChatColor.RED + "Invalid attribute!");
+        sender.sendMessage(ChatColor.YELLOW + "Valid attributes: pvp, spawnMonsters/Animals, isolatedChat, difficulty, gamemode");
+      }
     } catch (final InvalidEnvironmentException e) {
       sender.sendMessage(ChatColor.RED + "Invalid environment type!");
       sender.sendMessage(ChatColor.YELLOW + "Valid types: NORMAL, NETHER, SKYLANDS");

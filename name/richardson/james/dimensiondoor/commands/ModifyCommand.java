@@ -68,7 +68,13 @@ public class ModifyCommand extends Command {
         DimensionDoor.log(Level.INFO, String.format("%s has changed %s to %s for %s", getSenderName(sender), attributeName, gamemode.name(), args.get(0)));
         sender.sendMessage(String.format(ChatColor.GREEN + "Set %s to %s for %s", attributeName, gamemode.name(), args.get(0)));
       } catch (IllegalArgumentException e) {
-        throw new InvalidAttributeException(attributeName);
+        StringBuilder guidence = new StringBuilder();
+        guidence.append(ChatColor.YELLOW + "Valid gamemodes: ");
+        for (GameMode gamemode : GameMode.values()) {
+          guidence.append(gamemode.toString() + ", ");
+        }
+        guidence.deleteCharAt(guidence.length() - 2);
+        throw new InvalidAttributeException(attributeName, guidence.toString());
       } 
     } else if (attributeName.equalsIgnoreCase("difficulty")) {
       try {
@@ -78,10 +84,16 @@ public class ModifyCommand extends Command {
         DimensionDoor.log(Level.INFO, String.format("%s has changed %s to %s for %s", getSenderName(sender), attributeName, difficulty.name(), args.get(0)));
         sender.sendMessage(String.format(ChatColor.GREEN + "Set %s to %s for %s", attributeName, difficulty.name(), args.get(0)));
       } catch (IllegalArgumentException e) {
-        throw new InvalidAttributeException(attributeName);
+        StringBuilder guidence = new StringBuilder();
+        guidence.append(ChatColor.YELLOW + "Valid difficulties: ");
+        for (Difficulty difficulty : Difficulty.values()) {
+          guidence.append(difficulty.toString() + ", ");
+        }
+        guidence.deleteCharAt(guidence.length() - 2);
+        throw new InvalidAttributeException(attributeName, guidence.toString());
       }   
     } else {
-      throw new InvalidAttributeException(attributeName);
+      throw new InvalidAttributeException(attributeName, null);
     }
     
     plugin.applyWorldAttributes(worldRecord);
