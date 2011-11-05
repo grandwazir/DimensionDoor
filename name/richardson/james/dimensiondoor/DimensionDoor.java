@@ -17,6 +17,7 @@
  ******************************************************************************/
 package name.richardson.james.dimensiondoor;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -38,9 +39,11 @@ import name.richardson.james.dimensiondoor.commands.SpawnCommand;
 import name.richardson.james.dimensiondoor.commands.TeleportCommand;
 import name.richardson.james.dimensiondoor.commands.TemplateCommand;
 import name.richardson.james.dimensiondoor.commands.UnloadCommand;
+import name.richardson.james.dimensiondoor.configurations.InventoryProtectionConfiguration;
 import name.richardson.james.dimensiondoor.exceptions.CustomChunkGeneratorNotFoundException;
 import name.richardson.james.dimensiondoor.exceptions.InvalidEnvironmentException;
 import name.richardson.james.dimensiondoor.exceptions.PluginNotFoundException;
+import name.richardson.james.dimensiondoor.exceptions.UnableToCreateConfigurationException;
 import name.richardson.james.dimensiondoor.exceptions.WorldIsAlreadyLoadedException;
 import name.richardson.james.dimensiondoor.exceptions.WorldIsNotEmptyException;
 import name.richardson.james.dimensiondoor.exceptions.WorldIsNotLoadedException;
@@ -50,6 +53,7 @@ import name.richardson.james.dimensiondoor.listeners.DimensionDoorPlayerListener
 import name.richardson.james.dimensiondoor.listeners.DimensionDoorWorldListener;
 import name.richardson.james.dimensiondoor.persistent.WorldRecord;
 
+import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.World.Environment;
@@ -60,6 +64,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.config.Configuration;
 
 import com.avaje.ebean.Transaction;
 import com.nijiko.permissions.PermissionHandler;
@@ -72,6 +77,9 @@ public class DimensionDoor extends JavaPlugin {
 
   public PermissionHandler externalPermissions = null;
   public HashMap<String, Boolean> isolatedChatAttributes = new HashMap<String, Boolean>();
+  public HashMap<String, GameMode> worldGameModes = new HashMap<String, GameMode>();
+  public Configuration inventoryProtectionConfiguration;
+  
   private CommandManager cm;
   private PluginDescriptionFile desc;
   private final DimensionDoorPlayerListener playerListener;
@@ -83,7 +91,7 @@ public class DimensionDoor extends JavaPlugin {
     DimensionDoor.instance = this;
     worldListener = new DimensionDoorWorldListener(this);
     playerListener = new DimensionDoorPlayerListener(this);
-    entityListener = new DimensionDoorEntityListener();
+    entityListener = new DimensionDoorEntityListener(this);
   }
 
   public static DimensionDoor getInstance() {
@@ -110,7 +118,7 @@ public class DimensionDoor extends JavaPlugin {
       }
       
       // this is temporary until we get a method to query gamemodes
-      entityListener.updateCache();
+      worldGameModes.put(worldRecord.getName(), worldRecord.getGamemode());
       
       DimensionDoor.log(Level.INFO, String.format("Applying world configuration: %s", world.getName()));
     } catch (final WorldIsNotLoadedException e) {
@@ -293,7 +301,7 @@ public class DimensionDoor extends JavaPlugin {
     // get external permissions if available
     connectPermissions();
 
-    
+    // establish database
     try {
       setupDatabase();
     } catch (SQLException e) {
@@ -301,6 +309,16 @@ public class DimensionDoor extends JavaPlugin {
       pm.disablePlugin(this);
     }
 
+    // load configuration
+    try {
+      inventoryProtectionConfiguration = new InventoryProtectionConfiguration(new File("plugins/DimensionDoor/inventory_protection_configuration.yml"), this);
+    } catch (UnableToCreateConfigurationException e) {
+      log(Level.SEVERE, "Unable to create configuration: " + e.getPath());
+      pm.disablePlugin(this);
+      return;
+    }
+    
+    
     // check to see if we are disabled
     if (!pm.isPluginEnabled(this)) return;
     
@@ -334,11 +352,9 @@ public class DimensionDoor extends JavaPlugin {
     pm.registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, Event.Priority.Normal, this);
     pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Event.Priority.Highest, this);
     pm.registerEvent(Event.Type.PLAYER_CHANGED_WORLD, playerListener, Event.Priority.High, this);
-    pm.registerEvent(Event.Type.ITEM_SPAWN, entityListener, Event.Priority.High, this);
-    
-    // update gamemode cache
-    // this is a workaround until we get a method to query gamemodes
-    entityListener.updateCache();
+    if (inventoryProtectionConfiguration.getBoolean("world-settings.preventItemsSpawning", true)) {
+      pm.registerEvent(Event.Type.ITEM_SPAWN, entityListener, Event.Priority.High, this);
+    }
     
     // register commands
     getCommand("dd").setExecutor(cm);

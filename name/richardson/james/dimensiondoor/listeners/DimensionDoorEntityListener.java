@@ -17,34 +17,28 @@
  ******************************************************************************/
 package name.richardson.james.dimensiondoor.listeners;
 
-import java.util.HashMap;
-
 import org.bukkit.GameMode;
 import org.bukkit.entity.Item;
 import org.bukkit.event.entity.EntityListener;
 import org.bukkit.event.entity.ItemSpawnEvent;
 
-import name.richardson.james.dimensiondoor.persistent.WorldRecord;
+import name.richardson.james.dimensiondoor.DimensionDoor;
 
 public class DimensionDoorEntityListener extends EntityListener {
 
-  public HashMap<String, GameMode> worldGameModes = new HashMap<String, GameMode>();
+  private DimensionDoor plugin;
 
-  public DimensionDoorEntityListener() {}
+  public DimensionDoorEntityListener(DimensionDoor plugin) {
+    this.plugin = plugin;
+  }
   
   public void onItemSpawn(final ItemSpawnEvent event) {
     Item item = (Item) event.getEntity();
-    GameMode gamemode = worldGameModes.get(item.getWorld().getName());
+    GameMode gamemode = plugin.worldGameModes.get(item.getWorld().getName());
     if (gamemode == GameMode.CREATIVE) {
       event.setCancelled(true);
     }
   }
   
-  public void updateCache() {
-    WorldRecord.findAll();
-    for (WorldRecord record : WorldRecord.findAll()) {
-      worldGameModes.put(record.getName(), record.getGamemode());
-    }
-  }
   
 }

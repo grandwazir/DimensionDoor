@@ -24,12 +24,15 @@ import name.richardson.james.dimensiondoor.DimensionDoor;
 import name.richardson.james.dimensiondoor.exceptions.WorldIsNotManagedException;
 import name.richardson.james.dimensiondoor.persistent.WorldRecord;
 
+import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class DimensionDoorPlayerListener extends PlayerListener {
 
@@ -73,11 +76,25 @@ public class DimensionDoorPlayerListener extends PlayerListener {
   public void onPlayerChangedWorld(final PlayerChangedWorldEvent event) {
     final Player player = event.getPlayer();
     final World world = event.getPlayer().getWorld();
+    final String worldFrom = event.getFrom().getName();
+    
     try {
       final WorldRecord worldRecord = WorldRecord.findFirst(world.getName());
       player.setGameMode(worldRecord.getGamemode());
     } catch (WorldIsNotManagedException e) {
       DimensionDoor.log(Level.SEVERE, String.format("A world has been loaded but has not been automatically registered: %s", world.getName()));
+    }
+    
+    // fixes a way players can bring items back from CREATIVE mode.
+    if (plugin.worldGameModes.get(worldFrom).equals(GameMode.CREATIVE)) {
+      // clear the item in the player's hand
+      if (plugin.inventoryProtectionConfiguration.getBoolean("inventory-settings.deleteItemInHandOnReturn", true)) {
+        clearItemInHand(player);
+      }
+      // clear all items from a player's action bar
+      if (plugin.inventoryProtectionConfiguration.getBoolean("inventory-settings.deleteActionBarOnReturn", true)) {
+        clearActionBar(player);
+      }
     }
   }
   
@@ -97,6 +114,21 @@ public class DimensionDoorPlayerListener extends PlayerListener {
     }
   }
   
+  private void clearItemInHand(Player player) {
+    ItemStack itemInHand = player.getInventory().getItemInHand();
+    // only clear the item if they are actually hold the item
+    // otherwise we get an exception
+    if (!itemInHand.getType().equals(Material.AIR)) {
+      itemInHand.setAmount(-1);
+      player.getInventory().setItemInHand(itemInHand);
+    }
+  }
+  
+  private void clearActionBar(Player player) {
+    for (int i=0; i<=8; i++) {
+      player.getInventory().clear(i);
+    }
+  }
   
 
 }
