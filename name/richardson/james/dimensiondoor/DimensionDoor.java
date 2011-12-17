@@ -303,7 +303,6 @@ public class DimensionDoor extends JavaPlugin {
     cm = new CommandManager();
 
     // get external permissions if available
-    connectPermissions();
 
     // establish database
     try {
@@ -409,14 +408,6 @@ public class DimensionDoor extends JavaPlugin {
       getServer().unloadWorld(world.getName(), true);
     } else {
       throw new WorldIsNotEmptyException();
-    }
-  }
-
-  private void connectPermissions() {
-    final Plugin permissionsPlugin = getServer().getPluginManager().getPlugin("Permissions");
-    if (permissionsPlugin != null) {
-      externalPermissions = ((Permissions) permissionsPlugin).getHandler();
-      log(Level.INFO, String.format("External permissions system found (%s)", ((Permissions) permissionsPlugin).getDescription().getFullName()));
     }
   }
 

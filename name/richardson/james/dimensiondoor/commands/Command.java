@@ -119,11 +119,6 @@ public abstract class Command implements CommandExecutor {
       if (player.hasPermission(node) || player.hasPermission("dimensiondoor.*")) { 
         return; 
       }
-
-      if (plugin.externalPermissions != null) {
-        if (plugin.externalPermissions.has(player, node))
-          return;
-      }
     }
 
     throw new PlayerNotAuthorisedException();
