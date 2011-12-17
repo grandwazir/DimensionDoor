@@ -17,6 +17,8 @@
  ******************************************************************************/
 package name.richardson.james.dimensiondoor.listeners;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,11 +38,16 @@ import org.bukkit.inventory.ItemStack;
 
 public class DimensionDoorPlayerListener extends PlayerListener {
 
+  private final static Set<World> worlds = new HashSet<World>();
   private final Logger log = Logger.getLogger("Minecraft");
   private final DimensionDoor plugin;
 
   public DimensionDoorPlayerListener(final DimensionDoor plugin) {
     this.plugin = plugin;
+  }
+  
+  public static void addWorld(World world) {
+    worlds.add(world);
   }
 
   @Override

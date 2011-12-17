@@ -27,7 +27,7 @@ import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.WorldLoadEvent;
 
-public class DimensionDoorWorldListener extends WorldListener {
+public class WorldListener extends org.bukkit.event.world.WorldListener {
 
   private final DimensionDoor plugin;
 
