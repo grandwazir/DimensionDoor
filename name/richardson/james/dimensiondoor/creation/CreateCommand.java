@@ -34,7 +34,7 @@ public class CreateCommand extends Command {
   public CreateCommand() {
     name = "create";
     description = "create (or import) a new world.";
-    usage = "/dd create [world] [environment] <s:seed> <g:generatorPlugin:generatorID>";
+    usage = "/dd create [world] [environment] <s:seed> <g:plugin:id>";
     permission = this.registerCommandPermission();
   }
 
