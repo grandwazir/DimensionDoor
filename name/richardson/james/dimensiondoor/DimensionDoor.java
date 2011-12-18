@@ -27,6 +27,7 @@ import javax.persistence.PersistenceException;
 import org.bukkit.World;
 import org.bukkit.event.Event;
 import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -62,6 +63,7 @@ public class DimensionDoor extends JavaPlugin {
   private final EntityListener entityListener;
   private final BlockListener blockListener;
   private PluginManager pm;
+  private Permission rootPermission;
 
   public DimensionDoor() {
     DimensionDoor.instance = this;
@@ -79,6 +81,16 @@ public class DimensionDoor extends JavaPlugin {
     return Database.getDatabaseClasses();
   }
 
+  public void setRootPermission() {
+    Permission permission = new Permission("dimensiondoor.*", "Allow users unrestricted access to DimensionDoor.", PermissionDefault.OP);
+    this.getServer().getPluginManager().addPermission(permission);
+    rootPermission = permission;
+  }
+  
+  public Permission getRootPermission() {
+    return rootPermission;
+  }
+  
   public Permission getPermission(String permission) {
     return this.getServer().getPluginManager().getPermission(permission);
   }
@@ -97,6 +109,7 @@ public class DimensionDoor extends JavaPlugin {
       this.setupDatabase();
       new Database(this);
       this.registerListeners();
+      this.setRootPermission();
       // load the worlds
       this.registerMainWorlds();
       this.registerAuxiliaryWorlds();

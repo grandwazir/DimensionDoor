@@ -92,7 +92,7 @@ public abstract class Command implements CommandExecutor {
 
   protected Permission registerCommandPermission() {
     Permission permission = new Permission("dimensiondoor." + name, "Allow users to " + description, PermissionDefault.OP);
-    permission.addParent("dimensiondoor.*", true);
+    permission.addParent(DimensionDoor.getInstance().getRootPermission(), true);
     return registerPermission(permission);
   }
 

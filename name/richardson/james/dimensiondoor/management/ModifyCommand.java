@@ -136,11 +136,13 @@ public class ModifyCommand extends Command {
   }
 
   private void registerAdditionalPermissions() {
+    Permission wildcard = new Permission(this.permission.getName() + ".*", "Allow a user to set all attributes", PermissionDefault.OP);
+    this.registerPermission(wildcard);
     for (Attribute attribute : Attribute.values()) {
       String permissionNode = this.permission.getName() + "." + attribute.toString().toLowerCase();
       String description = String.format("Allow users to modify %s attributes.", attribute.toString().toLowerCase().replace("_", " "));
       Permission permission = new Permission(permissionNode, description, PermissionDefault.OP);
-      permission.addParent(this.permission, true);
+      permission.addParent(wildcard, true);
       this.registerPermission(permission);
     }
   }
