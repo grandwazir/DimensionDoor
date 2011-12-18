@@ -34,13 +34,15 @@ public class CommandManager implements CommandExecutor {
   public boolean onCommand(final CommandSender sender, final org.bukkit.command.Command command, final String label, final String[] args) {
     if (args.length != 0) {
       if (args[0].equalsIgnoreCase("help")) {
-        if (commands.containsKey(args[0])) {
-          final Command c = commands.get(args[0]);
+        if (args.length == 2) {
+          if (commands.containsKey(args[1])) {
+          final Command c = commands.get(args[1]);
           sender.sendMessage(ChatColor.RED + c.getUsage());
-          sender.sendMessage(ChatColor.YELLOW + "Description: " + c.getDescription());
-        } else {
-          sender.sendMessage(ChatColor.RED + "/dd help <command>");
-          sender.sendMessage(ChatColor.YELLOW + "You must specify a valid command.");
+            sender.sendMessage(ChatColor.YELLOW + upcaseFirstLetter(c.getDescription()));
+          } else {
+            sender.sendMessage(ChatColor.RED + "/dd help <command>");
+            sender.sendMessage(ChatColor.YELLOW + "You must specify a valid command.");
+          }
         }
       } else if (commands.containsKey(args[0])) {
         commands.get(args[0]).onCommand(sender, command, label, args);
@@ -49,6 +51,12 @@ public class CommandManager implements CommandExecutor {
     return true;
   }
 
+  private String upcaseFirstLetter(String message) {
+    char[] stringArray = message.toCharArray();
+    stringArray[0] = Character.toUpperCase(stringArray[0]);
+    return new String(stringArray);
+  }
+  
   public void registerCommand(final String commandName, final Command command) {
     commands.put(commandName, command);
   }
