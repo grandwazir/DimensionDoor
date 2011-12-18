@@ -28,7 +28,7 @@ public class Logger {
   private static boolean currentlyDebugging = false;
   private static final Level debugLevel = Level.FINE;
   private static final java.util.logging.Logger parentLogger = java.util.logging.Logger.getLogger("Minecraft");
-  private static final String prefix = "[jChat] ";
+  private static final String prefix = "[DimensionDoor] ";
   private static final Set<Logger> registeredLoggers = new HashSet<Logger>();
 
   private final java.util.logging.Logger logger;

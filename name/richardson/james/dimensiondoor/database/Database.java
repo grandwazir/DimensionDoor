@@ -22,10 +22,10 @@ package name.richardson.james.dimensiondoor.database;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.avaje.ebean.EbeanServer;
+
 import name.richardson.james.dimensiondoor.DimensionDoor;
 import name.richardson.james.dimensiondoor.util.Logger;
-
-import com.avaje.ebean.EbeanServer;
 
 public class Database {
 
@@ -51,15 +51,15 @@ public class Database {
   }
 
   public static Class<?> getDatabaseClass(final Record record) {
-    if (record instanceof ReservationRecord)
-      return ReservationRecord.class;
+    if (record instanceof WorldRecord)
+      return WorldRecord.class;
     else
       throw new IllegalArgumentException();
   }
 
   public static List<Class<?>> getDatabaseClasses() {
     final List<Class<?>> list = new ArrayList<Class<?>>();
-    list.add(ReservationRecord.class);
+    list.add(WorldRecord.class);
     return list;
   }
 

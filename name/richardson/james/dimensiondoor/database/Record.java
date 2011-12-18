@@ -22,10 +22,10 @@ package name.richardson.james.dimensiondoor.database;
 import java.util.List;
 import java.util.Set;
 
-import name.richardson.james.dimensiondoor.util.Logger;
-
 import com.avaje.ebean.ExampleExpression;
 import com.avaje.ebean.LikeType;
+
+import name.richardson.james.dimensiondoor.util.Logger;
 
 public abstract class Record {
 
@@ -65,7 +65,6 @@ public abstract class Record {
     final ExampleExpression expression = Database.getInstance().getExpressionFactory().exampleLike(example, true, LikeType.EQUAL_TO);
     return Database.getInstance().find(example.getClass()).where().add(expression).findList();
   }
-
 
   protected final static int save(final Set<Record> records) {
     Record.logger.debug("Saving records to database.");

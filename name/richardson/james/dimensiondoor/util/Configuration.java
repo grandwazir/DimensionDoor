@@ -24,6 +24,8 @@ import java.io.InputStream;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import name.richardson.james.dimensiondoor.DimensionDoor;
+
 public abstract class Configuration {
 
   protected static Configuration instance;
@@ -39,7 +41,7 @@ public abstract class Configuration {
   public Configuration() throws IOException {
     if (this.configuration != null) throw new IllegalStateException("");
     // load configuration
-    logger.info("Loading configuration: " + fileName + ".");
+    logger.debug("Loading configuration: " + fileName + ".");
     this.configurationFile = new File(dataFolder + "/" + fileName);
     logger.debug("Using path: " + configurationFile.toString());
     configuration = YamlConfiguration.loadConfiguration(configurationFile);

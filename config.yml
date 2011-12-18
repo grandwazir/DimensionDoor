@@ -1,0 +1,6 @@
+creative-world-transfer-settings:
+  clear-action-bar: true
+  clear-item-in-hand: true
+creative-world-settings:
+  prevent-container-blocks: true
+  prevent-item-drops: true

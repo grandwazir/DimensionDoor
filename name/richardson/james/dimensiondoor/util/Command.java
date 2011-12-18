@@ -23,79 +23,81 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import name.richardson.james.dimensiondoor.DimensionDoor;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
+import name.richardson.james.dimensiondoor.DimensionDoor;
+
 public abstract class Command implements CommandExecutor {
 
-  protected String description;
+  protected static final Logger logger = new Logger(Command.class);
 
-  protected final Logger logger;
   protected String name;
-  protected String permission;
-  protected final DimensionDoor plugin;
+  protected String description;
   protected String usage;
-
-  public Command(final DimensionDoor plugin) {
-    this.plugin = plugin;
-    this.logger = new Logger(this.getClass());
-  }
+  protected Permission permission;
+  protected Boolean isPlayerOnly = false;
 
   public abstract void execute(CommandSender sender, Map<String, Object> arguments);
 
+  public String getDescription() {
+    return new String(description);
+  }
+
+  public String getName() {
+    return new String(name);
+  }
+
+  public Permission getPermission() {
+    return permission;
+  }
+
+  public String getUsage() {
+    return new String(usage);
+  }
+
   @Override
   public boolean onCommand(final CommandSender sender, final org.bukkit.command.Command command, final String label, final String[] args) {
-    if (!this.authorisePlayer(sender)) {
+    if (sender.hasPermission(this.permission) && (!(sender instanceof ConsoleCommandSender))) {
       sender.sendMessage(ChatColor.RED + "You do not have permission to do that.");
+      return true;
+    }
+
+    if (this.isPlayerOnly && (sender instanceof ConsoleCommandSender)) {
+      sender.sendMessage(ChatColor.RED + "You may not use this command from the console.");
       return true;
     }
 
     try {
       final LinkedList<String> arguments = new LinkedList<String>();
       arguments.addAll(Arrays.asList(args));
+      arguments.remove(0);
       final Map<String, Object> parsedArguments = this.parseArguments(arguments);
       this.execute(sender, parsedArguments);
-    } catch (final IllegalArgumentException e) {
-      sender.sendMessage(ChatColor.RED + this.usage);
-      sender.sendMessage(ChatColor.YELLOW + e.getMessage());
     } catch (final IllegalStateException e) {
+      sender.sendMessage(ChatColor.RED + e.getMessage());
+    } catch (final IllegalArgumentException e) {
       sender.sendMessage(ChatColor.RED + this.usage);
       sender.sendMessage(ChatColor.YELLOW + e.getMessage());
     }
     return true;
   }
 
-  /**
-   * Check to see if a player has permission to use this command.
-   * 
-   * A console user is permitted to use all commands by default.
-   * 
-   * @param sender
-   * The player/console that is attempting to use the command
-   * @return true if the player has permission; false otherwise.
-   */
-  protected boolean authorisePlayer(final CommandSender sender) {
-    if (sender instanceof ConsoleCommandSender)
-      return true;
-    else if (sender instanceof Player) {
-      final Player player = (Player) sender;
-      if (player.hasPermission(this.permission) || player.hasPermission("jchat.*")) { return true; }
-    }
-    return false;
-  }
-
   protected abstract Map<String, Object> parseArguments(List<String> arguments);
 
-  protected void registerPermission(final String name, final String description, final PermissionDefault defaultValue) {
-    final Permission permission = new Permission(name, description, defaultValue);
-    this.plugin.getServer().getPluginManager().addPermission(permission);
+  protected Permission registerCommandPermission() {
+    Permission permission = new Permission("dimensiondoor." + name, "Allow users to " + description, PermissionDefault.OP);
+    permission.addParent("dimensiondoor.*", true);
+    return registerPermission(permission);
+  }
+
+  protected Permission registerPermission(Permission permission) {
+    DimensionDoor.getInstance().getServer().getPluginManager().addPermission(permission);
+    return permission;
   }
 
 }

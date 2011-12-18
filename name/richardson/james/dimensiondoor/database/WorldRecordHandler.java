@@ -19,82 +19,76 @@
 
 package name.richardson.james.dimensiondoor.database;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.bukkit.GameMode;
 import org.bukkit.World;
 
-import name.richardson.james.dimensiondoor.WorldHandler;
-import name.richardson.james.dimensiondoor.util.Handler;
+import name.richardson.james.dimensiondoor.creation.WorldHandler;
 import name.richardson.james.dimensiondoor.util.Logger;
 
-
-public final class WorldRecordHandler extends Handler {
+public final class WorldRecordHandler {
 
   protected final static Logger logger = new Logger(WorldRecordHandler.class);
-  protected final static WorldHandler handler = new WorldHandler(WorldRecordHandler.class);
-  
-  public WorldRecordHandler(Class<?> owner) {
-    super(owner);
-  }
 
-  public WorldRecord createWorldRecord(World world) {
-    if (this.isWorldManaged(world.getName())) throw new IllegalArgumentException("That world is already managed.");
+  public static WorldRecord createWorldRecord(World world) {
+    logger.debug(String.format("Creating world record for %s.", world.getName()));
     WorldRecord record = new WorldRecord();
     record.setName(world.getName());
     record.setEnvironment(world.getEnvironment());
     record.setSeed(world.getSeed());
     record.setDifficulty(world.getDifficulty());
-    record.setGamemode((GameMode) handler.getDefaults().get("game-mode"));
+    record.setGamemode((GameMode) WorldHandler.getDefaults().get("game-mode"));
     record.save();
     return record;
   }
-  
-  public void deleteWorldRecord(String worldName) {
-    if (!this.isWorldManaged(worldName)) throw new IllegalArgumentException("That world is not managed.");
-    WorldRecord record = new WorldRecord();
-    record.setName(worldName);
-    Record result = WorldRecord.find(record).get(0);
+
+  public static void deleteWorldRecord(String worldName) {
+    if (!WorldRecordHandler.isWorldManaged(worldName)) throw new IllegalArgumentException(worldName + " is not managed by DimensionDoor.");
+    Record result = WorldRecord.find(worldName).get(0);
     result.delete();
   }
-  
-  public void deleteWorldRecord(World world) {
-    if (!this.isWorldManaged(world.getName())) throw new IllegalArgumentException("That world is not managed.");
-    WorldRecord record = new WorldRecord();
-    record.setName(world.getName());
-    Record result = WorldRecord.find(record).get(0);
+
+  public static void deleteWorldRecord(World world) {
+    if (!WorldRecordHandler.isWorldManaged(world.getName())) throw new IllegalArgumentException(world.getName() + " is not managed by DimensionDoor.");
+    Record result = WorldRecord.find(world.getName()).get(0);
     result.delete();
   }
-  
-  public WorldRecord getWorldRecord(World world) {
-    if (!this.isWorldManaged(world.getName())) throw new IllegalArgumentException("That world is not managed.");
-    WorldRecord record = new WorldRecord();
-    record.setName(world.getName());
-    return (WorldRecord) WorldRecord.find(record).get(0);
+
+  public static WorldRecord getWorldRecord(String worldName) {
+    if (!WorldRecordHandler.isWorldManaged(worldName)) throw new IllegalArgumentException(worldName + " is not managed by DimensionDoor.");
+    return (WorldRecord) WorldRecord.find(worldName).get(0);
   }
-  
-  public WorldRecord saveWorldRecord(WorldRecord record) {
-    record.save();
-    return record;
+
+  public static WorldRecord getWorldRecord(World world) {
+    if (!WorldRecordHandler.isWorldManaged(world.getName())) throw new IllegalArgumentException(world.getName() + " is not managed by DimensionDoor.");
+    return (WorldRecord) WorldRecord.find(world.getName()).get(0);
   }
-  
-  public boolean isWorldManaged(World world) {
-    WorldRecord record = new WorldRecord();
-    record.setName(world.getName());
-    if (WorldRecord.count(record) == 1) {
-      return true;
-    } else {
-      return false;
-    }
+
+  public static List<WorldRecord> getWorldRecordList() {
+    return Collections.unmodifiableList(WorldRecord.list());
   }
-  
-  public boolean isWorldManaged(String worldName) {
-    WorldRecord record = new WorldRecord();
-    record.setName(worldName);
-    if (WorldRecord.count(record) == 1) {
+
+  public static boolean isWorldManaged(String worldName) {
+    if (WorldRecord.count(worldName) == 1) {
       return true;
     } else {
       return false;
     }
   }
 
+  public static boolean isWorldManaged(World world) {
+    if (WorldRecord.count(world.getName()) == 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public static WorldRecord saveWorldRecord(WorldRecord record) {
+    record.save();
+    return record;
+  }
 
 }
