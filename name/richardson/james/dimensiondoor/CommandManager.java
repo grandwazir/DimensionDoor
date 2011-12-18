@@ -20,6 +20,7 @@
 package name.richardson.james.dimensiondoor;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
@@ -46,6 +47,12 @@ public class CommandManager implements CommandExecutor {
         }
       } else if (commands.containsKey(args[0])) {
         commands.get(args[0]).onCommand(sender, command, label, args);
+      }
+    } else {
+      sender.sendMessage(ChatColor.LIGHT_PURPLE + DimensionDoor.getInstance().getDescription().getFullName());
+      sender.sendMessage(ChatColor.GREEN + "Type /dd help <command> for details on a command.");
+      for (Entry<String, Command> c : commands.entrySet()) {
+        sender.sendMessage(ChatColor.YELLOW + "- " + c.getValue().getUsage());
       }
     }
     return true;
