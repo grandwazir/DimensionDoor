@@ -28,6 +28,7 @@ import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
@@ -60,7 +61,13 @@ public class ModifyCommand extends Command {
     final WorldRecord record = (WorldRecord) arguments.get("record");
     final String attribute = (String) arguments.get("attribute");
     String value = (String) arguments.get("value");
+    final String permissionPath = permission.getName() + "." + attribute;
 
+    if (!sender.hasPermission(permissionPath) && !(sender instanceof ConsoleCommandSender)) {
+      sender.sendMessage(ChatColor.RED + "You do not have permission to modify that attribute.");
+      return;
+    }
+    
     switch (Attribute.valueOf(attribute)) {
       case PVP:
         record.setPvp(Boolean.parseBoolean(value));
