@@ -22,7 +22,6 @@ package name.richardson.james.bukkit.dimensiondoor.management;
 import java.util.logging.Logger;
 
 import org.bukkit.Material;
-import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -31,7 +30,6 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
-import name.richardson.james.bukkit.dimensiondoor.DimensionDoorConfiguration;
 import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
 
 public class PlayerListener extends org.bukkit.event.player.PlayerListener {
