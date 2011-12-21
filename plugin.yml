@@ -1,5 +1,5 @@
 name: DimensionDoor
-main: name.richardson.james.dimensiondoor.DimensionDoor
+main: name.richardson.james.bukkit.dimensiondoor.DimensionDoor
 version: 1.9.0
 author: James Richardson (grandwazir)
 description: Multiworld management made easy.
