@@ -17,7 +17,7 @@
  * DimensionDoor. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-package name.richardson.james.dimensiondoor.management;
+package name.richardson.james.bukkit.dimensiondoor.management;
 
 import java.util.logging.Logger;
 
@@ -30,9 +30,9 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
-import name.richardson.james.dimensiondoor.DimensionDoor;
-import name.richardson.james.dimensiondoor.DimensionDoorConfiguration;
-import name.richardson.james.dimensiondoor.WorldRecord;
+import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
+import name.richardson.james.bukkit.dimensiondoor.DimensionDoorConfiguration;
+import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
 
 public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 

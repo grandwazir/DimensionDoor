@@ -1,4 +1,4 @@
-package name.richardson.james.dimensiondoor;
+package name.richardson.james.bukkit.dimensiondoor;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -17,15 +17,15 @@
  * DimensionDoor. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-package name.richardson.james.dimensiondoor.creation;
+package name.richardson.james.bukkit.dimensiondoor.creation;
 
 import org.bukkit.World;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 
-import name.richardson.james.dimensiondoor.DatabaseHandler;
-import name.richardson.james.dimensiondoor.DimensionDoor;
-import name.richardson.james.dimensiondoor.WorldRecord;
+import name.richardson.james.bukkit.dimensiondoor.DatabaseHandler;
+import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
+import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
 
 public class WorldListener extends org.bukkit.event.world.WorldListener {
 

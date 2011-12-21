@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2011 James Richardson.
  * 
- * UnloadCommand.java is part of DimensionDoor.
+ * LoadCommand.java is part of DimensionDoor.
  * 
  * DimensionDoor is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -17,43 +17,43 @@
  * DimensionDoor. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-package name.richardson.james.dimensiondoor.creation;
+package name.richardson.james.bukkit.dimensiondoor.creation;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
-public class UnloadCommand extends Command {
+import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
 
-  public UnloadCommand() {
-    name = "unload";
-    description = "unload a world from memory.";
-    usage = "/dd unload [world]";
+public class LoadCommand extends Command {
+
+  public LoadCommand() {
+    name = "load";
+    description = "load a managed world into memory.";
+    usage = "/dd load [world]";
     permission = this.registerCommandPermission();
   }
 
   @Override
   public void execute(CommandSender sender, Map<String, Object> arguments) {
-    final World world = (World) arguments.get("world");
-    WorldHandler.unloadWorld(world);
-    logger.info(String.format("%s has unloaded the world %s", sender.getName(), world.getName()));
-    sender.sendMessage(String.format(ChatColor.GREEN + "%s has been unloaded.", world.getName()));
+    final String worldName = (String) arguments.get("world");
+    WorldRecord record = WorldRecordHandler.getWorldRecord(worldName);
+    WorldHandler.loadWorld(record);
+    logger.info(String.format("%s has loaded the world %s", sender.getName(), worldName));
+    sender.sendMessage(String.format(ChatColor.GREEN + "%s has been loaded.", worldName));
   }
 
-  @Override
   protected Map<String, Object> parseArguments(List<String> arguments) {
     Map<String, Object> map = new HashMap<String, Object>();
     try {
       final String worldName = arguments.get(0);
-      final World world = WorldHandler.getWorld(worldName);
-      if (world == null) {
-        throw new IllegalArgumentException(String.format("%s not loaded.", worldName));
+      if (WorldHandler.isWorldLoaded(worldName)) {
+        throw new IllegalArgumentException(String.format("%s is already loaded.", worldName));
       } else {
-        map.put("world", world);
+        map.put("world", worldName);
       }
     } catch (final IndexOutOfBoundsException exception) {
       throw new IllegalArgumentException("You must specify a world.");

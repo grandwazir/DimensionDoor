@@ -17,7 +17,7 @@
  * DimensionDoor. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-package name.richardson.james.dimensiondoor;
+package name.richardson.james.bukkit.dimensiondoor;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,11 +40,11 @@ import org.bukkit.event.Event;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.PluginManager;
 
+import name.richardson.james.bukkit.dimensiondoor.creation.CreateCommand;
+import name.richardson.james.bukkit.dimensiondoor.creation.WorldListener;
 import name.richardson.james.bukkit.util.Logger;
 import name.richardson.james.bukkit.util.Plugin;
 import name.richardson.james.bukkit.util.command.CommandManager;
-import name.richardson.james.dimensiondoor.creation.CreateCommand;
-import name.richardson.james.dimensiondoor.creation.WorldListener;
 
 public class DimensionDoor extends Plugin {
   

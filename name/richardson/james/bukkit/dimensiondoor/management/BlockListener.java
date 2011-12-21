@@ -17,7 +17,7 @@
  * DimensionDoor. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-package name.richardson.james.dimensiondoor.management;
+package name.richardson.james.bukkit.dimensiondoor.management;
 
 import org.bukkit.ChatColor;
 import org.bukkit.World;

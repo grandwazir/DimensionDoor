@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2011 James Richardson.
  * 
- * TeleportCommand.java is part of DimensionDoor.
+ * RemoveCommand.java is part of DimensionDoor.
  * 
  * DimensionDoor is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -17,31 +17,35 @@
  * DimensionDoor. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-package name.richardson.james.dimensiondoor.management;
+package name.richardson.james.bukkit.dimensiondoor.creation;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
-public class TeleportCommand extends Command {
+public class RemoveCommand extends Command {
 
-  public TeleportCommand() {
-    name = "teleport";
-    description = "teleport to another world.";
-    usage = "/dd teleport [world]";
+  public RemoveCommand() {
+    name = "remove";
+    description = "unload and remove a world.";
+    usage = "/dd remove [world]";
     permission = this.registerCommandPermission();
-    isPlayerOnly = true;
   }
 
   @Override
   public void execute(CommandSender sender, Map<String, Object> arguments) {
-    final Player player = (Player) sender;
     final World world = (World) arguments.get("world");
-    player.teleport(world.getSpawnLocation());
+    final String worldName = world.getName();
+
+    WorldHandler.unloadWorld(world);
+    WorldRecordHandler.deleteWorldRecord(world);
+    logger.info(String.format("%s has removed the WorldRecord for %s", sender.getName(), worldName));
+    sender.sendMessage(String.format(ChatColor.GREEN + "%s has been removed.", worldName));
+    sender.sendMessage(ChatColor.YELLOW + "You will still need to remove the world directory.");
   }
 
   @Override

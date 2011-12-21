@@ -17,7 +17,7 @@
  * DimensionDoor. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-package name.richardson.james.dimensiondoor;
+package name.richardson.james.bukkit.dimensiondoor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

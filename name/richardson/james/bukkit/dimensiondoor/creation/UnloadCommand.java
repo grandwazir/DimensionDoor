@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2011 James Richardson.
  * 
- * ListCommand.java is part of DimensionDoor.
+ * UnloadCommand.java is part of DimensionDoor.
  * 
  * DimensionDoor is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -17,51 +17,48 @@
  * DimensionDoor. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-package name.richardson.james.dimensiondoor.management;
+package name.richardson.james.bukkit.dimensiondoor.creation;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
-import name.richardson.james.dimensiondoor.WorldRecord;
+public class UnloadCommand extends Command {
 
-public class ListCommand extends Command {
-
-  public ListCommand() {
-    super();
-    name = "list";
-    description = "list managed worlds.";
-    usage = "/dd list";
+  public UnloadCommand() {
+    name = "unload";
+    description = "unload a world from memory.";
+    usage = "/dd unload [world]";
     permission = this.registerCommandPermission();
   }
 
   @Override
   public void execute(CommandSender sender, Map<String, Object> arguments) {
-    final List<WorldRecord> worlds = WorldRecordHandler.getWorldRecordList();
-    final String message = buildWorldList(worlds);
-    sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + "Currently managing %d worlds:", worlds.size()));
-    sender.sendMessage(message);
+    final World world = (World) arguments.get("world");
+    WorldHandler.unloadWorld(world);
+    logger.info(String.format("%s has unloaded the world %s", sender.getName(), world.getName()));
+    sender.sendMessage(String.format(ChatColor.GREEN + "%s has been unloaded.", world.getName()));
   }
 
-  private String buildWorldList(final List<WorldRecord> records) {
-    final StringBuilder message = new StringBuilder();
-    for (final WorldRecord record : records) {
-      final String name = record.getName();
-      if (WorldHandler.isWorldLoaded(name)) {
-        message.append(ChatColor.GREEN + name + ", ");
-      } else {
-        message.append(ChatColor.RED + name + ", ");
-      }
-    }
-    message.delete(message.length() - 2, message.length());
-    return message.toString();
-  }
-
+  @Override
   protected Map<String, Object> parseArguments(List<String> arguments) {
-    return new HashMap<String, Object>();
+    Map<String, Object> map = new HashMap<String, Object>();
+    try {
+      final String worldName = arguments.get(0);
+      final World world = WorldHandler.getWorld(worldName);
+      if (world == null) {
+        throw new IllegalArgumentException(String.format("%s not loaded.", worldName));
+      } else {
+        map.put("world", world);
+      }
+    } catch (final IndexOutOfBoundsException exception) {
+      throw new IllegalArgumentException("You must specify a world.");
+    }
+    return map;
   }
 
 }

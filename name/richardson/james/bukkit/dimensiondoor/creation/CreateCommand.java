@@ -17,7 +17,7 @@
  * DimensionDoor. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-package name.richardson.james.dimensiondoor.creation;
+package name.richardson.james.bukkit.dimensiondoor.creation;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,17 +29,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
+import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.util.command.CommandArgumentException;
 import name.richardson.james.bukkit.util.command.CommandUsageException;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
-import name.richardson.james.dimensiondoor.DimensionDoor;
 
 public class CreateCommand extends PlayerCommand {
 
   public static final String NAME = "create";
   public static final String DESCRIPTION = "Create a new world.";
   public static final String PERMISSION_DESCRIPTION = "Allow users to create new worlds.";
-  public static final String USAGE = "<name> [e:environment] [s:seed] [g:plugin,id]";
+  public static final String USAGE = "<name> [e:environment] [s:seed] [g:plugin:id]";
   
   public static final Permission PERMISSION = new Permission("dimensiondoor.create", PERMISSION_DESCRIPTION, PermissionDefault.OP);
   

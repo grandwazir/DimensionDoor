@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2011 James Richardson.
  * 
- * SpawnCommand.java is part of DimensionDoor.
+ * ListCommand.java is part of DimensionDoor.
  * 
  * DimensionDoor is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -17,42 +17,51 @@
  * DimensionDoor. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-package name.richardson.james.dimensiondoor.management;
+package name.richardson.james.bukkit.dimensiondoor.management;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
-public class SpawnCommand extends Command {
+import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
 
-  public SpawnCommand() {
+public class ListCommand extends Command {
+
+  public ListCommand() {
     super();
-    name = "spawn";
-    description = "set the spawn point of a world.";
-    usage = "/dd spawn";
+    name = "list";
+    description = "list managed worlds.";
+    usage = "/dd list";
     permission = this.registerCommandPermission();
-    isPlayerOnly = true;
   }
 
   @Override
   public void execute(CommandSender sender, Map<String, Object> arguments) {
-    final Player player = (Player) sender;
-    final World world = player.getWorld();
-    final Integer x = (int) player.getLocation().getX();
-    final Integer y = (int) player.getLocation().getY();
-    final Integer z = (int) player.getLocation().getZ();
-    world.setSpawnLocation(x, y, z);
-    logger.info(String.format("%s has set a new spawn location for %s", sender.getName(), world.getName()));
-    sender.sendMessage(String.format(ChatColor.GREEN + "New spawn location set for %s", world.getName()));
+    final List<WorldRecord> worlds = WorldRecordHandler.getWorldRecordList();
+    final String message = buildWorldList(worlds);
+    sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + "Currently managing %d worlds:", worlds.size()));
+    sender.sendMessage(message);
   }
 
-  @Override
+  private String buildWorldList(final List<WorldRecord> records) {
+    final StringBuilder message = new StringBuilder();
+    for (final WorldRecord record : records) {
+      final String name = record.getName();
+      if (WorldHandler.isWorldLoaded(name)) {
+        message.append(ChatColor.GREEN + name + ", ");
+      } else {
+        message.append(ChatColor.RED + name + ", ");
+      }
+    }
+    message.delete(message.length() - 2, message.length());
+    return message.toString();
+  }
+
   protected Map<String, Object> parseArguments(List<String> arguments) {
-    return null;
+    return new HashMap<String, Object>();
   }
 
 }
