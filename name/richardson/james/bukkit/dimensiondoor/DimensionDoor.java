@@ -257,7 +257,7 @@ public class DimensionDoor extends Plugin {
   }
 
   private void loadConfiguration() throws IOException {
-    final DimensionDoorConfiguration configuration = new DimensionDoorConfiguration(this);
+    configuration = new DimensionDoorConfiguration(this);
     if (configuration.isDebugging()) {
       Logger.enableDebugging(this.getDescription().getName().toLowerCase());
     }
