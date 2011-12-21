@@ -26,37 +26,49 @@ import java.util.Map;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
-public class UnloadCommand extends Command {
+import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
+import name.richardson.james.bukkit.util.command.CommandArgumentException;
+import name.richardson.james.bukkit.util.command.PlayerCommand;
 
-  public UnloadCommand() {
-    name = "unload";
-    description = "unload a world from memory.";
-    usage = "/dd unload [world]";
-    permission = this.registerCommandPermission();
+public class UnloadCommand extends PlayerCommand {
+
+  public static final String NAME = "unload";
+  public static final String DESCRIPTION = "Unload a world from memory.";
+  public static final String PERMISSION_DESCRIPTION = "Allow users to unload worlds.";
+  public static final String USAGE = "<name>";
+  public static final Permission PERMISSION = new Permission("dimensiondoor.unload", PERMISSION_DESCRIPTION, PermissionDefault.OP);
+  
+  private final DimensionDoor plugin;
+  
+  public UnloadCommand(DimensionDoor plugin) {
+    super(plugin, NAME, DESCRIPTION, USAGE, PERMISSION_DESCRIPTION, PERMISSION);
+    this.plugin = plugin;
   }
 
   @Override
   public void execute(CommandSender sender, Map<String, Object> arguments) {
     final World world = (World) arguments.get("world");
-    WorldHandler.unloadWorld(world);
+    plugin.unloadWorld(world);
     logger.info(String.format("%s has unloaded the world %s", sender.getName(), world.getName()));
     sender.sendMessage(String.format(ChatColor.GREEN + "%s has been unloaded.", world.getName()));
   }
 
   @Override
-  protected Map<String, Object> parseArguments(List<String> arguments) {
+  public Map<String, Object> parseArguments(List<String> arguments) throws CommandArgumentException {
     Map<String, Object> map = new HashMap<String, Object>();
     try {
       final String worldName = arguments.get(0);
-      final World world = WorldHandler.getWorld(worldName);
+      final World world = plugin.getWorld(worldName);
       if (world == null) {
-        throw new IllegalArgumentException(String.format("%s not loaded.", worldName));
+        throw new CommandArgumentException(String.format("%s not loaded!", worldName), "Use /dd list for a list of worlds.");
       } else {
         map.put("world", world);
       }
     } catch (final IndexOutOfBoundsException exception) {
-      throw new IllegalArgumentException("You must specify a world.");
+      throw new CommandArgumentException("You must specify a world!", "Use /dd list for a list of worlds.");
     }
     return map;
   }
