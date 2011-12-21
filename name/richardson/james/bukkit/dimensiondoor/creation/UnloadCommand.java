@@ -63,7 +63,7 @@ public class UnloadCommand extends PlayerCommand {
       final String worldName = arguments.get(0);
       final World world = this.plugin.getWorld(worldName);
       if (world == null)
-        throw new CommandArgumentException(String.format("%s not loaded!", worldName), "Use /dd list for a list of worlds.");
+        throw new CommandArgumentException(String.format("%s is not loaded!", worldName), "Use /dd list for a list of worlds.");
       else {
         map.put("world", world);
       }

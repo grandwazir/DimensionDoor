@@ -52,7 +52,7 @@ public class TeleportCommand extends PlayerCommand {
 
   @Override
   public void execute(final CommandSender sender, final Map<String, Object> arguments) throws CommandUsageException {
-    if (sender instanceof ConsoleCommandSender) throw new CommandUsageException("You may not use this command from the Console.");
+    if (sender instanceof ConsoleCommandSender) throw new CommandUsageException("You may not use this command from the console.");
     final Player player = (Player) sender;
     final World world = (World) arguments.get("world");
     player.teleport(world.getSpawnLocation());

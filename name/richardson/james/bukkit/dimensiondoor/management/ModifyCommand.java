@@ -81,6 +81,7 @@ public class ModifyCommand extends PlayerCommand {
         break;
       case DIFFICULTY:
         try {
+          value = value.toUpperCase();
           record.setDifficulty(Difficulty.valueOf(value));
           break;
         } catch (final IllegalArgumentException exception) {
@@ -94,6 +95,7 @@ public class ModifyCommand extends PlayerCommand {
         }
       case GAME_MODE:
         try {
+          value = value.toUpperCase();
           record.setGamemode(GameMode.valueOf(value));
           break;
         } catch (final IllegalArgumentException exception) {
@@ -167,7 +169,7 @@ public class ModifyCommand extends PlayerCommand {
   }
 
   private void registerAdditionalPermissions() {
-    final Permission wildcard = new Permission(ModifyCommand.PERMISSION.getName() + ".*", "Allow a user to set all attributes", PermissionDefault.OP);
+    final Permission wildcard = new Permission(ModifyCommand.PERMISSION.getName() + ".*", "Allow a user to set all attributes.", PermissionDefault.OP);
     this.plugin.addPermission(wildcard, true);
     for (final WorldRecord.Attribute attribute : WorldRecord.Attribute.values()) {
       final String permissionNode = ModifyCommand.PERMISSION.getName() + "." + attribute.toString().toLowerCase();
