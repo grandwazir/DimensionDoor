@@ -156,6 +156,13 @@ public class DimensionDoor extends Plugin {
     return server.createWorld(newWorld);
   }
 
+  public void removeWorld(WorldRecord record) {
+    logger.debug(String.format("Removing world record for %s.", record.getName()));
+    final World world = this.getWorld(record.getName());
+    if (world != null) this.unloadWorld(world);
+    database.delete(record);
+  }
+  
   public void onDisable() {
     logger.info(String.format("%s is disabled!", this.getDescription().getName()));
   }
