@@ -31,6 +31,7 @@ import org.bukkit.permissions.PermissionDefault;
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
 import name.richardson.james.bukkit.util.command.CommandArgumentException;
+import name.richardson.james.bukkit.util.command.CommandUsageException;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
 
 public class LoadCommand extends PlayerCommand {
@@ -49,9 +50,14 @@ public class LoadCommand extends PlayerCommand {
   }
 
   @Override
-  public void execute(final CommandSender sender, final Map<String, Object> arguments) {
+  public void execute(final CommandSender sender, final Map<String, Object> arguments) throws CommandArgumentException {
     final WorldRecord record = (WorldRecord) arguments.get("record");
-    this.plugin.loadWorld(record);
+    try {
+      plugin.loadWorld(record);
+    } catch (final IllegalArgumentException exception) {
+      this.logger.warning(String.format("Unable to load %s: %s", record.getName(), exception.getMessage()));
+      throw new CommandArgumentException(String.format("Unable to load %s!", record.getName()), exception.getMessage());
+    }
     this.logger.info(String.format("%s has loaded the world %s", sender.getName(), record.getName()));
     sender.sendMessage(String.format(ChatColor.GREEN + "%s has been loaded.", record.getName()));
   }

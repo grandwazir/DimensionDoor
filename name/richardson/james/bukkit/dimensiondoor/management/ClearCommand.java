@@ -39,8 +39,8 @@ import name.richardson.james.bukkit.util.command.PlayerCommand;
 public class ClearCommand extends PlayerCommand {
 
   public static final String NAME = "clear";
-  public static final String DESCRIPTION = "Clear all entities from a world.";
-  public static final String PERMISSION_DESCRIPTION = "Allow users to clear entities from a world.";
+  public static final String DESCRIPTION = "Clear all monsters and animals from a world.";
+  public static final String PERMISSION_DESCRIPTION = "Allow users to clear monsters and animals from a world.";
   public static final String USAGE = "<name>";
   public static final Permission PERMISSION = new Permission("dimensiondoor.clear", ClearCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
 
@@ -61,8 +61,8 @@ public class ClearCommand extends PlayerCommand {
         count++;
       }
     }
-    this.logger.info(String.format("%s has cleared all entities from the world %s", sender.getName(), world.getName()));
-    sender.sendMessage(String.format(ChatColor.GREEN + "%d entities cleared from %s.", count, world.getName()));
+    this.logger.info(String.format("%s has cleared all monsters and animals from the world %s", sender.getName(), world.getName()));
+    sender.sendMessage(String.format(ChatColor.GREEN + "%d monsters and animals cleared from %s.", count, world.getName()));
   }
 
   @Override

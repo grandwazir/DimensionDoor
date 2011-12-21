@@ -181,6 +181,7 @@ public class DimensionDoor extends Plugin {
     this.logger.debug(String.format("Loading world called %s.", record.getName()));
     final WorldCreator newWorld = new WorldCreator(record.getName());
     newWorld.environment(record.getEnvironment());
+    newWorld.seed(record.getSeed());
     if (record.getGeneratorPlugin() != null) {
       final ChunkGenerator chunkGenerator = this.getCustomChunkGenerator(record.getGeneratorPlugin(), record.getGeneratorID(), record.getName());
       newWorld.generator(chunkGenerator);
@@ -199,6 +200,7 @@ public class DimensionDoor extends Plugin {
     this.server = this.getServer();
 
     try {
+      this.logger.setPrefix("[DimensionDoor] ");
       this.loadConfiguration();
       this.setupDatabase();
       this.setDefaults();
@@ -262,7 +264,7 @@ public class DimensionDoor extends Plugin {
       else
         return chunkGenerator;
     } else
-      throw new IllegalArgumentException(String.format("%s is not enabled!", generator));
+      throw new IllegalArgumentException(String.format("Plugin %s is not enabled!", generator));
   }
 
   private void loadConfiguration() throws IOException {
