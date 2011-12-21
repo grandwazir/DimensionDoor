@@ -28,28 +28,28 @@ public class DimensionDoorConfiguration extends AbstractConfiguration {
 
   public final static String FILE_NAME = "config.yml";
 
-  public DimensionDoorConfiguration(Plugin plugin) throws IOException {
-    super(plugin, FILE_NAME);
+  public DimensionDoorConfiguration(final Plugin plugin) throws IOException {
+    super(plugin, DimensionDoorConfiguration.FILE_NAME);
   }
 
   public boolean isClearActionBar() {
-    return configuration.getBoolean("creative-world-transfer-settings.clear-action-bar");
+    return this.configuration.getBoolean("creative-world-transfer-settings.clear-action-bar");
   }
 
   public boolean isClearHand() {
-    return configuration.getBoolean("creative-world-transfer-settings.clear-hand");
+    return this.configuration.getBoolean("creative-world-transfer-settings.clear-hand");
   }
 
   public boolean isDebugging() {
-    return configuration.getBoolean("debugging");
+    return this.configuration.getBoolean("debugging");
   }
 
   public boolean isPreventContainerBlocks() {
-    return configuration.getBoolean("creative-world-settings.prevent-container-blocks");
+    return this.configuration.getBoolean("creative-world-settings.prevent-container-blocks");
   }
 
   public boolean isPreventItemSpawning() {
-    return configuration.getBoolean("creative-world-settings.prevent-item-spawning");
+    return this.configuration.getBoolean("creative-world-settings.prevent-item-spawning");
   }
 
 }

@@ -26,16 +26,17 @@ import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 
 public class EntityListener extends org.bukkit.event.entity.EntityListener {
 
-  private DimensionDoor plugin;
+  private final DimensionDoor plugin;
 
-  public EntityListener(DimensionDoor plugin) {
+  public EntityListener(final DimensionDoor plugin) {
     this.plugin = plugin;
   }
-  
+
+  @Override
   public void onItemSpawn(final ItemSpawnEvent event) {
     if (event.isCancelled()) return;
     final World world = event.getEntity().getWorld();
-    if (plugin.getCreativeWorlds().contains(world)) {
+    if (this.plugin.getCreativeWorlds().contains(world)) {
       event.setCancelled(true);
     }
   }

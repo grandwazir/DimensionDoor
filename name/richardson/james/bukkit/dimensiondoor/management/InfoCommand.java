@@ -42,27 +42,26 @@ public class InfoCommand extends PlayerCommand {
   public static final String DESCRIPTION = "Get information about a world.";
   public static final String PERMISSION_DESCRIPTION = "Allow users to get information about worlds.";
   public static final String USAGE = "[name]";
-  public static final Permission PERMISSION = new Permission("dimensiondoor.info", PERMISSION_DESCRIPTION, PermissionDefault.OP);
-  
+  public static final Permission PERMISSION = new Permission("dimensiondoor.info", InfoCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+
   private final DimensionDoor plugin;
-  
-  public InfoCommand(DimensionDoor plugin) {
-    super(plugin, NAME, DESCRIPTION, USAGE, PERMISSION_DESCRIPTION, PERMISSION);
+
+  public InfoCommand(final DimensionDoor plugin) {
+    super(plugin, InfoCommand.NAME, InfoCommand.DESCRIPTION, InfoCommand.USAGE, InfoCommand.PERMISSION_DESCRIPTION, InfoCommand.PERMISSION);
     this.plugin = plugin;
   }
 
   @Override
-  public void execute(CommandSender sender, Map<String, Object> arguments) throws CommandUsageException {
+  public void execute(final CommandSender sender, final Map<String, Object> arguments) throws CommandUsageException {
     final WorldRecord record;
 
     if (arguments.isEmpty()) {
       if (sender instanceof Player) {
         final Player player = (Player) sender;
         final World world = player.getWorld();
-        record = WorldRecord.findByWorld(plugin.getDatabaseHandler(), world);
-      } else {
+        record = WorldRecord.findByWorld(this.plugin.getDatabaseHandler(), world);
+      } else
         throw new CommandUsageException("You must specify a world.");
-      }
     } else {
       record = (WorldRecord) arguments.get("record");
     }
@@ -83,14 +82,14 @@ public class InfoCommand extends PlayerCommand {
   }
 
   @Override
-  public Map<String, Object> parseArguments(List<String> arguments) throws CommandArgumentException {
-    Map<String, Object> map = new HashMap<String, Object>();
+  public Map<String, Object> parseArguments(final List<String> arguments) throws CommandArgumentException {
+    final Map<String, Object> map = new HashMap<String, Object>();
     if (!arguments.isEmpty()) {
       final String worldName = arguments.get(0);
-      final WorldRecord record = WorldRecord.findByName(plugin.getDatabaseHandler(), worldName);
-      if (record == null) {
+      final WorldRecord record = WorldRecord.findByName(this.plugin.getDatabaseHandler(), worldName);
+      if (record == null)
         throw new CommandArgumentException(String.format("%s is not managed by DimensionDoor!", worldName), "Use /dd list for a list of worlds.");
-      } else {
+      else {
         map.put("record", record);
       }
     }

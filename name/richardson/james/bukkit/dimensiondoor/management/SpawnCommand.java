@@ -39,14 +39,14 @@ public class SpawnCommand extends PlayerCommand {
   public static final String DESCRIPTION = "Set the spawn point of the world.";
   public static final String PERMISSION_DESCRIPTION = "Allow users to set the spawn points of worlds.";
   public static final String USAGE = "";
-  public static final Permission PERMISSION = new Permission("dimensiondoor.spawn", PERMISSION_DESCRIPTION, PermissionDefault.OP);
-  
-  public SpawnCommand(DimensionDoor plugin) {
-    super(plugin, NAME, DESCRIPTION, USAGE, PERMISSION_DESCRIPTION, PERMISSION);
+  public static final Permission PERMISSION = new Permission("dimensiondoor.spawn", SpawnCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+
+  public SpawnCommand(final DimensionDoor plugin) {
+    super(plugin, SpawnCommand.NAME, SpawnCommand.DESCRIPTION, SpawnCommand.USAGE, SpawnCommand.PERMISSION_DESCRIPTION, SpawnCommand.PERMISSION);
   }
 
   @Override
-  public void execute(CommandSender sender, Map<String, Object> arguments) throws CommandUsageException {
+  public void execute(final CommandSender sender, final Map<String, Object> arguments) throws CommandUsageException {
     if (sender instanceof ConsoleCommandSender) throw new CommandUsageException("You may not use this command from the Console.");
     final Player player = (Player) sender;
     final World world = player.getWorld();
@@ -54,7 +54,7 @@ public class SpawnCommand extends PlayerCommand {
     final Integer y = (int) player.getLocation().getY();
     final Integer z = (int) player.getLocation().getZ();
     world.setSpawnLocation(x, y, z);
-    logger.info(String.format("%s has set a new spawn location for %s", sender.getName(), world.getName()));
+    this.logger.info(String.format("%s has set a new spawn location for %s", sender.getName(), world.getName()));
     sender.sendMessage(String.format(ChatColor.GREEN + "New spawn location set for %s", world.getName()));
   }
 

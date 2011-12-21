@@ -31,28 +31,28 @@ public class WorldListener extends org.bukkit.event.world.WorldListener {
 
   private final DimensionDoor plugin;
   private final DatabaseHandler database;
-  
-  public WorldListener(DimensionDoor plugin) {
+
+  public WorldListener(final DimensionDoor plugin) {
     this.plugin = plugin;
     this.database = plugin.getDatabaseHandler();
   }
-  
+
   @Override
   public void onWorldInit(final WorldInitEvent event) {
     final World world = event.getWorld();
-    final WorldRecord record = WorldRecord.findByWorld(database, world);
+    final WorldRecord record = WorldRecord.findByWorld(this.database, world);
     if (record == null) {
-      plugin.addWorld(world);
+      this.plugin.addWorld(world);
     }
   }
 
   @Override
   public void onWorldLoad(final WorldLoadEvent event) {
-    plugin.applyWorldAttributes(event.getWorld());
+    this.plugin.applyWorldAttributes(event.getWorld());
   }
 
   public void onWorldUnload(final WorldLoadEvent event) {
-    plugin.onWorldUnload(event.getWorld());
+    this.plugin.onWorldUnload(event.getWorld());
   }
 
 }

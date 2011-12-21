@@ -41,17 +41,17 @@ public class TeleportCommand extends PlayerCommand {
   public static final String DESCRIPTION = "Teleport to another world.";
   public static final String PERMISSION_DESCRIPTION = "Allow users to teleport to other worlds.";
   public static final String USAGE = "<name>";
-  public static final Permission PERMISSION = new Permission("dimensiondoor.teleport", PERMISSION_DESCRIPTION, PermissionDefault.OP);
-  
+  public static final Permission PERMISSION = new Permission("dimensiondoor.teleport", TeleportCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+
   private final DimensionDoor plugin;
-  
-  public TeleportCommand(DimensionDoor plugin) {
-    super(plugin, NAME, DESCRIPTION, USAGE, PERMISSION_DESCRIPTION, PERMISSION);
+
+  public TeleportCommand(final DimensionDoor plugin) {
+    super(plugin, TeleportCommand.NAME, TeleportCommand.DESCRIPTION, TeleportCommand.USAGE, TeleportCommand.PERMISSION_DESCRIPTION, TeleportCommand.PERMISSION);
     this.plugin = plugin;
   }
 
   @Override
-  public void execute(CommandSender sender, Map<String, Object> arguments) throws CommandUsageException {
+  public void execute(final CommandSender sender, final Map<String, Object> arguments) throws CommandUsageException {
     if (sender instanceof ConsoleCommandSender) throw new CommandUsageException("You may not use this command from the Console.");
     final Player player = (Player) sender;
     final World world = (World) arguments.get("world");
@@ -59,14 +59,14 @@ public class TeleportCommand extends PlayerCommand {
   }
 
   @Override
-  public Map<String, Object> parseArguments(List<String> arguments) throws CommandArgumentException {
-    Map<String, Object> map = new HashMap<String, Object>();
+  public Map<String, Object> parseArguments(final List<String> arguments) throws CommandArgumentException {
+    final Map<String, Object> map = new HashMap<String, Object>();
     try {
       final String worldName = arguments.get(0);
-      final World world = plugin.getWorld(worldName);
-      if (world == null) {
+      final World world = this.plugin.getWorld(worldName);
+      if (world == null)
         throw new CommandArgumentException(String.format("%s not loaded!", worldName), "Use /dd list for a list of worlds.");
-      } else {
+      else {
         map.put("world", world);
       }
     } catch (final IndexOutOfBoundsException exception) {

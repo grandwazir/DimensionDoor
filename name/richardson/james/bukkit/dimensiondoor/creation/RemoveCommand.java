@@ -39,34 +39,34 @@ public class RemoveCommand extends PlayerCommand {
   public static final String DESCRIPTION = "Unload and remove a world from DimensionDoor.";
   public static final String PERMISSION_DESCRIPTION = "Allow users to remove worlds.";
   public static final String USAGE = "<name>";
-  public static final Permission PERMISSION = new Permission("dimensiondoor.remove", PERMISSION_DESCRIPTION, PermissionDefault.OP);
-  
+  public static final Permission PERMISSION = new Permission("dimensiondoor.remove", RemoveCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+
   private final DimensionDoor plugin;
-  
-  public RemoveCommand(DimensionDoor plugin) {
-    super(plugin, NAME, DESCRIPTION, USAGE, PERMISSION_DESCRIPTION, PERMISSION);
+
+  public RemoveCommand(final DimensionDoor plugin) {
+    super(plugin, RemoveCommand.NAME, RemoveCommand.DESCRIPTION, RemoveCommand.USAGE, RemoveCommand.PERMISSION_DESCRIPTION, RemoveCommand.PERMISSION);
     this.plugin = plugin;
   }
 
   @Override
-  public void execute(CommandSender sender, Map<String, Object> arguments) {
+  public void execute(final CommandSender sender, final Map<String, Object> arguments) {
     final WorldRecord record = (WorldRecord) arguments.get("record");
     final String worldName = record.getName();
-    plugin.removeWorld(record);
-    logger.info(String.format("%s has removed the WorldRecord for %s", sender.getName(), worldName));
+    this.plugin.removeWorld(record);
+    this.logger.info(String.format("%s has removed the WorldRecord for %s", sender.getName(), worldName));
     sender.sendMessage(String.format(ChatColor.GREEN + "%s has been removed.", worldName));
     sender.sendMessage(ChatColor.YELLOW + "You will still need to remove the world directory.");
   }
 
   @Override
-  public Map<String, Object> parseArguments(List<String> arguments) throws CommandArgumentException {
-    Map<String, Object> map = new HashMap<String, Object>();
+  public Map<String, Object> parseArguments(final List<String> arguments) throws CommandArgumentException {
+    final Map<String, Object> map = new HashMap<String, Object>();
     try {
       final String worldName = arguments.get(0);
-      final WorldRecord record = WorldRecord.findByName(plugin.getDatabaseHandler(), worldName);
-      if (record == null) {
+      final WorldRecord record = WorldRecord.findByName(this.plugin.getDatabaseHandler(), worldName);
+      if (record == null)
         throw new CommandArgumentException(String.format("%s is not managed by DimensionDoor!", worldName), "Use /dd list for a list of worlds.");
-      } else {
+      else {
         map.put("record", record);
       }
     } catch (final IndexOutOfBoundsException exception) {

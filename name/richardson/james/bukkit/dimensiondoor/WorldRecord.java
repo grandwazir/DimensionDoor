@@ -43,7 +43,7 @@ public class WorldRecord {
     GAME_MODE,
     DIFFICULTY
   }
-  
+
   private final static Logger logger = new Logger(WorldRecord.class);
 
   @Id
@@ -77,110 +77,116 @@ public class WorldRecord {
   @NotNull
   private GameMode gamemode;
 
-  public static WorldRecord findByName(DatabaseHandler database, String worldName) {
+  public static WorldRecord findByName(final DatabaseHandler database, final String worldName) {
     return database.getEbeanServer().find(WorldRecord.class).where().ieq("name", worldName).findUnique();
   }
 
-  public static WorldRecord findByWorld(DatabaseHandler database, World world) {
+  public static WorldRecord findByWorld(final DatabaseHandler database, final World world) {
     return database.getEbeanServer().find(WorldRecord.class).where().ieq("name", world.getName()).findUnique();
   }
 
   public Difficulty getDifficulty() {
-    return difficulty;
+    return this.difficulty;
   }
 
   public World.Environment getEnvironment() {
-    return environment;
+    return this.environment;
   }
 
   public GameMode getGamemode() {
-    return gamemode;
+    return this.gamemode;
   }
 
   public String getGeneratorID() {
-    return generatorID;
+    return this.generatorID;
   }
 
   public String getGeneratorPlugin() {
-    return generatorPlugin;
+    return this.generatorPlugin;
   }
 
   public String getName() {
-    return name;
+    return this.name;
   }
 
   public long getSeed() {
-    return seed;
+    return this.seed;
   }
 
   public boolean isIsolatedChat() {
-    return isolatedChat;
+    return this.isolatedChat;
   }
 
   public boolean isPvp() {
-    return pvp;
+    return this.pvp;
   }
 
   public boolean isSpawnAnimals() {
-    return spawnAnimals;
+    return this.spawnAnimals;
   }
 
   public boolean isSpawnMonsters() {
-    return spawnMonsters;
+    return this.spawnMonsters;
   }
 
-  public void setDifficulty(Difficulty difficulty) {
+  public void setDifficulty(final Difficulty difficulty) {
     this.difficulty = difficulty;
   }
 
-  public void setEnvironment(World.Environment environment) {
+  public void setEnvironment(final World.Environment environment) {
     this.environment = environment;
   }
 
-  public void setGamemode(GameMode gamemode) {
+  public void setGamemode(final GameMode gamemode) {
     this.gamemode = gamemode;
   }
 
-  public void setGeneratorID(String generatorID) {
+  public void setGeneratorID(final String generatorID) {
     this.generatorID = generatorID;
   }
 
-  public void setGeneratorPlugin(String generatorPlugin) {
+  public void setGeneratorPlugin(final String generatorPlugin) {
     this.generatorPlugin = generatorPlugin;
   }
 
-  public void setIsolatedChat(boolean isolatedChat) {
+  public void setIsolatedChat(final boolean isolatedChat) {
     this.isolatedChat = isolatedChat;
   }
 
-  public void setName(String name) {
+  public void setName(final String name) {
     this.name = name;
   }
 
-  public void setPvp(boolean pvp) {
+  public void setPvp(final boolean pvp) {
     this.pvp = pvp;
   }
 
-  public void setSeed(long seed) {
+  public void setSeed(final long seed) {
     this.seed = seed;
   }
 
-  public void setSpawnAnimals(boolean spawnAnimals) {
+  public void setSpawnAnimals(final boolean spawnAnimals) {
     this.spawnAnimals = spawnAnimals;
   }
 
-  public void setSpawnMonsters(boolean spawnMonsters) {
+  public void setSpawnMonsters(final boolean spawnMonsters) {
     this.spawnMonsters = spawnMonsters;
   }
 
   @Override
   public String toString() {
-    StringBuilder message = new StringBuilder();
+    final StringBuilder message = new StringBuilder();
     message.append(this.getClass().getSimpleName() + ": [");
     message.append("name: " + this.name);
-    if (environment != null) message.append(", environment: " + this.environment.toString());
-    if (gamemode != null) message.append(", gamemode: " + this.gamemode.toString());
-    if (difficulty != null) message.append(", difficulty: " + this.difficulty.toString());
+    if (this.environment != null) {
+      message.append(", environment: " + this.environment.toString());
+    }
+    if (this.gamemode != null) {
+      message.append(", gamemode: " + this.gamemode.toString());
+    }
+    if (this.difficulty != null) {
+      message.append(", difficulty: " + this.difficulty.toString());
+    }
     message.append(", seed: " + Long.toString(this.seed));
     message.append(", spawn-animals: " + Boolean.toString(this.spawnAnimals));
     message.append(", spawn-monsters: " + Boolean.toString(this.spawnAnimals));

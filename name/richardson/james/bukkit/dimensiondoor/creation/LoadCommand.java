@@ -39,33 +39,34 @@ public class LoadCommand extends PlayerCommand {
   public static final String DESCRIPTION = "Load a world mananged by DimensionDoor.";
   public static final String PERMISSION_DESCRIPTION = "Allow users to load existing worlds.";
   public static final String USAGE = "<name>";
-  public static final Permission PERMISSION = new Permission("dimensiondoor.load", PERMISSION_DESCRIPTION, PermissionDefault.OP);
-  
+  public static final Permission PERMISSION = new Permission("dimensiondoor.load", LoadCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+
   private final DimensionDoor plugin;
-  
-  public LoadCommand(DimensionDoor plugin) {
-    super(plugin, NAME, DESCRIPTION, USAGE, PERMISSION_DESCRIPTION, PERMISSION);
+
+  public LoadCommand(final DimensionDoor plugin) {
+    super(plugin, LoadCommand.NAME, LoadCommand.DESCRIPTION, LoadCommand.USAGE, LoadCommand.PERMISSION_DESCRIPTION, LoadCommand.PERMISSION);
     this.plugin = plugin;
   }
 
   @Override
-  public void execute(CommandSender sender, Map<String, Object> arguments) {
+  public void execute(final CommandSender sender, final Map<String, Object> arguments) {
     final WorldRecord record = (WorldRecord) arguments.get("record");
-    plugin.loadWorld(record);
-    logger.info(String.format("%s has loaded the world %s", sender.getName(), record.getName()));
+    this.plugin.loadWorld(record);
+    this.logger.info(String.format("%s has loaded the world %s", sender.getName(), record.getName()));
     sender.sendMessage(String.format(ChatColor.GREEN + "%s has been loaded.", record.getName()));
   }
 
-  public Map<String, Object> parseArguments(List<String> arguments) throws CommandArgumentException {
-    Map<String, Object> map = new HashMap<String, Object>();
+  @Override
+  public Map<String, Object> parseArguments(final List<String> arguments) throws CommandArgumentException {
+    final Map<String, Object> map = new HashMap<String, Object>();
     try {
       final String worldName = arguments.get(0);
-      final WorldRecord record = WorldRecord.findByName(plugin.getDatabaseHandler(), worldName);
-      if (plugin.isWorldLoaded(worldName)) {
+      final WorldRecord record = WorldRecord.findByName(this.plugin.getDatabaseHandler(), worldName);
+      if (this.plugin.isWorldLoaded(worldName))
         throw new CommandArgumentException(String.format("%s is already loaded!", worldName), "You may not load a world twice.");
-      } else if (record == null) {
+      else if (record == null)
         throw new CommandArgumentException(String.format("%s is not managed by DimensionDoor!", worldName), "To import an existing world use /dd create.");
-      } else {
+      else {
         map.put("record", record);
       }
     } catch (final IndexOutOfBoundsException exception) {

@@ -39,37 +39,42 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
   private final boolean isClearActionBar;
   private final boolean isClearHand;
 
-  public PlayerListener(DimensionDoor plugin) {
+  public PlayerListener(final DimensionDoor plugin) {
     this.plugin = plugin;
     this.isClearActionBar = plugin.getPluginConfiguration().isClearActionBar();
     this.isClearHand = plugin.getPluginConfiguration().isClearHand();
   }
 
+  @Override
   public void onPlayerChangedWorld(final PlayerChangedWorldEvent event) {
     final Player player = event.getPlayer();
     final World currentWorld = event.getPlayer().getWorld();
-    final WorldRecord currentWorldRecord = WorldRecord.findByWorld(plugin.getDatabaseHandler(), currentWorld);
+    final WorldRecord currentWorldRecord = WorldRecord.findByWorld(this.plugin.getDatabaseHandler(), currentWorld);
     final World previousWorld = event.getFrom();
 
     player.setGameMode(currentWorldRecord.getGamemode());
 
-    if (plugin.getCreativeWorlds().contains(previousWorld)) {
-      if (this.isClearActionBar) clearActionBar(player);
-      if (this.isClearHand) clearItemInHand(player);
+    if (this.plugin.getCreativeWorlds().contains(previousWorld)) {
+      if (this.isClearActionBar) {
+        this.clearActionBar(player);
+      }
+      if (this.isClearHand) {
+        this.clearItemInHand(player);
+      }
     }
   }
 
   @Override
   public void onPlayerChat(final PlayerChatEvent event) {
-    if (event.isCancelled() || plugin.getIsolatedWorlds().isEmpty()) return;
+    if (event.isCancelled() || this.plugin.getIsolatedWorlds().isEmpty()) return;
     final World world = event.getPlayer().getWorld();
     String message = event.getFormat();
     message = message.replace("%1$s", event.getPlayer().getDisplayName());
     message = message.replace("%2$s", event.getMessage());
-    if (plugin.getIsolatedWorlds().contains(world)) {
-      sendIsolatedMessage(message, world);
+    if (this.plugin.getIsolatedWorlds().contains(world)) {
+      this.sendIsolatedMessage(message, world);
     } else {
-      sendNormalMessage(message);
+      this.sendNormalMessage(message);
     }
     event.setCancelled(true);
   }
@@ -84,14 +89,14 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
     }
   }
 
-  private void clearActionBar(Player player) {
+  private void clearActionBar(final Player player) {
     for (int i = 0; i <= 8; i++) {
       player.getInventory().clear(i);
     }
   }
 
-  private void clearItemInHand(Player player) {
-    ItemStack itemInHand = player.getInventory().getItemInHand();
+  private void clearItemInHand(final Player player) {
+    final ItemStack itemInHand = player.getInventory().getItemInHand();
     // only clear the item if they are actually hold the item
     // otherwise we get an exception
     if (!itemInHand.getType().equals(Material.AIR)) {
@@ -101,21 +106,21 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
   }
 
   private void sendIsolatedMessage(final String message, final World world) {
-    for (final Player player : plugin.getServer().getOnlinePlayers()) {
+    for (final Player player : this.plugin.getServer().getOnlinePlayers()) {
       if (player != null && player.getWorld().equals(world) && player.isOnline()) {
         player.sendMessage(message);
       }
     }
-    logger.info(message);
+    this.logger.info(message);
   }
 
   private void sendNormalMessage(final String message) {
-    for (final Player player : plugin.getServer().getOnlinePlayers()) {
-      if (player != null && (!plugin.getIsolatedWorlds().contains(player.getWorld())) && player.isOnline()) {
+    for (final Player player : this.plugin.getServer().getOnlinePlayers()) {
+      if (player != null && (!this.plugin.getIsolatedWorlds().contains(player.getWorld())) && player.isOnline()) {
         player.sendMessage(message);
       }
     }
-    logger.info(message);
+    this.logger.info(message);
   }
 
 }

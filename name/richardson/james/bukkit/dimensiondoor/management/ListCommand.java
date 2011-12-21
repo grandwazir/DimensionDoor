@@ -37,19 +37,19 @@ public class ListCommand extends PlayerCommand {
   public static final String DESCRIPTION = "List all the available worlds.";
   public static final String PERMISSION_DESCRIPTION = "Allow users to list all available worlds.";
   public static final String USAGE = "";
-  public static final Permission PERMISSION = new Permission("dimensiondoor.list", PERMISSION_DESCRIPTION, PermissionDefault.OP);
-  
+  public static final Permission PERMISSION = new Permission("dimensiondoor.list", ListCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+
   private final DimensionDoor plugin;
-  
-  public ListCommand(DimensionDoor plugin) {
-    super(plugin, NAME, DESCRIPTION, USAGE, PERMISSION_DESCRIPTION, PERMISSION);
+
+  public ListCommand(final DimensionDoor plugin) {
+    super(plugin, ListCommand.NAME, ListCommand.DESCRIPTION, ListCommand.USAGE, ListCommand.PERMISSION_DESCRIPTION, ListCommand.PERMISSION);
     this.plugin = plugin;
   }
 
   @Override
-  public void execute(CommandSender sender, Map<String, Object> arguments) {
-    List<? extends Object> records = plugin.getDatabaseHandler().list(WorldRecord.class);
-    final String message = buildWorldList(records);
+  public void execute(final CommandSender sender, final Map<String, Object> arguments) {
+    final List<? extends Object> records = this.plugin.getDatabaseHandler().list(WorldRecord.class);
+    final String message = this.buildWorldList(records);
     sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + "Currently managing %d worlds:", records.size()));
     sender.sendMessage(message);
   }
@@ -59,7 +59,7 @@ public class ListCommand extends PlayerCommand {
     for (final Object record : records) {
       final WorldRecord worldRecord = (WorldRecord) record;
       final String name = worldRecord.getName();
-      if (plugin.isWorldLoaded(name)) {
+      if (this.plugin.isWorldLoaded(name)) {
         message.append(ChatColor.GREEN + name + ", ");
       } else {
         message.append(ChatColor.RED + name + ", ");

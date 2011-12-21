@@ -40,18 +40,18 @@ public class CreateCommand extends PlayerCommand {
   public static final String DESCRIPTION = "Create a new world.";
   public static final String PERMISSION_DESCRIPTION = "Allow users to create new worlds.";
   public static final String USAGE = "<name> [e:environment] [s:seed] [g:plugin:id]";
-  
-  public static final Permission PERMISSION = new Permission("dimensiondoor.create", PERMISSION_DESCRIPTION, PermissionDefault.OP);
-  
-  private DimensionDoor plugin;
-  
-  public CreateCommand(DimensionDoor plugin) {
-    super(plugin, NAME, DESCRIPTION, USAGE, PERMISSION_DESCRIPTION, PERMISSION);
+
+  public static final Permission PERMISSION = new Permission("dimensiondoor.create", CreateCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+
+  private final DimensionDoor plugin;
+
+  public CreateCommand(final DimensionDoor plugin) {
+    super(plugin, CreateCommand.NAME, CreateCommand.DESCRIPTION, CreateCommand.USAGE, CreateCommand.PERMISSION_DESCRIPTION, CreateCommand.PERMISSION);
     this.plugin = plugin;
   }
 
   @Override
-  public void execute(CommandSender sender, Map<String, Object> arguments) throws CommandUsageException {
+  public void execute(final CommandSender sender, final Map<String, Object> arguments) throws CommandUsageException {
     final String worldName = (String) arguments.get("worldName");
     final Environment environment = (Environment) arguments.get("environment");
     final Long seed = (Long) arguments.get("seed");
@@ -62,37 +62,37 @@ public class CreateCommand extends PlayerCommand {
       final String generatorPlugin = (String) arguments.get("generatorPlugin");
       final String generatorID = (String) arguments.get("generatorID");
       try {
-        plugin.createWorld(worldName, environment, seed, generatorPlugin, generatorID);
-      } catch (IllegalArgumentException exception) {
+        this.plugin.createWorld(worldName, environment, seed, generatorPlugin, generatorID);
+      } catch (final IllegalArgumentException exception) {
         throw new CommandUsageException(exception.getMessage());
       }
     } else {
-      plugin.createWorld(worldName, environment, seed);
+      this.plugin.createWorld(worldName, environment, seed);
     }
 
     sender.sendMessage(String.format(ChatColor.GREEN + "%s has been created.", worldName));
-    logger.info(String.format("%s has created a new world called %s", sender.getName(), worldName));
+    this.logger.info(String.format("%s has created a new world called %s", sender.getName(), worldName));
 
   }
 
   @Override
-  public Map<String, Object> parseArguments(List<String> arguments) throws CommandArgumentException {
-    Map<String, Object> map = new HashMap<String, Object>();
+  public Map<String, Object> parseArguments(final List<String> arguments) throws CommandArgumentException {
+    final Map<String, Object> map = new HashMap<String, Object>();
 
-    map.put("environment", plugin.getDefaults().get("environment"));
+    map.put("environment", this.plugin.getDefaults().get("environment"));
     map.put("seed", System.currentTimeMillis());
-    
+
     // get our required arguments
     try {
       final String worldName = arguments.remove(0);
       map.put("worldName", worldName);
-      if (plugin.getWorld(worldName) != null) throw new CommandArgumentException(worldName + " already exists!", "You must specify a name that is not in use.");
+      if (this.plugin.getWorld(worldName) != null) throw new CommandArgumentException(worldName + " already exists!", "You must specify a name that is not in use.");
     } catch (final IndexOutOfBoundsException exception) {
       throw new CommandArgumentException("You must specify a world name!", "It must be a name not used by another world.");
     }
 
     if (arguments.isEmpty()) return map;
-    
+
     for (String argument : arguments) {
       if (argument.startsWith("e:")) {
         try {
@@ -114,10 +114,10 @@ public class CreateCommand extends PlayerCommand {
     }
     return map;
   }
-  
+
   private String buildEnvironmentList() {
-    StringBuilder message = new StringBuilder();
-    for (Environment environment : Environment.values()) {
+    final StringBuilder message = new StringBuilder();
+    for (final Environment environment : Environment.values()) {
       message.append(environment.name());
       message.append(", ");
     }

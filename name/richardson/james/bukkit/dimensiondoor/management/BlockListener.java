@@ -28,17 +28,18 @@ import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 
 public class BlockListener extends org.bukkit.event.block.BlockListener {
 
-  private DimensionDoor plugin;
+  private final DimensionDoor plugin;
 
-  public BlockListener(DimensionDoor plugin) {
+  public BlockListener(final DimensionDoor plugin) {
     this.plugin = plugin;
   }
-  
+
   // fixes another duplication area where players can place creative
   // items into their inventory through the chest interface.
+  @Override
   public void onBlockPlace(final BlockPlaceEvent event) {
     final World world = event.getPlayer().getWorld();
-    if (plugin.getCreativeWorlds().contains(world)) {
+    if (this.plugin.getCreativeWorlds().contains(world)) {
       if (event.getBlockPlaced().getState() instanceof ContainerBlock) {
         event.setCancelled(true);
         event.getPlayer().sendMessage(ChatColor.RED + "You may not use those in creative mode.");

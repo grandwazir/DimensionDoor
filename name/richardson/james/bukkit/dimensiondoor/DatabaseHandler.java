@@ -1,3 +1,4 @@
+
 package name.richardson.james.bukkit.dimensiondoor;
 
 import java.util.ArrayList;
@@ -5,10 +6,9 @@ import java.util.List;
 
 import com.avaje.ebean.EbeanServer;
 
-
 public class DatabaseHandler extends name.richardson.james.bukkit.util.Database {
-  
-  public DatabaseHandler(EbeanServer database) {
+
+  public DatabaseHandler(final EbeanServer database) {
     super(database);
   }
 
@@ -18,14 +18,16 @@ public class DatabaseHandler extends name.richardson.james.bukkit.util.Database 
     return list;
   }
 
-  public void validate() {
+  @Override
+  public void upgrade(final int schema) {
     // TODO Auto-generated method stub
-    
+
   }
 
-  public void upgrade(int schema) {
+  @Override
+  public void validate() {
     // TODO Auto-generated method stub
-    
+
   }
 
 }
