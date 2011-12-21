@@ -62,7 +62,7 @@ public class ModifyCommand extends PlayerCommand {
 
     if (!sender.hasPermission(permissionPath)) throw new CommandPermissionException("You do not have permission to modify that attribute.", ModifyCommand.PERMISSION);
 
-    switch (WorldRecord.Attribute.valueOf(attribute)) {
+    switch (WorldRecord.Attribute.valueOf(attribute.toUpperCase())) {
       case PVP:
         record.setPvp(Boolean.parseBoolean(value));
         value = Boolean.toString(Boolean.parseBoolean(value));
