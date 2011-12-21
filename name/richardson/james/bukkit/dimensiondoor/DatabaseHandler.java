@@ -1,14 +1,15 @@
 
 package name.richardson.james.bukkit.dimensiondoor;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.avaje.ebean.EbeanServer;
 
 public class DatabaseHandler extends name.richardson.james.bukkit.util.Database {
-
-  public DatabaseHandler(final EbeanServer database) {
+  
+  public DatabaseHandler(final EbeanServer database) throws SQLException {
     super(database);
   }
 
@@ -17,17 +18,5 @@ public class DatabaseHandler extends name.richardson.james.bukkit.util.Database 
     list.add(WorldRecord.class);
     return list;
   }
-
-  @Override
-  public void upgrade(final int schema) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void validate() {
-    // TODO Auto-generated method stub
-
-  }
-
+  
 }

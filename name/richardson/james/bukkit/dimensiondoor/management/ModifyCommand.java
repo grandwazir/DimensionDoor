@@ -79,6 +79,10 @@ public class ModifyCommand extends PlayerCommand {
         record.setIsolatedChat(Boolean.parseBoolean(value));
         value = Boolean.toString(Boolean.parseBoolean(value));
         break;
+      case SPAWN_IN_MEMORY:
+        record.setKeepSpawnInMemory(Boolean.parseBoolean(value));
+        value = Boolean.toString(Boolean.parseBoolean(value));
+        break;
       case DIFFICULTY:
         try {
           value = value.toUpperCase();

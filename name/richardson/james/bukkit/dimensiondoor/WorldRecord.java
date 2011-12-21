@@ -32,7 +32,7 @@ import org.bukkit.World;
 import name.richardson.james.bukkit.util.Logger;
 
 @Entity()
-@Table(name = "dd_worlds")
+@Table(name = "dimensiondoor_worlds")
 public class WorldRecord {
 
   public enum Attribute {
@@ -41,7 +41,8 @@ public class WorldRecord {
     SPAWN_ANIMALS,
     ISOLATED_CHAT,
     GAME_MODE,
-    DIFFICULTY
+    DIFFICULTY,
+    SPAWN_IN_MEMORY
   }
 
   private final static Logger logger = new Logger(WorldRecord.class);
@@ -58,6 +59,9 @@ public class WorldRecord {
   @NotNull
   private boolean spawnMonsters;
 
+  @NotNull
+  private boolean keepSpawnInMemory;
+  
   @NotNull
   private long seed;
 
@@ -193,10 +197,19 @@ public class WorldRecord {
     message.append(", spawn-animals: " + Boolean.toString(this.spawnAnimals));
     message.append(", spawn-monsters: " + Boolean.toString(this.spawnAnimals));
     message.append(", isolatedChat: " + Boolean.toString(this.isolatedChat));
+    message.append(", spawn-in-memory: " + Boolean.toString(this.keepSpawnInMemory));
     message.append(", generator-plugin: " + this.generatorPlugin);
     message.append(", generator-id: " + this.generatorID);
     message.append("].");
     return message.toString();
+  }
+
+  public boolean isKeepSpawnInMemory() {
+    return keepSpawnInMemory;
+  }
+
+  public void setKeepSpawnInMemory(boolean keepSpawnInMemory) {
+    this.keepSpawnInMemory = keepSpawnInMemory;
   }
 
 }

@@ -20,6 +20,7 @@
 package name.richardson.james.bukkit.dimensiondoor;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -79,6 +80,9 @@ public class DimensionDoor extends Plugin {
     record.setSeed(world.getSeed());
     record.setDifficulty(world.getDifficulty());
     record.setGamemode((GameMode) this.defaults.get("game-mode"));
+    record.setKeepSpawnInMemory((Boolean) this.getDefaults().get("spawn-in-memory"));
+    record.setSpawnAnimals((Boolean) this.getDefaults().get("spawn-animals"));
+    record.setSpawnMonsters((Boolean) this.getDefaults().get("spawn-monsters"));
     this.database.save(record);
   }
 
@@ -206,6 +210,9 @@ public class DimensionDoor extends Plugin {
     } catch (final IOException exception) {
       this.logger.severe("Unable to load configuration!");
       exception.printStackTrace();
+    } catch (SQLException exception) {
+      // TODO Auto-generated catch block
+      exception.printStackTrace();
     } finally {
       if (!this.getServer().getPluginManager().isPluginEnabled(this)) return;
     }
@@ -299,13 +306,13 @@ public class DimensionDoor extends Plugin {
     pluginManager.registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, Event.Priority.Normal, this);
     pluginManager.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Event.Priority.High, this);
     pluginManager.registerEvent(Event.Type.PLAYER_CHANGED_WORLD, playerListener, Event.Priority.High, this);
-    if (configuration.isPreventContainerBlocks()) { 
+    if (configuration.isPreventContainerBlocks()) {
       pluginManager.registerEvent(Event.Type.BLOCK_PLACE, blockListener, Event.Priority.High, this);
     }
     if (configuration.isPreventItemSpawning()) {
       pluginManager.registerEvent(Event.Type.ITEM_SPAWN, entityListener, Event.Priority.High, this);
     }
-     
+
   }
 
   private void registerMainWorlds() {
@@ -327,14 +334,16 @@ public class DimensionDoor extends Plugin {
     this.defaults.put("difficulty", world.getDifficulty());
     this.defaults.put("environment", world.getEnvironment());
     this.defaults.put("game-mode", this.server.getDefaultGameMode());
+    this.defaults.put("spawn-in-memory", true);
   }
 
-  private void setupDatabase() {
+  private void setupDatabase() throws SQLException {
     try {
       this.getDatabase().find(WorldRecord.class).findRowCount();
       this.database = new DatabaseHandler(this.getDatabase());
     } catch (final PersistenceException ex) {
       this.logger.warning("No database schema found. Generating a new one.");
+      ex.printStackTrace();
       this.installDDL();
     }
   }
