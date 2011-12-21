@@ -70,15 +70,15 @@ public class InfoCommand extends PlayerCommand {
     sender.sendMessage(String.format(ChatColor.YELLOW + "- seed: %d", record.getSeed()));
     sender.sendMessage(String.format(ChatColor.YELLOW + "- environment: %s", record.getEnvironment().toString()));
     sender.sendMessage(String.format(ChatColor.YELLOW + "- difficulty: %s", record.getDifficulty().name()));
-    sender.sendMessage(String.format(ChatColor.YELLOW + "- game-mode: %s", record.getGamemode().name()));
-    sender.sendMessage(String.format(ChatColor.YELLOW + "- isolated-chat: %b", record.isIsolatedChat()));
+    sender.sendMessage(String.format(ChatColor.YELLOW + "- game mode: %s", record.getGamemode().name()));
+    sender.sendMessage(String.format(ChatColor.YELLOW + "- isolated chat: %b", record.isIsolatedChat()));
     sender.sendMessage(String.format(ChatColor.YELLOW + "- pvp: %b", record.isPvp()));
-    sender.sendMessage(String.format(ChatColor.YELLOW + "- spawn-animals: %b", record.isSpawnAnimals()));
-    sender.sendMessage(String.format(ChatColor.YELLOW + "- spawn-monsters: %b", record.isSpawnMonsters()));
-    sender.sendMessage(String.format(ChatColor.YELLOW + "- spawn-in-memory: %b", record.isKeepSpawnInMemory()));
+    sender.sendMessage(String.format(ChatColor.YELLOW + "- spawn animals: %b", record.isSpawnAnimals()));
+    sender.sendMessage(String.format(ChatColor.YELLOW + "- spawn monsters: %b", record.isSpawnMonsters()));
+    sender.sendMessage(String.format(ChatColor.YELLOW + "- keep spawn in memory: %b", record.isKeepSpawnInMemory()));
     if (record.getGeneratorPlugin() != null) {
-      sender.sendMessage(String.format(ChatColor.YELLOW + "- generator-plugin: %s", record.getGeneratorPlugin()));
-      sender.sendMessage(String.format(ChatColor.YELLOW + "- generator-id: %s", record.getGeneratorID()));
+      sender.sendMessage(String.format(ChatColor.YELLOW + "- generator plugin: %s", record.getGeneratorPlugin()));
+      sender.sendMessage(String.format(ChatColor.YELLOW + "- generator id: %s", record.getGeneratorID()));
     }
   }
 
