@@ -35,11 +35,11 @@ import name.richardson.james.bukkit.util.command.PlayerCommand;
 
 public class LoadCommand extends PlayerCommand {
 
-  public static final String NAME = "create";
-  public static final String DESCRIPTION = "Create a new world.";
-  public static final String PERMISSION_DESCRIPTION = "Allow users to create new worlds.";
-  public static final String USAGE = "<name> [e:environment] [s:seed] [g:plugin:id]";
-  public static final Permission PERMISSION = new Permission("dimensiondoor.create", PERMISSION_DESCRIPTION, PermissionDefault.OP);
+  public static final String NAME = "load";
+  public static final String DESCRIPTION = "Load a world mananged by DimensionDoor.";
+  public static final String PERMISSION_DESCRIPTION = "Allow users to load existing worlds.";
+  public static final String USAGE = "<name>";
+  public static final Permission PERMISSION = new Permission("dimensiondoor.load", PERMISSION_DESCRIPTION, PermissionDefault.OP);
   
   private final DimensionDoor plugin;
   
