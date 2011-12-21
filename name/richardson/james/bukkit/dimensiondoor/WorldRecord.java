@@ -78,10 +78,12 @@ public class WorldRecord {
   private GameMode gamemode;
 
   public static WorldRecord findByName(final DatabaseHandler database, final String worldName) {
+    logger.debug(String.format("Attempting to return WorldRecord matching the name %s.", worldName));
     return database.getEbeanServer().find(WorldRecord.class).where().ieq("name", worldName).findUnique();
   }
 
   public static WorldRecord findByWorld(final DatabaseHandler database, final World world) {
+    logger.debug(String.format("Attempting to return WorldRecord matching the name %s.", world.getName()));
     return database.getEbeanServer().find(WorldRecord.class).where().ieq("name", world.getName()).findUnique();
   }
 
