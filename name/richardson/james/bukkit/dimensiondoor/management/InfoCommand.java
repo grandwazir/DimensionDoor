@@ -27,29 +27,41 @@ import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
+import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
+import name.richardson.james.bukkit.util.command.CommandArgumentException;
+import name.richardson.james.bukkit.util.command.CommandUsageException;
+import name.richardson.james.bukkit.util.command.PlayerCommand;
 
-public class InfoCommand extends Command {
+public class InfoCommand extends PlayerCommand {
 
-  public InfoCommand() {
-    name = "info";
-    description = "shows configuration details about a world.";
-    usage = "/dd info <world>";
-    permission = this.registerCommandPermission();
+  public static final String NAME = "info";
+  public static final String DESCRIPTION = "Get information about a world.";
+  public static final String PERMISSION_DESCRIPTION = "Allow users to get information about worlds.";
+  public static final String USAGE = "[name]";
+  public static final Permission PERMISSION = new Permission("dimensiondoor.info", PERMISSION_DESCRIPTION, PermissionDefault.OP);
+  
+  private final DimensionDoor plugin;
+  
+  public InfoCommand(DimensionDoor plugin) {
+    super(plugin, NAME, DESCRIPTION, USAGE, PERMISSION_DESCRIPTION, PERMISSION);
+    this.plugin = plugin;
   }
 
   @Override
-  public void execute(CommandSender sender, Map<String, Object> arguments) {
+  public void execute(CommandSender sender, Map<String, Object> arguments) throws CommandUsageException {
     final WorldRecord record;
 
     if (arguments.isEmpty()) {
       if (sender instanceof Player) {
         final Player player = (Player) sender;
         final World world = player.getWorld();
-        record = WorldRecordHandler.getWorldRecord(world);
+        record = WorldRecord.findByWorld(plugin.getDatabaseHandler(), world);
       } else {
-        throw new IllegalArgumentException("You must specify a world.");
+        throw new CommandUsageException("You must specify a world.");
       }
     } else {
       record = (WorldRecord) arguments.get("record");
@@ -71,15 +83,15 @@ public class InfoCommand extends Command {
   }
 
   @Override
-  protected Map<String, Object> parseArguments(List<String> arguments) {
+  public Map<String, Object> parseArguments(List<String> arguments) throws CommandArgumentException {
     Map<String, Object> map = new HashMap<String, Object>();
     if (!arguments.isEmpty()) {
-      final String worldName = arguments.remove(0);
-      if (WorldRecordHandler.isWorldManaged(worldName)) {
-        final WorldRecord worldRecord = WorldRecordHandler.getWorldRecord(worldName);
-        map.put("record", worldRecord);
+      final String worldName = arguments.get(0);
+      final WorldRecord record = WorldRecord.findByName(plugin.getDatabaseHandler(), worldName);
+      if (record == null) {
+        throw new CommandArgumentException(String.format("%s is not managed by DimensionDoor!", worldName), "Use /dd list for a list of worlds.");
       } else {
-        throw new IllegalArgumentException(String.format("%s is not managed by DimensionDoor.", worldName));
+        map.put("record", record);
       }
     }
     return map;
