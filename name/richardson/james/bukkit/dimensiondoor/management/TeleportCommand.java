@@ -26,15 +26,26 @@ import java.util.Map;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
-public class TeleportCommand extends Command {
+import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
+import name.richardson.james.bukkit.util.command.CommandArgumentException;
+import name.richardson.james.bukkit.util.command.PlayerCommand;
 
-  public TeleportCommand() {
-    name = "teleport";
-    description = "teleport to another world.";
-    usage = "/dd teleport [world]";
-    permission = this.registerCommandPermission();
-    isPlayerOnly = true;
+public class TeleportCommand extends PlayerCommand {
+
+  public static final String NAME = "teleport";
+  public static final String DESCRIPTION = "Teleport to another world.";
+  public static final String PERMISSION_DESCRIPTION = "Allow users to teleport to other worlds.";
+  public static final String USAGE = "<name>";
+  public static final Permission PERMISSION = new Permission("dimensiondoor.teleport", PERMISSION_DESCRIPTION, PermissionDefault.OP);
+  
+  private final DimensionDoor plugin;
+  
+  public TeleportCommand(DimensionDoor plugin) {
+    super(plugin, NAME, DESCRIPTION, USAGE, PERMISSION_DESCRIPTION, PERMISSION);
+    this.plugin = plugin;
   }
 
   @Override
@@ -45,18 +56,18 @@ public class TeleportCommand extends Command {
   }
 
   @Override
-  protected Map<String, Object> parseArguments(List<String> arguments) {
+  public Map<String, Object> parseArguments(List<String> arguments) throws CommandArgumentException {
     Map<String, Object> map = new HashMap<String, Object>();
     try {
-      final String worldName = arguments.remove(0);
-      final World world = WorldHandler.getWorld(worldName);
+      final String worldName = arguments.get(0);
+      final World world = plugin.getWorld(worldName);
       if (world == null) {
-        throw new IllegalArgumentException(String.format("%s not loaded.", worldName));
+        throw new CommandArgumentException(String.format("%s not loaded!", worldName), "Use /dd list for a list of worlds.");
       } else {
         map.put("world", world);
       }
     } catch (final IndexOutOfBoundsException exception) {
-      throw new IllegalArgumentException("You must specify a world.");
+      throw new CommandArgumentException("You must specify a world!", "Use /dd list for a list of worlds.");
     }
     return map;
   }
