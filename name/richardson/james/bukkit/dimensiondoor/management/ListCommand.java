@@ -19,38 +19,47 @@
 
 package name.richardson.james.bukkit.dimensiondoor.management;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
+import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
+import name.richardson.james.bukkit.util.command.PlayerCommand;
 
-public class ListCommand extends Command {
+public class ListCommand extends PlayerCommand {
 
-  public ListCommand() {
-    super();
-    name = "list";
-    description = "list managed worlds.";
-    usage = "/dd list";
-    permission = this.registerCommandPermission();
+  public static final String NAME = "list";
+  public static final String DESCRIPTION = "List all the available worlds.";
+  public static final String PERMISSION_DESCRIPTION = "Allow users to list all available worlds.";
+  public static final String USAGE = "";
+  public static final Permission PERMISSION = new Permission("dimensiondoor.list", PERMISSION_DESCRIPTION, PermissionDefault.OP);
+  
+  private final DimensionDoor plugin;
+  
+  public ListCommand(DimensionDoor plugin) {
+    super(plugin, NAME, DESCRIPTION, USAGE, PERMISSION_DESCRIPTION, PERMISSION);
+    this.plugin = plugin;
   }
 
   @Override
   public void execute(CommandSender sender, Map<String, Object> arguments) {
-    final List<WorldRecord> worlds = WorldRecordHandler.getWorldRecordList();
-    final String message = buildWorldList(worlds);
-    sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + "Currently managing %d worlds:", worlds.size()));
+    List<? extends Object> records = plugin.getDatabaseHandler().list(WorldRecord.class);
+    final String message = buildWorldList(records);
+    sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + "Currently managing %d worlds:", records.size()));
     sender.sendMessage(message);
   }
 
-  private String buildWorldList(final List<WorldRecord> records) {
+  private String buildWorldList(final List<? extends Object> records) {
     final StringBuilder message = new StringBuilder();
-    for (final WorldRecord record : records) {
-      final String name = record.getName();
-      if (WorldHandler.isWorldLoaded(name)) {
+    for (final Object record : records) {
+      final WorldRecord worldRecord = (WorldRecord) record;
+      final String name = worldRecord.getName();
+      if (plugin.isWorldLoaded(name)) {
         message.append(ChatColor.GREEN + name + ", ");
       } else {
         message.append(ChatColor.RED + name + ", ");
@@ -58,10 +67,6 @@ public class ListCommand extends Command {
     }
     message.delete(message.length() - 2, message.length());
     return message.toString();
-  }
-
-  protected Map<String, Object> parseArguments(List<String> arguments) {
-    return new HashMap<String, Object>();
   }
 
 }

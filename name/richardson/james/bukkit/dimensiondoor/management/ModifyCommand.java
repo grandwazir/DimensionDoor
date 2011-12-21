@@ -32,31 +32,38 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
+import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
+import name.richardson.james.bukkit.util.command.CommandArgumentException;
+import name.richardson.james.bukkit.util.command.CommandPermissionException;
+import name.richardson.james.bukkit.util.command.PlayerCommand;
 
-public class ModifyCommand extends Command {
+public class ModifyCommand extends PlayerCommand {
 
-  public ModifyCommand() {
-    name = "modify";
-    description = "modify an attribute on a world.";
-    usage = "/dd modify [world] [attribute] [value]";
-    permission = this.registerCommandPermission();
+  public static final String NAME = "modify";
+  public static final String DESCRIPTION = "Modify world settings.";
+  public static final String PERMISSION_DESCRIPTION = "Allow users to modify world settings.";
+  public static final String USAGE = "<name> <attribute> <value>";
+  public static final Permission PERMISSION = new Permission("dimensiondoor.modify", PERMISSION_DESCRIPTION, PermissionDefault.OP);
+  
+  private final DimensionDoor plugin;
+  
+  public ModifyCommand(DimensionDoor plugin) {
+    super(plugin, NAME, DESCRIPTION, USAGE, PERMISSION_DESCRIPTION, PERMISSION);
+    this.plugin = plugin;
     this.registerAdditionalPermissions();
   }
 
   @Override
-  public void execute(CommandSender sender, Map<String, Object> arguments) {
+  public void execute(CommandSender sender, Map<String, Object> arguments) throws CommandPermissionException, CommandArgumentException {
     final WorldRecord record = (WorldRecord) arguments.get("record");
     final String attribute = (String) arguments.get("attribute");
     String value = (String) arguments.get("value");
-    final String permissionPath = permission.getName() + "." + attribute;
+    final String permissionPath = PERMISSION.getName() + "." + attribute;
 
-    if (!sender.hasPermission(permissionPath) && !(sender instanceof ConsoleCommandSender)) {
-      sender.sendMessage(ChatColor.RED + "You do not have permission to modify that attribute.");
-      return;
-    }
+    if (!sender.hasPermission(permissionPath)) throw new CommandPermissionException("You do not have permission to modify that attribute.", PERMISSION);
     
-    switch (Attribute.valueOf(attribute)) {
+    switch (WorldRecord.Attribute.valueOf(attribute)) {
       case PVP:
         record.setPvp(Boolean.parseBoolean(value));
         value = Boolean.toString(Boolean.parseBoolean(value));
@@ -84,7 +91,7 @@ public class ModifyCommand extends Command {
             guidence.append(difficulty.toString() + ", ");
           }
           guidence.deleteCharAt(guidence.length() - 2);
-          throw new IllegalArgumentException(guidence.toString());
+          throw new CommandArgumentException("You must specify a valid difficulty.", "Choose between " + guidence.toString());
         }
       case GAME_MODE:
         try {
@@ -97,15 +104,15 @@ public class ModifyCommand extends Command {
             guidence.append(gameMode.toString() + ", ");
           }
           guidence.deleteCharAt(guidence.length() - 2);
-          throw new IllegalArgumentException(guidence.toString());
+          throw new CommandArgumentException("You must specify a valid game mode.", "Choose between " + guidence.toString());
         }
     }
 
-    WorldRecordHandler.saveWorldRecord(record);
+    plugin.getDatabaseHandler().save(record);
 
-    if (WorldHandler.isWorldLoaded(record.getName())) {
-      final World world = WorldHandler.getWorld(record.getName());
-      WorldHandler.applyWorldAttributes(world);
+    if (plugin.isWorldLoaded(record.getName())) {
+      final World world = plugin.getWorld(record.getName());
+      plugin.applyWorldAttributes(world);
     }
 
     logger.info(String.format("%s has changed %s to %s for %s", sender.getName(), attribute.toString(), value, record.getName()));
@@ -115,7 +122,7 @@ public class ModifyCommand extends Command {
 
   private String getAttributesString() {
     StringBuilder builder = new StringBuilder();
-    for (Attribute attribute : Attribute.values()) {
+    for (WorldRecord.Attribute attribute : WorldRecord.Attribute.values()) {
       builder.append(attribute.toString());
       builder.append(", ");
     }
@@ -124,44 +131,48 @@ public class ModifyCommand extends Command {
   }
 
   private void registerAdditionalPermissions() {
-    Permission wildcard = new Permission(this.permission.getName() + ".*", "Allow a user to set all attributes", PermissionDefault.OP);
-    this.registerPermission(wildcard);
-    for (Attribute attribute : Attribute.values()) {
-      String permissionNode = this.permission.getName() + "." + attribute.toString().toLowerCase();
+    Permission wildcard = new Permission(PERMISSION.getName() + ".*", "Allow a user to set all attributes", PermissionDefault.OP);
+    plugin.addPermission(wildcard, true);
+    for (WorldRecord.Attribute attribute : WorldRecord.Attribute.values()) {
+      String permissionNode = PERMISSION.getName() + "." + attribute.toString().toLowerCase();
       String description = String.format("Allow users to modify %s attributes.", attribute.toString().toLowerCase().replace("_", " "));
       Permission permission = new Permission(permissionNode, description, PermissionDefault.OP);
       permission.addParent(wildcard, true);
-      this.registerPermission(permission);
+      plugin.addPermission(permission, false);
     }
   }
 
   @Override
-  protected Map<String, Object> parseArguments(List<String> arguments) {
+  public Map<String, Object> parseArguments(List<String> arguments) throws CommandArgumentException {
     Map<String, Object> map = new HashMap<String, Object>();
 
     try {
       final String worldName = arguments.remove(0);
-      final WorldRecord record = WorldRecordHandler.getWorldRecord(worldName);
-      map.put("record", record);
+      final WorldRecord record = WorldRecord.findByName(plugin.getDatabaseHandler(), worldName);
+      if (record == null) {
+        throw new CommandArgumentException(String.format("%s is not managed by DimensionDoor!", worldName), "Use /dd list for a list of worlds.");
+      } else {
+        map.put("record", record);
+      }
     } catch (final IndexOutOfBoundsException exception) {
-      throw new IllegalArgumentException("You must specify a world name.");
+      throw new CommandArgumentException("You must specify a world!", "Use /dd list for a list of worlds.");
     }
 
     try {
       final String attributeName = arguments.remove(0).toUpperCase();
-      final String attribute = Attribute.valueOf(attributeName).toString();
+      final String attribute = WorldRecord.Attribute.valueOf(attributeName).toString();
       map.put("attribute", attribute);
     } catch (final IllegalArgumentException exception) {
-      throw new IllegalArgumentException("You must specify a valid attribute. Choose between " + this.getAttributesString());
+      throw new CommandArgumentException("You must specify a valid attribute!", "Choose between " + this.getAttributesString());
     } catch (final IndexOutOfBoundsException exception) {
-      throw new IllegalArgumentException("You must specify a valid attribute. Choose between " + this.getAttributesString());
+      throw new CommandArgumentException("You must specify a valid attribute!", "Choose between " + this.getAttributesString());
     }
 
     try {
       final String value = arguments.remove(0);
       map.put("value", value);
     } catch (final IndexOutOfBoundsException exception) {
-      throw new IllegalArgumentException("You must specify a value.");
+      throw new CommandArgumentException("You must specify a value!", "This value varies depending on the attribute.");
     }
 
     return map;
