@@ -24,13 +24,21 @@ import org.bukkit.World;
 import org.bukkit.block.ContainerBlock;
 import org.bukkit.event.block.BlockPlaceEvent;
 
+import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
+
 public class BlockListener extends org.bukkit.event.block.BlockListener {
 
+  private DimensionDoor plugin;
+
+  public BlockListener(DimensionDoor plugin) {
+    this.plugin = plugin;
+  }
+  
   // fixes another duplication area where players can place creative
   // items into their inventory through the chest interface.
   public void onBlockPlace(final BlockPlaceEvent event) {
     final World world = event.getPlayer().getWorld();
-    if (WorldHandler.getCreativeWorlds().contains(world)) {
+    if (plugin.getCreativeWorlds().contains(world)) {
       if (event.getBlockPlaced().getState() instanceof ContainerBlock) {
         event.setCancelled(true);
         event.getPlayer().sendMessage(ChatColor.RED + "You may not use those in creative mode.");
