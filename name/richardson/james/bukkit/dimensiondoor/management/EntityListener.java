@@ -22,12 +22,20 @@ package name.richardson.james.bukkit.dimensiondoor.management;
 import org.bukkit.World;
 import org.bukkit.event.entity.ItemSpawnEvent;
 
+import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
+
 public class EntityListener extends org.bukkit.event.entity.EntityListener {
 
+  private DimensionDoor plugin;
+
+  public EntityListener(DimensionDoor plugin) {
+    this.plugin = plugin;
+  }
+  
   public void onItemSpawn(final ItemSpawnEvent event) {
     if (event.isCancelled()) return;
     final World world = event.getEntity().getWorld();
-    if (WorldHandler.getCreativeWorlds().contains(world)) {
+    if (plugin.getCreativeWorlds().contains(world)) {
       event.setCancelled(true);
     }
   }

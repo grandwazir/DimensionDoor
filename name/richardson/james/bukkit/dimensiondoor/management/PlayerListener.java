@@ -36,36 +36,39 @@ import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
 
 public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 
-  private static final Logger logger = Logger.getLogger("Minecraft");
+  private final Logger logger = Logger.getLogger("Minecraft");
+  private final DimensionDoor plugin;
+  private final boolean isClearActionBar;
+  private final boolean isClearHand;
 
-  private final Server server;
-
-  public PlayerListener() {
-    this.server = DimensionDoor.getInstance().getServer();
+  public PlayerListener(DimensionDoor plugin) {
+    this.plugin = plugin;
+    this.isClearActionBar = plugin.getPluginConfiguration().isClearActionBar();
+    this.isClearHand = plugin.getPluginConfiguration().isClearHand();
   }
 
   public void onPlayerChangedWorld(final PlayerChangedWorldEvent event) {
     final Player player = event.getPlayer();
     final World currentWorld = event.getPlayer().getWorld();
-    final WorldRecord currentWorldRecord = WorldRecordHandler.getWorldRecord(currentWorld);
+    final WorldRecord currentWorldRecord = WorldRecord.findByWorld(plugin.getDatabaseHandler(), currentWorld);
     final World previousWorld = event.getFrom();
 
     player.setGameMode(currentWorldRecord.getGamemode());
 
-    if (WorldHandler.getCreativeWorlds().contains(previousWorld)) {
-      if (DimensionDoorConfiguration.getInstance().isClearActionBar()) clearActionBar(player);
-      if (DimensionDoorConfiguration.getInstance().isClearHand()) clearItemInHand(player);
+    if (plugin.getCreativeWorlds().contains(previousWorld)) {
+      if (this.isClearActionBar) clearActionBar(player);
+      if (this.isClearHand) clearItemInHand(player);
     }
   }
 
   @Override
   public void onPlayerChat(final PlayerChatEvent event) {
-    if (event.isCancelled() || WorldHandler.getIsolatedWorlds().isEmpty()) return;
+    if (event.isCancelled() || plugin.getIsolatedWorlds().isEmpty()) return;
     final World world = event.getPlayer().getWorld();
     String message = event.getFormat();
     message = message.replace("%1$s", event.getPlayer().getDisplayName());
     message = message.replace("%2$s", event.getMessage());
-    if (WorldHandler.getIsolatedWorlds().contains(world)) {
+    if (plugin.getIsolatedWorlds().contains(world)) {
       sendIsolatedMessage(message, world);
     } else {
       sendNormalMessage(message);
@@ -100,7 +103,7 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
   }
 
   private void sendIsolatedMessage(final String message, final World world) {
-    for (final Player player : server.getOnlinePlayers()) {
+    for (final Player player : plugin.getServer().getOnlinePlayers()) {
       if (player != null && player.getWorld().equals(world) && player.isOnline()) {
         player.sendMessage(message);
       }
@@ -109,8 +112,8 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
   }
 
   private void sendNormalMessage(final String message) {
-    for (final Player player : server.getOnlinePlayers()) {
-      if (player != null && (!WorldHandler.getIsolatedWorlds().contains(player.getWorld())) && player.isOnline()) {
+    for (final Player player : plugin.getServer().getOnlinePlayers()) {
+      if (player != null && (!plugin.getIsolatedWorlds().contains(player.getWorld())) && player.isOnline()) {
         player.sendMessage(message);
       }
     }

@@ -311,4 +311,8 @@ public class DimensionDoor extends Plugin {
     return database;
   }
 
+  public DimensionDoorConfiguration getPluginConfiguration() {
+    return configuration;
+  }
+
 }
