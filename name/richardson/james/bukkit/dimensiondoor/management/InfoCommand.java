@@ -75,6 +75,7 @@ public class InfoCommand extends PlayerCommand {
     sender.sendMessage(String.format(ChatColor.YELLOW + "- pvp: %b", record.isPvp()));
     sender.sendMessage(String.format(ChatColor.YELLOW + "- spawn-animals: %b", record.isSpawnAnimals()));
     sender.sendMessage(String.format(ChatColor.YELLOW + "- spawn-monsters: %b", record.isSpawnMonsters()));
+    sender.sendMessage(String.format(ChatColor.YELLOW + "- spawn-in-memory: %b", record.isKeepSpawnInMemory()));
     if (record.getGeneratorPlugin() != null) {
       sender.sendMessage(String.format(ChatColor.YELLOW + "- generator-plugin: %s", record.getGeneratorPlugin()));
       sender.sendMessage(String.format(ChatColor.YELLOW + "- generator-id: %s", record.getGeneratorID()));
