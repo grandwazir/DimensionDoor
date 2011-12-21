@@ -17,10 +17,7 @@
  * DimensionDoor. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-package name.richardson.james.dimensiondoor.database;
-
-import java.util.List;
-import java.util.Map;
+package name.richardson.james.dimensiondoor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -32,11 +29,22 @@ import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.World;
 
-import name.richardson.james.dimensiondoor.creation.WorldHandler;
+import name.richardson.james.bukkit.util.Logger;
 
 @Entity()
 @Table(name = "dd_worlds")
-public class WorldRecord extends Record {
+public class WorldRecord {
+
+  public enum Attribute {
+    PVP,
+    SPAWN_MONSTERS,
+    SPAWN_ANIMALS,
+    ISOLATED_CHAT,
+    GAME_MODE,
+    DIFFICULTY
+  }
+  
+  private final static Logger logger = new Logger(WorldRecord.class);
 
   @Id
   private String name;
@@ -69,18 +77,12 @@ public class WorldRecord extends Record {
   @NotNull
   private GameMode gamemode;
 
-  protected static final int count(final String name) {
-    Record.logger.debug("Attempting to get row count searching for records with the worldName: " + name);
-    return Database.getInstance().find(WorldRecord.class).where().ieq("name", name).findRowCount();
+  public static WorldRecord findByName(DatabaseHandler database, String worldName) {
+    return database.getEbeanServer().find(WorldRecord.class).where().ieq("name", worldName).findUnique();
   }
 
-  protected static final List<WorldRecord> find(final String name) {
-    Record.logger.debug("Attempting to find records with the worldName: " + name);
-    return Database.getInstance().find(WorldRecord.class).where().ieq("name", name).findList();
-  }
-
-  protected static List<WorldRecord> list() {
-    return Database.getInstance().find(WorldRecord.class).findList();
+  public static WorldRecord findByWorld(DatabaseHandler database, World world) {
+    return database.getEbeanServer().find(WorldRecord.class).where().ieq("name", world.getName()).findUnique();
   }
 
   public Difficulty getDifficulty() {
@@ -125,15 +127,6 @@ public class WorldRecord extends Record {
 
   public boolean isSpawnMonsters() {
     return spawnMonsters;
-  }
-
-  public void setDefaults() {
-    Map<String, Object> defaults = WorldHandler.getDefaults();
-    pvp = (Boolean) defaults.get("pvp");
-    spawnMonsters = (Boolean) defaults.get("spawn-monsters");
-    spawnAnimals = (Boolean) defaults.get("spawn-animals");
-    difficulty = (Difficulty) defaults.get("difficulty");
-    gamemode = (GameMode) defaults.get("game-mode");
   }
 
   public void setDifficulty(Difficulty difficulty) {

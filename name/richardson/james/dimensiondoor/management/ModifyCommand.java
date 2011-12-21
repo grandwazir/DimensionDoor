@@ -32,21 +32,9 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
-import name.richardson.james.dimensiondoor.creation.WorldHandler;
-import name.richardson.james.dimensiondoor.database.WorldRecord;
-import name.richardson.james.dimensiondoor.database.WorldRecordHandler;
-import name.richardson.james.dimensiondoor.util.Command;
+import name.richardson.james.dimensiondoor.WorldRecord;
 
 public class ModifyCommand extends Command {
-
-  public enum Attribute {
-    PVP,
-    SPAWN_MONSTERS,
-    SPAWN_ANIMALS,
-    ISOLATED_CHAT,
-    GAME_MODE,
-    DIFFICULTY
-  }
 
   public ModifyCommand() {
     name = "modify";

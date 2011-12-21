@@ -23,25 +23,36 @@ import org.bukkit.World;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 
-import name.richardson.james.dimensiondoor.database.WorldRecordHandler;
+import name.richardson.james.dimensiondoor.DatabaseHandler;
+import name.richardson.james.dimensiondoor.DimensionDoor;
+import name.richardson.james.dimensiondoor.WorldRecord;
 
 public class WorldListener extends org.bukkit.event.world.WorldListener {
 
+  private final DimensionDoor plugin;
+  private final DatabaseHandler database;
+  
+  public WorldListener(DimensionDoor plugin) {
+    this.plugin = plugin;
+    this.database = plugin.getDatabaseHandler();
+  }
+  
   @Override
   public void onWorldInit(final WorldInitEvent event) {
-    World world = event.getWorld();
-    if (!WorldRecordHandler.isWorldManaged(world)) {
-      WorldRecordHandler.createWorldRecord(world);
+    final World world = event.getWorld();
+    final WorldRecord record = WorldRecord.findByWorld(database, world);
+    if (record == null) {
+      plugin.addWorld(world);
     }
   }
 
   @Override
   public void onWorldLoad(final WorldLoadEvent event) {
-    WorldHandler.applyWorldAttributes(event.getWorld());
+    plugin.applyWorldAttributes(event.getWorld());
   }
 
   public void onWorldUnload(final WorldLoadEvent event) {
-    WorldHandler.onWorldUnload(event.getWorld());
+    plugin.onWorldUnload(event.getWorld());
   }
 
 }

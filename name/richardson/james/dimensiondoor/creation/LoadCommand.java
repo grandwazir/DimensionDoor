@@ -26,9 +26,7 @@ import java.util.Map;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import name.richardson.james.dimensiondoor.database.WorldRecord;
-import name.richardson.james.dimensiondoor.database.WorldRecordHandler;
-import name.richardson.james.dimensiondoor.util.Command;
+import name.richardson.james.dimensiondoor.WorldRecord;
 
 public class LoadCommand extends Command {
 

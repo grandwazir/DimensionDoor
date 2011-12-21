@@ -27,8 +27,6 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import name.richardson.james.dimensiondoor.util.Command;
-
 public class SpawnCommand extends Command {
 
   public SpawnCommand() {

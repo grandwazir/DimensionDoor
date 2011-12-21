@@ -32,9 +32,7 @@ import org.bukkit.inventory.ItemStack;
 
 import name.richardson.james.dimensiondoor.DimensionDoor;
 import name.richardson.james.dimensiondoor.DimensionDoorConfiguration;
-import name.richardson.james.dimensiondoor.creation.WorldHandler;
-import name.richardson.james.dimensiondoor.database.WorldRecord;
-import name.richardson.james.dimensiondoor.database.WorldRecordHandler;
+import name.richardson.james.dimensiondoor.WorldRecord;
 
 public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 

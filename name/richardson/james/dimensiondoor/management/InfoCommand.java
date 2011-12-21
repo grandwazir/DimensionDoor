@@ -28,9 +28,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import name.richardson.james.dimensiondoor.database.WorldRecord;
-import name.richardson.james.dimensiondoor.database.WorldRecordHandler;
-import name.richardson.james.dimensiondoor.util.Command;
+import name.richardson.james.dimensiondoor.WorldRecord;
 
 public class InfoCommand extends Command {
 

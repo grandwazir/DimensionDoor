@@ -27,9 +27,6 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import name.richardson.james.dimensiondoor.creation.WorldHandler;
-import name.richardson.james.dimensiondoor.util.Command;
-
 public class TeleportCommand extends Command {
 
   public TeleportCommand() {

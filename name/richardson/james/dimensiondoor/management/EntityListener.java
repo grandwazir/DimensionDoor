@@ -22,8 +22,6 @@ package name.richardson.james.dimensiondoor.management;
 import org.bukkit.World;
 import org.bukkit.event.entity.ItemSpawnEvent;
 
-import name.richardson.james.dimensiondoor.creation.WorldHandler;
-
 public class EntityListener extends org.bukkit.event.entity.EntityListener {
 
   public void onItemSpawn(final ItemSpawnEvent event) {

@@ -27,8 +27,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
-import name.richardson.james.dimensiondoor.util.Command;
-
 public class UnloadCommand extends Command {
 
   public UnloadCommand() {

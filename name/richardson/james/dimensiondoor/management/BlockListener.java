@@ -24,8 +24,6 @@ import org.bukkit.World;
 import org.bukkit.block.ContainerBlock;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-import name.richardson.james.dimensiondoor.creation.WorldHandler;
-
 public class BlockListener extends org.bukkit.event.block.BlockListener {
 
   // fixes another duplication area where players can place creative

@@ -20,24 +20,16 @@
 package name.richardson.james.dimensiondoor;
 
 import java.io.IOException;
-import java.io.InputStream;
 
-import name.richardson.james.dimensiondoor.util.Configuration;
-import name.richardson.james.dimensiondoor.util.Logger;
+import name.richardson.james.bukkit.util.Plugin;
+import name.richardson.james.bukkit.util.configuration.AbstractConfiguration;
 
-public class DimensionDoorConfiguration extends Configuration {
+public class DimensionDoorConfiguration extends AbstractConfiguration {
 
-  protected final static String fileName = "config.yml";
-  protected final static Logger logger = new Logger(DimensionDoorConfiguration.class);
+  public final static String FILE_NAME = "config.yml";
 
-  protected final InputStream defaults = DimensionDoor.getInstance().getResource(fileName);
-
-  public DimensionDoorConfiguration() throws IOException {
-    super();
-  }
-
-  public static DimensionDoorConfiguration getInstance() {
-    return (DimensionDoorConfiguration) instance;
+  public DimensionDoorConfiguration(Plugin plugin) throws IOException {
+    super(plugin, FILE_NAME);
   }
 
   public boolean isClearActionBar() {
@@ -58,13 +50,6 @@ public class DimensionDoorConfiguration extends Configuration {
 
   public boolean isPreventItemSpawning() {
     return configuration.getBoolean("creative-world-settings.prevent-item-spawning");
-  }
-
-  public void logValues() {
-    logger.config(String.format("debugging : %b", this.isDebugging()));
-    logger.config(String.format("inventory-settings.clear-action-bar : %b", this.isClearActionBar()));
-    logger.config(String.format("inventory-settings.clear-hand : %b", this.isClearHand()));
-    logger.config(String.format("world-settings.prevent-container-blocks : %b", this.isPreventContainerBlocks()));
   }
 
 }
