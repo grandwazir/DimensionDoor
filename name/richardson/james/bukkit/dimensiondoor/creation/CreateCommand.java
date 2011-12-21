@@ -64,7 +64,7 @@ public class CreateCommand extends PlayerCommand {
       try {
         plugin.createWorld(worldName, environment, seed, generatorPlugin, generatorID);
       } catch (IllegalArgumentException exception) {
-        throw new CommandUsageException(exception.getMessage(), CreateCommand.USAGE);
+        throw new CommandUsageException(exception.getMessage());
       }
     } else {
       plugin.createWorld(worldName, environment, seed);

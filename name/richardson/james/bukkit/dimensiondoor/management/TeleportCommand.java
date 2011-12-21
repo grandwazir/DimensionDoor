@@ -25,12 +25,14 @@ import java.util.Map;
 
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.util.command.CommandArgumentException;
+import name.richardson.james.bukkit.util.command.CommandUsageException;
 import name.richardson.james.bukkit.util.command.PlayerCommand;
 
 public class TeleportCommand extends PlayerCommand {
@@ -49,7 +51,8 @@ public class TeleportCommand extends PlayerCommand {
   }
 
   @Override
-  public void execute(CommandSender sender, Map<String, Object> arguments) {
+  public void execute(CommandSender sender, Map<String, Object> arguments) throws CommandUsageException {
+    if (sender instanceof ConsoleCommandSender) throw new CommandUsageException("You may not use this command from the Console.");
     final Player player = (Player) sender;
     final World world = (World) arguments.get("world");
     player.teleport(world.getSpawnLocation());
