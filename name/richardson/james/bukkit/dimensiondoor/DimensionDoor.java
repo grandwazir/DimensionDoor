@@ -46,6 +46,7 @@ import name.richardson.james.bukkit.dimensiondoor.creation.RemoveCommand;
 import name.richardson.james.bukkit.dimensiondoor.creation.UnloadCommand;
 import name.richardson.james.bukkit.dimensiondoor.creation.WorldListener;
 import name.richardson.james.bukkit.dimensiondoor.management.BlockListener;
+import name.richardson.james.bukkit.dimensiondoor.management.ClearCommand;
 import name.richardson.james.bukkit.dimensiondoor.management.EntityListener;
 import name.richardson.james.bukkit.dimensiondoor.management.InfoCommand;
 import name.richardson.james.bukkit.dimensiondoor.management.ListCommand;
@@ -92,6 +93,7 @@ public class DimensionDoor extends Plugin {
     world.setDifficulty(record.getDifficulty());
     world.setPVP(record.isPvp());
     world.setSpawnFlags(record.isSpawnMonsters(), record.isSpawnAnimals());
+    world.setKeepSpawnInMemory(record.isKeepSpawnInMemory());
     if (record.isIsolatedChat()) {
       this.isolatedChatWorlds.add(world);
     }
@@ -284,6 +286,7 @@ public class DimensionDoor extends Plugin {
   private void registerCommands() {
     final CommandManager cm = new CommandManager(this.getDescription());
     this.getCommand("dd").setExecutor(cm);
+    cm.registerCommand("clear", new ClearCommand(this));
     cm.registerCommand("create", new CreateCommand(this));
     cm.registerCommand("info", new InfoCommand(this));
     cm.registerCommand("list", new ListCommand(this));
@@ -343,7 +346,6 @@ public class DimensionDoor extends Plugin {
       this.database = new DatabaseHandler(this.getDatabase());
     } catch (final PersistenceException ex) {
       this.logger.warning("No database schema found. Generating a new one.");
-      ex.printStackTrace();
       this.installDDL();
     }
   }
