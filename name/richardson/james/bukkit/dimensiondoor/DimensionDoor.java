@@ -40,7 +40,18 @@ import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.PluginManager;
 
 import name.richardson.james.bukkit.dimensiondoor.creation.CreateCommand;
+import name.richardson.james.bukkit.dimensiondoor.creation.LoadCommand;
+import name.richardson.james.bukkit.dimensiondoor.creation.RemoveCommand;
+import name.richardson.james.bukkit.dimensiondoor.creation.UnloadCommand;
 import name.richardson.james.bukkit.dimensiondoor.creation.WorldListener;
+import name.richardson.james.bukkit.dimensiondoor.management.BlockListener;
+import name.richardson.james.bukkit.dimensiondoor.management.EntityListener;
+import name.richardson.james.bukkit.dimensiondoor.management.InfoCommand;
+import name.richardson.james.bukkit.dimensiondoor.management.ListCommand;
+import name.richardson.james.bukkit.dimensiondoor.management.ModifyCommand;
+import name.richardson.james.bukkit.dimensiondoor.management.PlayerListener;
+import name.richardson.james.bukkit.dimensiondoor.management.SpawnCommand;
+import name.richardson.james.bukkit.dimensiondoor.management.TeleportCommand;
 import name.richardson.james.bukkit.util.Logger;
 import name.richardson.james.bukkit.util.Plugin;
 import name.richardson.james.bukkit.util.command.CommandManager;
@@ -56,6 +67,9 @@ public class DimensionDoor extends Plugin {
   private DimensionDoorConfiguration configuration;
   private WorldListener worldListener;
   private DatabaseHandler database;
+  private PlayerListener playerListener;
+  private BlockListener blockListener;
+  private EntityListener entityListener;
 
   public void addWorld(final World world) {
     this.logger.debug(String.format("Creating world record for %s.", world.getName()));
@@ -264,39 +278,34 @@ public class DimensionDoor extends Plugin {
     final CommandManager cm = new CommandManager(this.getDescription());
     this.getCommand("dd").setExecutor(cm);
     cm.registerCommand("create", new CreateCommand(this));
-    /*
-     * cm.registerCommand("info", new InfoCommand());
-     * cm.registerCommand("list", new ListCommand());
-     * cm.registerCommand("load", new LoadCommand());
-     * cm.registerCommand("modify", new ModifyCommand());
-     * cm.registerCommand("remove", new RemoveCommand());
-     * cm.registerCommand("spawn", new SpawnCommand());
-     * cm.registerCommand("teleport", new TeleportCommand());
-     * cm.registerCommand("unload", new UnloadCommand());
-     */
+    cm.registerCommand("info", new InfoCommand(this));
+    cm.registerCommand("list", new ListCommand(this));
+    cm.registerCommand("load", new LoadCommand(this));
+    cm.registerCommand("modify", new ModifyCommand(this));
+    cm.registerCommand("remove", new RemoveCommand(this));
+    cm.registerCommand("spawn", new SpawnCommand(this));
+    cm.registerCommand("teleport", new TeleportCommand(this));
+    cm.registerCommand("unload", new UnloadCommand(this));
   }
 
   private void registerListeners() {
     this.worldListener = new WorldListener(this);
+    this.playerListener = new PlayerListener(this);
+    this.blockListener = new BlockListener(this);
+    this.entityListener = new EntityListener(this);
     this.pluginManager.registerEvent(Event.Type.WORLD_LOAD, this.worldListener, Event.Priority.Monitor, this);
     this.pluginManager.registerEvent(Event.Type.WORLD_UNLOAD, this.worldListener, Event.Priority.Monitor, this);
     this.pluginManager.registerEvent(Event.Type.WORLD_INIT, this.worldListener, Event.Priority.Monitor, this);
-    /*
-     * pluginManager.registerEvent(Event.Type.PLAYER_RESPAWN, playerListener,
-     * Event.Priority.Normal, this);
-     * pluginManager.registerEvent(Event.Type.PLAYER_CHAT, playerListener,
-     * Event.Priority.High, this);
-     * pluginManager.registerEvent(Event.Type.PLAYER_CHANGED_WORLD,
-     * playerListener, Event.Priority.High, this);
-     * if (configuration.isPreventContainerBlocks()) {
-     * pluginManager.registerEvent(Event.Type.BLOCK_PLACE, blockListener,
-     * Event.Priority.High, this);
-     * }
-     * if (configuration.isPreventItemSpawning()) {
-     * pluginManager.registerEvent(Event.Type.ITEM_SPAWN, entityListener,
-     * Event.Priority.High, this);
-     * }
-     */
+    pluginManager.registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, Event.Priority.Normal, this);
+    pluginManager.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Event.Priority.High, this);
+    pluginManager.registerEvent(Event.Type.PLAYER_CHANGED_WORLD, playerListener, Event.Priority.High, this);
+    if (configuration.isPreventContainerBlocks()) { 
+      pluginManager.registerEvent(Event.Type.BLOCK_PLACE, blockListener, Event.Priority.High, this);
+    }
+    if (configuration.isPreventItemSpawning()) {
+      pluginManager.registerEvent(Event.Type.ITEM_SPAWN, entityListener, Event.Priority.High, this);
+    }
+     
   }
 
   private void registerMainWorlds() {
