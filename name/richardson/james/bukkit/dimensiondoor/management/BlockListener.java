@@ -38,6 +38,7 @@ public class BlockListener extends org.bukkit.event.block.BlockListener {
   // items into their inventory through the chest interface.
   @Override
   public void onBlockPlace(final BlockPlaceEvent event) {
+    if (event.isCancelled()) return;
     final World world = event.getPlayer().getWorld();
     if (this.plugin.getCreativeWorlds().contains(world)) {
       if (isBlackListed(event.getBlock())) {
