@@ -322,10 +322,8 @@ public class DimensionDoor extends Plugin {
 
   private void registerMainWorlds() {
     for (final World world : this.getServer().getWorlds()) {
-      final WorldRecord record = WorldRecord.findByWorld(this.getDatabaseHandler(), world);
-      if (record == null) {
-        this.addWorld(world);
-      }
+      final WorldRecord record = WorldRecord.findByName(this.getDatabaseHandler(), world.getName());
+      if (record == null) this.addWorld(world);
       this.applyWorldAttributes(world);
     }
   }
@@ -345,11 +343,11 @@ public class DimensionDoor extends Plugin {
   private void setupDatabase() throws SQLException {
     try {
       this.getDatabase().find(WorldRecord.class).findRowCount();
-      this.database = new DatabaseHandler(this.getDatabase());
     } catch (final PersistenceException ex) {
       this.logger.warning("No database schema found. Generating a new one.");
       this.installDDL();
     }
+    this.database = new DatabaseHandler(this.getDatabase());
   }
 
 }
