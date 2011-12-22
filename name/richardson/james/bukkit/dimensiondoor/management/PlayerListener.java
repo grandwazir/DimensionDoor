@@ -51,7 +51,7 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
     final World currentWorld = event.getPlayer().getWorld();
     final WorldRecord currentWorldRecord = WorldRecord.findByWorld(this.plugin.getDatabaseHandler(), currentWorld);
     final World previousWorld = event.getFrom();
-
+    
     player.setGameMode(currentWorldRecord.getGamemode());
 
     if (this.plugin.getCreativeWorlds().contains(previousWorld)) {

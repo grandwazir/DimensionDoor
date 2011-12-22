@@ -1,3 +1,4 @@
+debugging: false
 creative-world-transfer-settings:
   clear-action-bar: true
   clear-item-in-hand: true

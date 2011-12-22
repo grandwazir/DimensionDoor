@@ -21,7 +21,7 @@ package name.richardson.james.bukkit.dimensiondoor.management;
 
 import org.bukkit.ChatColor;
 import org.bukkit.World;
-import org.bukkit.block.ContainerBlock;
+import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
@@ -40,11 +40,31 @@ public class BlockListener extends org.bukkit.event.block.BlockListener {
   public void onBlockPlace(final BlockPlaceEvent event) {
     final World world = event.getPlayer().getWorld();
     if (this.plugin.getCreativeWorlds().contains(world)) {
-      if (event.getBlockPlaced().getState() instanceof ContainerBlock) {
+      if (isBlackListed(event.getBlock())) {
         event.setCancelled(true);
         event.getPlayer().sendMessage(ChatColor.RED + "You may not use those in creative mode.");
       }
     }
+  }
+  
+  private boolean isBlackListed(Block block) {
+    switch (block.getState().getType()) {
+      case CHEST:
+        return true;
+      case FURNACE:
+        return true;
+      case DISPENSER:
+        return true;
+      case ENCHANTMENT_TABLE:
+        return true;
+      case BREWING_STAND:
+        return true;
+      case WORKBENCH:
+        return true;
+      case STORAGE_MINECART:
+        return true;
+    }
+    return false;
   }
 
 }
