@@ -54,6 +54,7 @@ import name.richardson.james.bukkit.dimensiondoor.management.ModifyCommand;
 import name.richardson.james.bukkit.dimensiondoor.management.PlayerListener;
 import name.richardson.james.bukkit.dimensiondoor.management.SpawnCommand;
 import name.richardson.james.bukkit.dimensiondoor.management.TeleportCommand;
+import name.richardson.james.bukkit.dimensiondoor.management.VehicleListener;
 import name.richardson.james.bukkit.util.Logger;
 import name.richardson.james.bukkit.util.Plugin;
 import name.richardson.james.bukkit.util.command.CommandManager;
@@ -72,6 +73,7 @@ public class DimensionDoor extends Plugin {
   private PlayerListener playerListener;
   private BlockListener blockListener;
   private EntityListener entityListener;
+  private VehicleListener vehicleListener;
 
   public void addWorld(final World world) {
     this.logger.debug(String.format("Creating world record for %s.", world.getName()));
@@ -303,8 +305,6 @@ public class DimensionDoor extends Plugin {
   private void registerListeners() {
     this.worldListener = new WorldListener(this);
     this.playerListener = new PlayerListener(this);
-    this.blockListener = new BlockListener(this);
-    this.entityListener = new EntityListener(this);
     this.pluginManager.registerEvent(Event.Type.WORLD_LOAD, this.worldListener, Event.Priority.Monitor, this);
     this.pluginManager.registerEvent(Event.Type.WORLD_UNLOAD, this.worldListener, Event.Priority.Monitor, this);
     this.pluginManager.registerEvent(Event.Type.WORLD_INIT, this.worldListener, Event.Priority.Monitor, this);
@@ -312,9 +312,13 @@ public class DimensionDoor extends Plugin {
     pluginManager.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Event.Priority.High, this);
     pluginManager.registerEvent(Event.Type.PLAYER_CHANGED_WORLD, playerListener, Event.Priority.High, this);
     if (configuration.isPreventContainerBlocks()) {
+      this.blockListener = new BlockListener(this);
       pluginManager.registerEvent(Event.Type.BLOCK_PLACE, blockListener, Event.Priority.High, this);
+      this.vehicleListener = new VehicleListener(this);
+      pluginManager.registerEvent(Event.Type.VEHICLE_CREATE, vehicleListener, Event.Priority.High, this);
     }
     if (configuration.isPreventItemSpawning()) {
+      this.entityListener = new EntityListener(this);
       pluginManager.registerEvent(Event.Type.ITEM_SPAWN, entityListener, Event.Priority.High, this);
     }
 
