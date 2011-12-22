@@ -47,7 +47,7 @@ public class BlockListener extends org.bukkit.event.block.BlockListener {
       }
     }
   }
-  
+
   private boolean isBlackListed(Block block) {
     switch (block.getState().getType()) {
       case CHEST:

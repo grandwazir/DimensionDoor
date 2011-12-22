@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2011 James Richardson.
  * 
- * UnloadCommand.java is part of DimensionDoor.
+ * ClearCommand.java is part of DimensionDoor.
  * 
  * DimensionDoor is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free

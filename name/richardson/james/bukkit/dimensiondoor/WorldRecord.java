@@ -61,7 +61,7 @@ public class WorldRecord {
 
   @NotNull
   private boolean keepSpawnInMemory;
-  
+
   @NotNull
   private long seed;
 
