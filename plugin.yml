@@ -1,6 +1,6 @@
 name: DimensionDoor
 main: name.richardson.james.bukkit.dimensiondoor.DimensionDoor
-version: 2.0.0
+version: 2.0.1
 author: James Richardson (grandwazir)
 description: Multiworld management made easy.
 website: https://github.com/grandwazir/DimensionDoor 
