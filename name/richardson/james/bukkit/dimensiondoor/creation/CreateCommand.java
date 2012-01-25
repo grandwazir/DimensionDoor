@@ -101,7 +101,13 @@ public class CreateCommand extends PlayerCommand {
           throw new CommandArgumentException("The environment specified does not exist!", "Valid types are: " + this.buildEnvironmentList() + ".");
         }
       } else if (argument.startsWith("s:")) {
-        final int seed = argument.replaceFirst("s:", "").hashCode();
+        String stringSeed = argument.replaceFirst("s:", "");
+        int seed = 0;
+        try {
+          seed = Integer.parseInt(stringSeed);
+        } catch (NumberFormatException exception) {
+          seed = stringSeed.hashCode();
+        }
         map.put("seed", new Long(seed));
       } else if (argument.startsWith("g:")) {
         argument = argument.replaceFirst("g:", "");
