@@ -49,7 +49,7 @@ public class DimensionDoorConfiguration extends AbstractConfiguration {
   }
 
   public boolean isPreventItemSpawning() {
-    return this.configuration.getBoolean("creative-world-settings.prevent-item-spawning");
+    return this.configuration.getBoolean("creative-world-settings.prevent-item-drops");
   }
 
 }

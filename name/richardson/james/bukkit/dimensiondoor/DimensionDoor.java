@@ -36,7 +36,6 @@ import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.PluginManager;
 
@@ -54,7 +53,6 @@ import name.richardson.james.bukkit.dimensiondoor.management.ModifyCommand;
 import name.richardson.james.bukkit.dimensiondoor.management.PlayerListener;
 import name.richardson.james.bukkit.dimensiondoor.management.SpawnCommand;
 import name.richardson.james.bukkit.dimensiondoor.management.TeleportCommand;
-import name.richardson.james.bukkit.dimensiondoor.management.VehicleListener;
 import name.richardson.james.bukkit.util.Logger;
 import name.richardson.james.bukkit.util.Plugin;
 import name.richardson.james.bukkit.util.command.CommandManager;
@@ -302,6 +300,7 @@ public class DimensionDoor extends Plugin {
   }
 
   private void registerListeners() {
+    this.worldListener = new WorldListener(this);
     this.playerListener = new PlayerListener(this);
     this.blockListener = new ContainerBlockListener(this);
     this.entityListener = new ItemListener(this);
