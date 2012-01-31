@@ -45,9 +45,9 @@ import name.richardson.james.bukkit.dimensiondoor.creation.LoadCommand;
 import name.richardson.james.bukkit.dimensiondoor.creation.RemoveCommand;
 import name.richardson.james.bukkit.dimensiondoor.creation.UnloadCommand;
 import name.richardson.james.bukkit.dimensiondoor.creation.WorldListener;
-import name.richardson.james.bukkit.dimensiondoor.management.BlockListener;
+import name.richardson.james.bukkit.dimensiondoor.management.ContainerBlockListener;
 import name.richardson.james.bukkit.dimensiondoor.management.ClearCommand;
-import name.richardson.james.bukkit.dimensiondoor.management.EntityListener;
+import name.richardson.james.bukkit.dimensiondoor.management.ItemListener;
 import name.richardson.james.bukkit.dimensiondoor.management.InfoCommand;
 import name.richardson.james.bukkit.dimensiondoor.management.ListCommand;
 import name.richardson.james.bukkit.dimensiondoor.management.ModifyCommand;
@@ -71,9 +71,8 @@ public class DimensionDoor extends Plugin {
   private WorldListener worldListener;
   private DatabaseHandler database;
   private PlayerListener playerListener;
-  private BlockListener blockListener;
-  private EntityListener entityListener;
-  private VehicleListener vehicleListener;
+  private ContainerBlockListener blockListener;
+  private ItemListener entityListener;
 
   public void addWorld(final World world) {
     this.logger.debug(String.format("Creating world record for %s.", world.getName()));
@@ -303,25 +302,13 @@ public class DimensionDoor extends Plugin {
   }
 
   private void registerListeners() {
-    this.worldListener = new WorldListener(this);
     this.playerListener = new PlayerListener(this);
-    this.pluginManager.registerEvent(Event.Type.WORLD_LOAD, this.worldListener, Event.Priority.Monitor, this);
-    this.pluginManager.registerEvent(Event.Type.WORLD_UNLOAD, this.worldListener, Event.Priority.Monitor, this);
-    this.pluginManager.registerEvent(Event.Type.WORLD_INIT, this.worldListener, Event.Priority.Monitor, this);
-    pluginManager.registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, Event.Priority.Normal, this);
-    pluginManager.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Event.Priority.High, this);
-    pluginManager.registerEvent(Event.Type.PLAYER_CHANGED_WORLD, playerListener, Event.Priority.High, this);
-    if (configuration.isPreventContainerBlocks()) {
-      this.blockListener = new BlockListener(this);
-      pluginManager.registerEvent(Event.Type.BLOCK_PLACE, blockListener, Event.Priority.High, this);
-      this.vehicleListener = new VehicleListener(this);
-      pluginManager.registerEvent(Event.Type.VEHICLE_CREATE, vehicleListener, Event.Priority.High, this);
-    }
-    if (configuration.isPreventItemSpawning()) {
-      this.entityListener = new EntityListener(this);
-      pluginManager.registerEvent(Event.Type.ITEM_SPAWN, entityListener, Event.Priority.High, this);
-    }
-
+    this.blockListener = new ContainerBlockListener(this);
+    this.entityListener = new ItemListener(this);
+    this.pluginManager.registerEvents(this.worldListener , this);
+    this.pluginManager.registerEvents(this.playerListener , this);
+    if (configuration.isPreventItemSpawning()) this.pluginManager.registerEvents(this.entityListener, this);
+    if (configuration.isPreventContainerBlocks()) this.pluginManager.registerEvents(this.blockListener, this);
   }
 
   private void registerMainWorlds() {

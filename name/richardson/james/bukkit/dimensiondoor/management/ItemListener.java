@@ -20,19 +20,22 @@
 package name.richardson.james.bukkit.dimensiondoor.management;
 
 import org.bukkit.World;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ItemSpawnEvent;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 
-public class EntityListener extends org.bukkit.event.entity.EntityListener {
+public class ItemListener implements Listener {
 
   private final DimensionDoor plugin;
 
-  public EntityListener(final DimensionDoor plugin) {
+  public ItemListener(final DimensionDoor plugin) {
     this.plugin = plugin;
   }
 
-  @Override
+  @EventHandler(priority = EventPriority.LOW)
   public void onItemSpawn(final ItemSpawnEvent event) {
     if (event.isCancelled()) return;
     final World world = event.getEntity().getWorld();

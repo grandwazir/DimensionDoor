@@ -24,6 +24,9 @@ import java.util.logging.Logger;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -32,7 +35,7 @@ import org.bukkit.inventory.ItemStack;
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
 
-public class PlayerListener extends org.bukkit.event.player.PlayerListener {
+public class PlayerListener implements Listener {
 
   private final Logger logger = Logger.getLogger("Minecraft");
   private final DimensionDoor plugin;
@@ -45,7 +48,7 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
     this.isClearHand = plugin.getPluginConfiguration().isClearHand();
   }
 
-  @Override
+  @EventHandler(priority = EventPriority.LOW)
   public void onPlayerChangedWorld(final PlayerChangedWorldEvent event) {
     final Player player = event.getPlayer();
     final World currentWorld = event.getPlayer().getWorld();
@@ -64,7 +67,7 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
     }
   }
 
-  @Override
+  @EventHandler(priority = EventPriority.NORMAL)
   public void onPlayerChat(final PlayerChatEvent event) {
     if (event.isCancelled() || this.plugin.getIsolatedWorlds().isEmpty()) return;
     final World world = event.getPlayer().getWorld();
@@ -79,7 +82,7 @@ public class PlayerListener extends org.bukkit.event.player.PlayerListener {
     event.setCancelled(true);
   }
 
-  @Override
+  @EventHandler(priority = EventPriority.NORMAL)
   public void onPlayerRespawn(final PlayerRespawnEvent event) {
     final Player player = event.getPlayer();
     final World currentWorld = player.getWorld();

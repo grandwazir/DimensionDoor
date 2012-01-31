@@ -20,6 +20,9 @@
 package name.richardson.james.bukkit.dimensiondoor.creation;
 
 import org.bukkit.World;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 
@@ -27,7 +30,7 @@ import name.richardson.james.bukkit.dimensiondoor.DatabaseHandler;
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
 
-public class WorldListener extends org.bukkit.event.world.WorldListener {
+public class WorldListener implements Listener {
 
   private final DimensionDoor plugin;
   private final DatabaseHandler database;
@@ -37,7 +40,7 @@ public class WorldListener extends org.bukkit.event.world.WorldListener {
     this.database = plugin.getDatabaseHandler();
   }
 
-  @Override
+  @EventHandler(priority = EventPriority.MONITOR)
   public void onWorldInit(final WorldInitEvent event) {
     final World world = event.getWorld();
     final WorldRecord record = WorldRecord.findByWorld(this.database, world);
@@ -46,11 +49,12 @@ public class WorldListener extends org.bukkit.event.world.WorldListener {
     }
   }
 
-  @Override
+  @EventHandler(priority = EventPriority.MONITOR)
   public void onWorldLoad(final WorldLoadEvent event) {
     this.plugin.applyWorldAttributes(event.getWorld());
   }
 
+  @EventHandler(priority = EventPriority.MONITOR)
   public void onWorldUnload(final WorldLoadEvent event) {
     this.plugin.onWorldUnload(event.getWorld());
   }

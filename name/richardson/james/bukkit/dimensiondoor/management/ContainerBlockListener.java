@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2011 James Richardson.
  * 
- * VehicleListener.java is part of DimensionDoor.
+ * BlockListener.java is part of DimensionDoor.
  * 
  * DimensionDoor is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -19,25 +19,66 @@
 
 package name.richardson.james.bukkit.dimensiondoor.management;
 
+import org.bukkit.ChatColor;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.StorageMinecart;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 
-public class VehicleListener extends org.bukkit.event.vehicle.VehicleListener {
+public class ContainerBlockListener implements Listener {
 
   private final DimensionDoor plugin;
 
-  public VehicleListener(DimensionDoor plugin) {
+  public ContainerBlockListener(final DimensionDoor plugin) {
     this.plugin = plugin;
   }
 
+  // fixes another duplication area where players can place creative
+  // items into their inventory through the chest interface.
+  @EventHandler(priority = EventPriority.LOW)
+  public void onBlockPlace(final BlockPlaceEvent event) {
+    if (event.isCancelled()) return;
+    final World world = event.getPlayer().getWorld();
+    if (this.plugin.getCreativeWorlds().contains(world)) {
+      if (isBlackListed(event.getBlock())) {
+        event.setCancelled(true);
+        event.getPlayer().sendMessage(ChatColor.RED + "You may not use those in creative mode.");
+      }
+    }
+  }
+
+  @EventHandler(priority = EventPriority.LOW)
   public void onVehicleCreate(VehicleCreateEvent event) {
     final World world = event.getVehicle().getLocation().getWorld();
     if (plugin.getCreativeWorlds().contains(world) && event.getVehicle() instanceof StorageMinecart) {
       event.getVehicle().remove();
     }
+  }
+  
+  private boolean isBlackListed(Block block) {
+    switch (block.getState().getType()) {
+      case CHEST:
+        return true;
+      case FURNACE:
+        return true;
+      case DISPENSER:
+        return true;
+      case ENCHANTMENT_TABLE:
+        return true;
+      case BREWING_STAND:
+        return true;
+      case WORKBENCH:
+        return true;
+      case STORAGE_MINECART:
+        return true;
+    }
+    return false;
   }
 
 }
