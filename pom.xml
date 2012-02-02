@@ -71,6 +71,28 @@
         <version>2.3.1</version>
       </plugin>
       
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <artifactSet>
+                <!-- We want to bundle in BukkitUtilities -->
+                <includes>
+                  <include>name.richardson.james.bukkit:bukkit-utilities</include>
+                </includes>
+              </artifactSet>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+  
    </plugins>
   </build>
   
