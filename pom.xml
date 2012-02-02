@@ -37,9 +37,9 @@
   </properties>
   
   <scm>
-    <connection>scm:git:git://github.com/grandwazir/BukkitUtilities.git</connection>
-    <url>https://github.com/grandwazir/BukkitUtilities</url>
-    <developerConnection>scm:git:git@github.com:grandwazir/BukkitUtilities.git</developerConnection>
+    <connection>scm:git:git://github.com/grandwazir/DimensionDoor.git</connection>
+    <url>https://github.com/grandwazir/DimensionDoor</url>
+    <developerConnection>scm:git:git@github.com:grandwazir/DimensionDoor.git</developerConnection>
   </scm>
   
   <build>
