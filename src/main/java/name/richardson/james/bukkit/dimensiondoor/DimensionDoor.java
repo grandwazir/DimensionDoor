@@ -53,11 +53,10 @@ import name.richardson.james.bukkit.dimensiondoor.management.ModifyCommand;
 import name.richardson.james.bukkit.dimensiondoor.management.PlayerListener;
 import name.richardson.james.bukkit.dimensiondoor.management.SpawnCommand;
 import name.richardson.james.bukkit.dimensiondoor.management.TeleportCommand;
-import name.richardson.james.bukkit.util.Logger;
-import name.richardson.james.bukkit.util.Plugin;
-import name.richardson.james.bukkit.util.command.CommandManager;
+import name.richardson.james.bukkit.utilities.command.CommandManager;
+import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
 
-public class DimensionDoor extends Plugin {
+public class DimensionDoor extends SkeletonPlugin {
 
   private final Set<World> isolatedChatWorlds = new HashSet<World>();
   private final Set<World> creativeWorlds = new HashSet<World>();
@@ -188,40 +187,6 @@ public class DimensionDoor extends Plugin {
     return this.server.createWorld(newWorld);
   }
 
-  @Override
-  public void onDisable() {
-    this.logger.info(String.format("%s is disabled!", this.getDescription().getName()));
-  }
-
-  @Override
-  public void onEnable() {
-    this.pluginManager = this.getServer().getPluginManager();
-    this.server = this.getServer();
-
-    try {
-      this.logger.setPrefix("[DimensionDoor] ");
-      this.loadConfiguration();
-      this.setupDatabase();
-      this.setDefaults();
-      this.setPermission();
-      // load the worlds
-      this.registerListeners();
-      this.registerMainWorlds();
-      this.registerAuxiliaryWorlds();
-      this.logger.info(String.format("%d worlds loaded and configured.", this.getServer().getWorlds().size()));
-      this.registerCommands();
-    } catch (final IOException exception) {
-      this.logger.severe("Unable to load configuration!");
-      exception.printStackTrace();
-    } catch (SQLException exception) {
-      // TODO Auto-generated catch block
-      exception.printStackTrace();
-    } finally {
-      if (!this.getServer().getPluginManager().isPluginEnabled(this)) return;
-    }
-    this.logger.info(String.format("%s is enabled.", this.getDescription().getFullName()));
-  }
-
   public void onWorldUnload(final World world) {
     this.isolatedChatWorlds.remove(world);
     this.creativeWorlds.remove(world);
@@ -266,11 +231,8 @@ public class DimensionDoor extends Plugin {
       throw new IllegalArgumentException(String.format("Plugin %s is not enabled!", generator));
   }
 
-  private void loadConfiguration() throws IOException {
+  protected void loadConfiguration() throws IOException {
     configuration = new DimensionDoorConfiguration(this);
-    if (configuration.isDebugging()) {
-      Logger.enableDebugging(this.getDescription().getName().toLowerCase());
-    }
   }
 
   private void registerAuxiliaryWorlds() {
@@ -284,8 +246,8 @@ public class DimensionDoor extends Plugin {
     }
   }
 
-  private void registerCommands() {
-    final CommandManager cm = new CommandManager(this.getDescription());
+  protected void registerCommands() {
+    final CommandManager cm = new CommandManager(this);
     this.getCommand("dd").setExecutor(cm);
     cm.registerCommand("clear", new ClearCommand(this));
     cm.registerCommand("create", new CreateCommand(this));
@@ -299,7 +261,7 @@ public class DimensionDoor extends Plugin {
     cm.registerCommand("unload", new UnloadCommand(this));
   }
 
-  private void registerListeners() {
+  protected void registerListeners() {
     this.worldListener = new WorldListener(this);
     this.playerListener = new PlayerListener(this);
     this.blockListener = new ContainerBlockListener(this);
@@ -308,6 +270,9 @@ public class DimensionDoor extends Plugin {
     this.pluginManager.registerEvents(this.playerListener , this);
     if (configuration.isPreventItemSpawning()) this.pluginManager.registerEvents(this.entityListener, this);
     if (configuration.isPreventContainerBlocks()) this.pluginManager.registerEvents(this.blockListener, this);
+    this.registerMainWorlds();
+    this.registerAuxiliaryWorlds();
+    this.logger.info(String.format("%d worlds loaded and configured.", this.getServer().getWorlds().size()));
   }
 
   private void registerMainWorlds() {
@@ -330,14 +295,23 @@ public class DimensionDoor extends Plugin {
     this.defaults.put("spawn-in-memory", true);
   }
 
-  private void setupDatabase() throws SQLException {
+  protected void setupPersistence() throws SQLException {
     try {
       this.getDatabase().find(WorldRecord.class).findRowCount();
     } catch (final PersistenceException ex) {
-      this.logger.warning("No database schema found. Generating a new one.");
+      this.logger.warning(this.getMessage("no-database"));
       this.installDDL();
     }
     this.database = new DatabaseHandler(this.getDatabase());
+  }
+
+  
+  public String getArtifactID() {
+    return "dimension-door";
+  }
+
+  public String getGroupID() {
+    return "name.richardson.james.bukkit";
   }
 
 }

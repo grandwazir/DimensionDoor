@@ -60,7 +60,7 @@
      <dependency>
 	   <groupId>name.richardson.james.bukkit</groupId>
 	   <artifactId>bukkit-utilities</artifactId>
-	   <version>1.0.2</version>
+	   <version>3.0.3-SNAPSHOT</version>
      </dependency>
   </dependencies>
 

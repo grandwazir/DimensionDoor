@@ -21,15 +21,13 @@ package name.richardson.james.bukkit.dimensiondoor;
 
 import java.io.IOException;
 
-import name.richardson.james.bukkit.util.Plugin;
-import name.richardson.james.bukkit.util.configuration.AbstractConfiguration;
+import name.richardson.james.bukkit.utilities.configuration.PluginConfiguration;
+import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
 
-public class DimensionDoorConfiguration extends AbstractConfiguration {
+public class DimensionDoorConfiguration extends PluginConfiguration {
 
-  public final static String FILE_NAME = "config.yml";
-
-  public DimensionDoorConfiguration(final Plugin plugin) throws IOException {
-    super(plugin, DimensionDoorConfiguration.FILE_NAME);
+  public DimensionDoorConfiguration(final SkeletonPlugin plugin) throws IOException {
+    super(plugin);
   }
 
   public boolean isClearActionBar() {

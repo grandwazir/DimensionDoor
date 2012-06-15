@@ -29,7 +29,7 @@ import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.World;
 
-import name.richardson.james.bukkit.util.Logger;
+import name.richardson.james.bukkit.utilities.internals.Logger;
 
 @Entity()
 @Table(name = "dimensiondoor_worlds")
