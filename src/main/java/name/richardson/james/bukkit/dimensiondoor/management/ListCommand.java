@@ -23,6 +23,8 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
@@ -38,6 +40,7 @@ public class ListCommand extends PluginCommand {
   public ListCommand(final DimensionDoor plugin) {
     super(plugin);
     this.plugin = plugin;
+    this.registerPermissions();
   }
 
   public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
@@ -67,4 +70,12 @@ public class ListCommand extends PluginCommand {
     return message.toString();
   }
 
+  private void registerPermissions() {
+    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
+    // create the base permission
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("listcommand-permission-description"), PermissionDefault.OP);
+    base.addParent(this.plugin.getRootPermission(), true);
+    this.addPermission(base);
+  }
+  
 }

@@ -20,15 +20,19 @@
 package name.richardson.james.bukkit.dimensiondoor.creation;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
 import name.richardson.james.bukkit.utilities.internals.Logger;
 
+@ConsoleCommand
 public class RemoveCommand extends PluginCommand {
 
   private static Logger logger = new Logger(RemoveCommand.class);
@@ -40,6 +44,7 @@ public class RemoveCommand extends PluginCommand {
   public RemoveCommand(final DimensionDoor plugin) {
     super(plugin);
     this.plugin = plugin;
+    this.registerPermissions();
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
@@ -63,4 +68,12 @@ public class RemoveCommand extends PluginCommand {
 
   }
 
+  private void registerPermissions() {
+    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
+    // create the base permission
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("removecommand-permission-description"), PermissionDefault.OP);
+    base.addParent(this.plugin.getRootPermission(), true);
+    this.addPermission(base);
+  }
+  
 }

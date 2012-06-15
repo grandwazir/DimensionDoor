@@ -22,6 +22,8 @@ package name.richardson.james.bukkit.dimensiondoor.management;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
@@ -32,6 +34,7 @@ public class SpawnCommand extends PluginCommand {
 
   public SpawnCommand(final DimensionDoor plugin) {
     super(plugin);
+    this.registerPermissions();
   }
 
   public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, name.richardson.james.bukkit.utilities.command.CommandUsageException {
@@ -50,4 +53,12 @@ public class SpawnCommand extends PluginCommand {
     return;
   }
 
+  private void registerPermissions() {
+    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
+    // create the base permission
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("spawncommand-permission-description"), PermissionDefault.OP);
+    base.addParent(this.plugin.getRootPermission(), true);
+    this.addPermission(base);
+  }
+  
 }

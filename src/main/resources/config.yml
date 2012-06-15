@@ -1,4 +1,8 @@
 debugging: false
+automatic-updates:
+  enabled: true
+  method: automatic
+  branch: stable
 creative-world-transfer-settings:
   clear-action-bar: true
   clear-item-in-hand: true

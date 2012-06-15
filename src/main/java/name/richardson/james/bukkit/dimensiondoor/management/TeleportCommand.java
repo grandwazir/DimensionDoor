@@ -22,6 +22,8 @@ package name.richardson.james.bukkit.dimensiondoor.management;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
@@ -36,6 +38,7 @@ public class TeleportCommand extends PluginCommand {
   public TeleportCommand(final DimensionDoor plugin) {
     super(plugin);
     this.plugin = plugin;
+    this.registerPermissions();
   }
 
   public void execute(CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException, CommandPermissionException, name.richardson.james.bukkit.utilities.command.CommandUsageException {
@@ -58,4 +61,12 @@ public class TeleportCommand extends PluginCommand {
 
   }
 
+  private void registerPermissions() {
+    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
+    // create the base permission
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("teleportcommand-permission-description"), PermissionDefault.OP);
+    base.addParent(this.plugin.getRootPermission(), true);
+    this.addPermission(base);
+  }
+  
 }

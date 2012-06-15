@@ -24,13 +24,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
+@ConsoleCommand
 public class ClearCommand extends PluginCommand {
 
   private final DimensionDoor plugin;
@@ -39,6 +43,7 @@ public class ClearCommand extends PluginCommand {
   public ClearCommand(final DimensionDoor plugin) {
     super(plugin);
     this.plugin = plugin;
+    this.registerPermissions();
   }
 
   public void execute(CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException, CommandPermissionException, CommandUsageException {
@@ -65,6 +70,14 @@ public class ClearCommand extends PluginCommand {
       this.worldName = arguments[0];
     }
 
+  }
+  
+  private void registerPermissions() {
+    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
+    // create the base permission
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("clearcommand-permission-description"), PermissionDefault.OP);
+    base.addParent(this.plugin.getRootPermission(), true);
+    this.addPermission(base);
   }
 
 }
