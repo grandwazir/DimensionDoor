@@ -33,27 +33,27 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
-import name.richardson.james.bukkit.util.command.CommandArgumentException;
-import name.richardson.james.bukkit.util.command.PlayerCommand;
+import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
+import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
+import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
-public class ClearCommand extends PlayerCommand {
-
-  public static final String NAME = "clear";
-  public static final String DESCRIPTION = "Clear all monsters and animals from a world.";
-  public static final String PERMISSION_DESCRIPTION = "Allow users to clear monsters and animals from a world.";
-  public static final String USAGE = "<name>";
-  public static final Permission PERMISSION = new Permission("dimensiondoor.clear", ClearCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+public class ClearCommand extends PluginCommand {
 
   private final DimensionDoor plugin;
+  private String worldName;
 
   public ClearCommand(final DimensionDoor plugin) {
-    super(plugin, ClearCommand.NAME, ClearCommand.DESCRIPTION, ClearCommand.USAGE, ClearCommand.PERMISSION_DESCRIPTION, ClearCommand.PERMISSION);
+    super(plugin);
     this.plugin = plugin;
   }
 
-  @Override
-  public void execute(final CommandSender sender, final Map<String, Object> arguments) {
-    final World world = (World) arguments.get("world");
+
+  public void execute(CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException, CommandPermissionException, CommandUsageException {
+    final World world = this.plugin.getWorld(worldName);
+    if (world == null) {
+      throw new CommandArgumentException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName), this.getMessage("load-world-hint"));
+    }
     int count = 0;
     for (Entity entity : world.getEntities()) {
       if (entity instanceof Monster || entity instanceof Animals) {
@@ -61,25 +61,19 @@ public class ClearCommand extends PlayerCommand {
         count++;
       }
     }
-    this.logger.info(String.format("%s has cleared all monsters and animals from the world %s", sender.getName(), world.getName()));
-    sender.sendMessage(String.format(ChatColor.GREEN + "%d monsters and animals cleared from %s.", count, world.getName()));
+    Object[] arguments = {count,world.getName()};
+    sender.sendMessage(this.getSimpleFormattedMessage("clear-report", arguments));
   }
+  
 
-  @Override
-  public Map<String, Object> parseArguments(final List<String> arguments) throws CommandArgumentException {
-    final Map<String, Object> map = new HashMap<String, Object>();
-    try {
-      final String worldName = arguments.get(0);
-      final World world = this.plugin.getWorld(worldName);
-      if (world == null)
-        throw new CommandArgumentException(String.format("%s is not loaded!", worldName), "Use /dd list for a list of worlds.");
-      else {
-        map.put("world", world);
-      }
-    } catch (final IndexOutOfBoundsException exception) {
-      throw new CommandArgumentException("You must specify a world!", "Use /dd list for a list of worlds.");
+  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
+
+    if (arguments.length == 0) {
+      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("load-world-hint"));
+    } else {
+      this.worldName = arguments[0];
     }
-    return map;
+
   }
 
 }

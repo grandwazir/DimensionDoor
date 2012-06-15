@@ -29,29 +29,18 @@ import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
-import name.richardson.james.bukkit.util.command.PlayerCommand;
+import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
+import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
+import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
-public class ListCommand extends PlayerCommand {
-
-  public static final String NAME = "list";
-  public static final String DESCRIPTION = "List all the available worlds.";
-  public static final String PERMISSION_DESCRIPTION = "Allow users to list all available worlds.";
-  public static final String USAGE = "";
-  public static final Permission PERMISSION = new Permission("dimensiondoor.list", ListCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+public class ListCommand extends PluginCommand {
 
   private final DimensionDoor plugin;
 
   public ListCommand(final DimensionDoor plugin) {
-    super(plugin, ListCommand.NAME, ListCommand.DESCRIPTION, ListCommand.USAGE, ListCommand.PERMISSION_DESCRIPTION, ListCommand.PERMISSION);
+    super(plugin);
     this.plugin = plugin;
-  }
-
-  @Override
-  public void execute(final CommandSender sender, final Map<String, Object> arguments) {
-    final List<? extends Object> records = this.plugin.getDatabaseHandler().list(WorldRecord.class);
-    final String message = this.buildWorldList(records);
-    sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + "Currently managing %d worlds:", records.size()));
-    sender.sendMessage(message);
   }
 
   private String buildWorldList(final List<? extends Object> records) {
@@ -67,6 +56,20 @@ public class ListCommand extends PlayerCommand {
     }
     message.delete(message.length() - 2, message.length());
     return message.toString();
+  }
+
+  
+  public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    final List<? extends Object> records = this.plugin.getDatabaseHandler().list(WorldRecord.class);
+    final String message = this.buildWorldList(records);
+    sender.sendMessage(plugin.getSimpleFormattedMessage("list-header", records.size()));
+    sender.sendMessage(message);
+  }
+  
+
+  public void parseArguments(String[] arguments, CommandSender sender) throws CommandArgumentException {
+    // TODO Auto-generated method stub
+    
   }
 
 }

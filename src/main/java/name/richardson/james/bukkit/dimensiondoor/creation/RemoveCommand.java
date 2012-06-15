@@ -32,35 +32,35 @@ import name.richardson.james.bukkit.utilities.internals.Logger;
 public class RemoveCommand extends PluginCommand {
 
   private static Logger logger = new Logger(RemoveCommand.class);
-  
+
   private final DimensionDoor plugin;
-  
+
   private String worldName;
 
   public RemoveCommand(final DimensionDoor plugin) {
     super(plugin);
     this.plugin = plugin;
   }
-  
-  public void parseArguments(String[] arguments, CommandSender sender) throws CommandArgumentException {
-    
+
+  public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    final WorldRecord record = WorldRecord.findByName(this.plugin.getDatabaseHandler(), this.worldName);
+    if (record == null) {
+      throw new CommandArgumentException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName), this.getMessage("load-world-hint"));
+    }
+    this.plugin.removeWorld(record);
+    RemoveCommand.logger.info(String.format("%s has removed the WorldRecord for %s", sender.getName(), this.worldName));
+    sender.sendMessage(this.getSimpleFormattedMessage("world-removed", this.worldName));
+    sender.sendMessage(this.getMessage("remove-data-also"));
+  }
+
+  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
+
     if (arguments.length == 0) {
       throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("load-world-hint"));
     } else {
       this.worldName = arguments[0];
     }
-    
-  }
 
-  public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final WorldRecord record = WorldRecord.findByName(this.plugin.getDatabaseHandler(), worldName);
-    if (record == null) {
-      throw new CommandArgumentException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName), this.getMessage("load-world-hint"));
-    }
-    this.plugin.removeWorld(record);
-    RemoveCommand.logger.info(String.format("%s has removed the WorldRecord for %s", sender.getName(), worldName));
-    sender.sendMessage(this.getSimpleFormattedMessage("world-removed", worldName));
-    sender.sendMessage(this.getMessage("remove-data-also"));
   }
 
 }

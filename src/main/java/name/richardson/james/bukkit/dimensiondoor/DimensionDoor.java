@@ -249,16 +249,16 @@ public class DimensionDoor extends SkeletonPlugin {
   protected void registerCommands() {
     final CommandManager cm = new CommandManager(this);
     this.getCommand("dd").setExecutor(cm);
-    cm.registerCommand("clear", new ClearCommand(this));
-    cm.registerCommand("create", new CreateCommand(this));
-    cm.registerCommand("info", new InfoCommand(this));
-    cm.registerCommand("list", new ListCommand(this));
-    cm.registerCommand("load", new LoadCommand(this));
-    cm.registerCommand("modify", new ModifyCommand(this));
-    cm.registerCommand("remove", new RemoveCommand(this));
-    cm.registerCommand("spawn", new SpawnCommand(this));
-    cm.registerCommand("teleport", new TeleportCommand(this));
-    cm.registerCommand("unload", new UnloadCommand(this));
+    cm.addCommand(new ClearCommand(this));
+    cm.addCommand(new CreateCommand(this));
+    cm.addCommand(new InfoCommand(this));
+    cm.addCommand(new ListCommand(this));
+    cm.addCommand(new LoadCommand(this));
+    cm.addCommand(new ModifyCommand(this));
+    cm.addCommand(new RemoveCommand(this));
+    cm.addCommand(new SpawnCommand(this));
+    cm.addCommand(new TeleportCommand(this));
+    cm.addCommand(new UnloadCommand(this));
   }
 
   protected void registerListeners() {

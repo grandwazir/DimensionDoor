@@ -31,48 +31,40 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
-import name.richardson.james.bukkit.util.command.CommandArgumentException;
-import name.richardson.james.bukkit.util.command.CommandUsageException;
-import name.richardson.james.bukkit.util.command.PlayerCommand;
+import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
+import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
+import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
-public class TeleportCommand extends PlayerCommand {
+public class TeleportCommand extends PluginCommand {
 
-  public static final String NAME = "teleport";
-  public static final String DESCRIPTION = "Teleport to another world.";
-  public static final String PERMISSION_DESCRIPTION = "Allow users to teleport to other worlds.";
-  public static final String USAGE = "<name>";
-  public static final Permission PERMISSION = new Permission("dimensiondoor.teleport", TeleportCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
 
   private final DimensionDoor plugin;
+  private String worldName;
 
   public TeleportCommand(final DimensionDoor plugin) {
-    super(plugin, TeleportCommand.NAME, TeleportCommand.DESCRIPTION, TeleportCommand.USAGE, TeleportCommand.PERMISSION_DESCRIPTION, TeleportCommand.PERMISSION);
+    super(plugin);
     this.plugin = plugin;
   }
+  
 
-  @Override
-  public void execute(final CommandSender sender, final Map<String, Object> arguments) throws CommandUsageException {
-    if (sender instanceof ConsoleCommandSender) throw new CommandUsageException("You may not use this command from the console.");
+  public void execute(CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException, CommandPermissionException, name.richardson.james.bukkit.utilities.command.CommandUsageException {
     final Player player = (Player) sender;
-    final World world = (World) arguments.get("world");
+    final World world = this.plugin.getWorld(worldName);
+    if (world == null) {
+      throw new CommandArgumentException(this.getSimpleFormattedMessage("world-not-loaded", worldName), this.getMessage("load-world-hint"));
+    }
     player.teleport(world.getSpawnLocation());
+    
   }
 
-  @Override
-  public Map<String, Object> parseArguments(final List<String> arguments) throws CommandArgumentException {
-    final Map<String, Object> map = new HashMap<String, Object>();
-    try {
-      final String worldName = arguments.get(0);
-      final World world = this.plugin.getWorld(worldName);
-      if (world == null)
-        throw new CommandArgumentException(String.format("%s not loaded!", worldName), "Use /dd list for a list of worlds.");
-      else {
-        map.put("world", world);
-      }
-    } catch (final IndexOutOfBoundsException exception) {
-      throw new CommandArgumentException("You must specify a world!", "Use /dd list for a list of worlds.");
+  public void parseArguments(String[] arguments, CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException {
+    
+    if (arguments.length == 0) {
+      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("load-world-hint"));
+    } else {
+      this.worldName = arguments[0];
     }
-    return map;
+    
   }
 
 }

@@ -19,18 +19,10 @@
 
 package name.richardson.james.bukkit.dimensiondoor.creation;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
-import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
@@ -38,7 +30,7 @@ import name.richardson.james.bukkit.utilities.command.PluginCommand;
 import name.richardson.james.bukkit.utilities.internals.Logger;
 
 public class UnloadCommand extends PluginCommand {
-  
+
   private static Logger logger = new Logger(RemoveCommand.class);
 
   private final DimensionDoor plugin;
@@ -50,9 +42,8 @@ public class UnloadCommand extends PluginCommand {
     this.plugin = plugin;
   }
 
-
-  public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final World world = this.plugin.getWorld(worldName);
+  public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    final World world = this.plugin.getWorld(this.worldName);
     if (world == null) {
       throw new CommandArgumentException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName), this.getMessage("load-world-hint"));
     }
@@ -61,14 +52,14 @@ public class UnloadCommand extends PluginCommand {
     sender.sendMessage(this.getSimpleFormattedMessage("world-unloaded", this.worldName));
   }
 
-  public void parseArguments(String[] arguments, CommandSender sender) throws CommandArgumentException {
-    
+  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
+
     if (arguments.length == 0) {
       throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("load-world-hint"));
     } else {
       this.worldName = arguments[0];
     }
-    
+
   }
 
 }

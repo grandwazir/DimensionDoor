@@ -35,9 +35,9 @@ import name.richardson.james.bukkit.utilities.internals.Logger;
 public class CreateCommand extends PluginCommand {
 
   private static Logger logger = new Logger(CreateCommand.class);
-  
+
   private final DimensionDoor plugin;
-  
+
   private String worldName;
   private Environment environment;
   private Long seed;
@@ -49,40 +49,28 @@ public class CreateCommand extends PluginCommand {
     this.plugin = plugin;
   }
 
-  private String buildEnvironmentList() {
-    final StringBuilder message = new StringBuilder();
-    for (final Environment environment : Environment.values()) {
-      message.append(environment.name());
-      message.append(", ");
-    }
-    message.delete(message.length() - 2, message.length());
-    return message.toString();
-  }
-
-  
-  public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+  public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     sender.sendMessage(this.getSimpleFormattedMessage("world-creation-in-progress", this.worldName));
 
     if (this.generatorPlugin != null) {
       try {
-        this.plugin.createWorld(worldName, environment, seed, generatorPlugin, generatorID);
+        this.plugin.createWorld(this.worldName, this.environment, this.seed, this.generatorPlugin, this.generatorID);
       } catch (final IllegalArgumentException exception) {
         throw new CommandUsageException(exception.getMessage());
       }
     } else {
-      this.plugin.createWorld(worldName, environment, seed);
+      this.plugin.createWorld(this.worldName, this.environment, this.seed);
     }
 
     sender.sendMessage(this.getSimpleFormattedMessage("world-creation-in-progress", this.worldName));
-    CreateCommand.logger.info(String.format("%s has created a new world called %s", sender.getName(), worldName));
-    
-  }
-  
+    CreateCommand.logger.info(String.format("%s has created a new world called %s", sender.getName(), this.worldName));
 
-  public void parseArguments(String[] arguments, CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException {
+  }
+
+  public void parseArguments(final String[] arguments, final CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException {
     final LinkedList<String> args = new LinkedList<String>();
-    args.addAll(Arrays.asList(arguments)); 
-    
+    args.addAll(Arrays.asList(arguments));
+
     // null old values
     this.worldName = null;
     this.environment = null;
@@ -104,11 +92,11 @@ public class CreateCommand extends PluginCommand {
           throw new CommandArgumentException(this.getMessage("invalid-environment"), this.getSimpleFormattedMessage("valid-environments", this.buildEnvironmentList()));
         }
       } else if (argument.startsWith("s:")) {
-        String stringSeed = argument.replaceFirst("s:", "");
+        final String stringSeed = argument.replaceFirst("s:", "");
         long seed = 0;
         try {
           seed = Long.parseLong(stringSeed);
-        } catch (NumberFormatException exception) {
+        } catch (final NumberFormatException exception) {
           seed = stringSeed.hashCode();
         }
         this.seed = new Long(seed);
@@ -116,10 +104,22 @@ public class CreateCommand extends PluginCommand {
         argument = argument.replaceFirst("g:", "");
         final String[] a = argument.split(":");
         this.generatorPlugin = a[0];
-        if (a.length == 2) this.generatorID = a[1];
+        if (a.length == 2) {
+          this.generatorID = a[1];
+        }
       }
     }
 
+  }
+
+  private String buildEnvironmentList() {
+    final StringBuilder message = new StringBuilder();
+    for (final Environment environment : Environment.values()) {
+      message.append(environment.name());
+      message.append(", ");
+    }
+    message.delete(message.length() - 2, message.length());
+    return message.toString();
   }
 
 }

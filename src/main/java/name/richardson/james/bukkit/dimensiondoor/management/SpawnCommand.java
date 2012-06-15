@@ -30,32 +30,29 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
-import name.richardson.james.bukkit.util.command.CommandUsageException;
-import name.richardson.james.bukkit.util.command.PlayerCommand;
+import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
+import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
+import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
-public class SpawnCommand extends PlayerCommand {
-
-  public static final String NAME = "spawn";
-  public static final String DESCRIPTION = "Set the spawn point of the world.";
-  public static final String PERMISSION_DESCRIPTION = "Allow users to set the spawn points of worlds.";
-  public static final String USAGE = "";
-  public static final Permission PERMISSION = new Permission("dimensiondoor.spawn", SpawnCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+public class SpawnCommand extends PluginCommand {
 
   public SpawnCommand(final DimensionDoor plugin) {
-    super(plugin, SpawnCommand.NAME, SpawnCommand.DESCRIPTION, SpawnCommand.USAGE, SpawnCommand.PERMISSION_DESCRIPTION, SpawnCommand.PERMISSION);
+    super(plugin);
   }
 
-  @Override
-  public void execute(final CommandSender sender, final Map<String, Object> arguments) throws CommandUsageException {
-    if (sender instanceof ConsoleCommandSender) throw new CommandUsageException("You may not use this command from the console.");
+  public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, name.richardson.james.bukkit.utilities.command.CommandUsageException {
     final Player player = (Player) sender;
     final World world = player.getWorld();
     final Integer x = (int) player.getLocation().getX();
     final Integer y = (int) player.getLocation().getY();
     final Integer z = (int) player.getLocation().getZ();
     world.setSpawnLocation(x, y, z);
-    this.logger.info(String.format("%s has set a new spawn location for %s", sender.getName(), world.getName()));
-    sender.sendMessage(String.format(ChatColor.GREEN + "New spawn location set for %s", world.getName()));
+    // this.logger.info(String.format("%s has set a new spawn location for %s", sender.getName(), world.getName()));
+    sender.sendMessage(this.getSimpleFormattedMessage("spawn-set", world.getName()));
+  }
+
+  public void parseArguments(String[] arguments, CommandSender sender) throws CommandArgumentException {
+    return;
   }
 
 }
