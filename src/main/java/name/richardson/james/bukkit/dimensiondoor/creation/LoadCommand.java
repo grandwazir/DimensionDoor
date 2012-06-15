@@ -19,65 +19,56 @@
 
 package name.richardson.james.bukkit.dimensiondoor.creation;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
-import name.richardson.james.bukkit.util.command.CommandArgumentException;
-import name.richardson.james.bukkit.util.command.PlayerCommand;
+import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
+import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
+import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.PluginCommand;
+import name.richardson.james.bukkit.utilities.internals.Logger;
 
-public class LoadCommand extends PlayerCommand {
+public class LoadCommand extends PluginCommand {
 
-  public static final String NAME = "load";
-  public static final String DESCRIPTION = "Load a world mananged by DimensionDoor.";
-  public static final String PERMISSION_DESCRIPTION = "Allow users to load existing worlds.";
-  public static final String USAGE = "<name>";
-  public static final Permission PERMISSION = new Permission("dimensiondoor.load", LoadCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
+  private static Logger logger = new Logger(LoadCommand.class);
 
   private final DimensionDoor plugin;
 
+  private String worldName;
+
   public LoadCommand(final DimensionDoor plugin) {
-    super(plugin, LoadCommand.NAME, LoadCommand.DESCRIPTION, LoadCommand.USAGE, LoadCommand.PERMISSION_DESCRIPTION, LoadCommand.PERMISSION);
+    super(plugin);
     this.plugin = plugin;
   }
 
-  @Override
-  public void execute(final CommandSender sender, final Map<String, Object> arguments) throws CommandArgumentException {
-    final WorldRecord record = (WorldRecord) arguments.get("record");
-    try {
-      plugin.loadWorld(record);
-    } catch (final IllegalArgumentException exception) {
-      this.logger.warning(String.format("Unable to load %s: %s", record.getName(), exception.getMessage()));
-      throw new CommandArgumentException(String.format("Unable to load %s!", record.getName()), exception.getMessage());
+  public void execute(final CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException, CommandPermissionException, CommandUsageException {
+    final WorldRecord record = WorldRecord.findByName(this.plugin.getDatabaseHandler(), this.worldName);
+
+    if (this.plugin.isWorldLoaded(this.worldName)) {
+      throw new CommandArgumentException(this.getSimpleFormattedMessage("world-is-already-loaded", this.worldName), this.getMessage("may-not-load-world-twice"));
+    } else if (record == null) {
+      throw new CommandArgumentException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName), this.getMessage("load-existing-world"));
+    } else {
+      try {
+        this.plugin.loadWorld(record);
+      } catch (final IllegalArgumentException exception) {
+        LoadCommand.logger.warning(this.getSimpleFormattedMessage("unable-to-load-world", this.worldName));
+        throw new CommandUsageException(this.getMessage("unable-to-load-world"));
+      }
+      LoadCommand.logger.info(String.format("%s has loaded the world %s", sender.getName(), record.getName()));
+      sender.sendMessage(this.getSimpleFormattedMessage("world-loaded", this.worldName));
     }
-    this.logger.info(String.format("%s has loaded the world %s", sender.getName(), record.getName()));
-    sender.sendMessage(String.format(ChatColor.GREEN + "%s has been loaded.", record.getName()));
   }
 
-  @Override
-  public Map<String, Object> parseArguments(final List<String> arguments) throws CommandArgumentException {
-    final Map<String, Object> map = new HashMap<String, Object>();
-    try {
-      final String worldName = arguments.get(0);
-      final WorldRecord record = WorldRecord.findByName(this.plugin.getDatabaseHandler(), worldName);
-      if (this.plugin.isWorldLoaded(worldName))
-        throw new CommandArgumentException(String.format("%s is already loaded!", worldName), "You may not load a world twice.");
-      else if (record == null)
-        throw new CommandArgumentException(String.format("%s is not managed by DimensionDoor!", worldName), "To import an existing world use /dd create.");
-      else {
-        map.put("record", record);
-      }
-    } catch (final IndexOutOfBoundsException exception) {
-      throw new CommandArgumentException("You must specify a world name!", "Use /dd list for a list of worlds to load.");
+  public void parseArguments(final String[] arguments, final CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException {
+
+    if (arguments.length == 0) {
+      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("load-world-hint"));
+    } else {
+      this.worldName = arguments[0];
     }
-    return map;
+
   }
 
 }

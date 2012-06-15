@@ -19,60 +19,48 @@
 
 package name.richardson.james.bukkit.dimensiondoor.creation;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
-import name.richardson.james.bukkit.util.command.CommandArgumentException;
-import name.richardson.james.bukkit.util.command.PlayerCommand;
+import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
+import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
+import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.PluginCommand;
+import name.richardson.james.bukkit.utilities.internals.Logger;
 
-public class RemoveCommand extends PlayerCommand {
+public class RemoveCommand extends PluginCommand {
 
-  public static final String NAME = "remove";
-  public static final String DESCRIPTION = "Unload and remove a world from DimensionDoor.";
-  public static final String PERMISSION_DESCRIPTION = "Allow users to remove worlds.";
-  public static final String USAGE = "<name>";
-  public static final Permission PERMISSION = new Permission("dimensiondoor.remove", RemoveCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
-
+  private static Logger logger = new Logger(RemoveCommand.class);
+  
   private final DimensionDoor plugin;
+  
+  private String worldName;
 
   public RemoveCommand(final DimensionDoor plugin) {
-    super(plugin, RemoveCommand.NAME, RemoveCommand.DESCRIPTION, RemoveCommand.USAGE, RemoveCommand.PERMISSION_DESCRIPTION, RemoveCommand.PERMISSION);
+    super(plugin);
     this.plugin = plugin;
   }
-
-  @Override
-  public void execute(final CommandSender sender, final Map<String, Object> arguments) {
-    final WorldRecord record = (WorldRecord) arguments.get("record");
-    final String worldName = record.getName();
-    this.plugin.removeWorld(record);
-    this.logger.info(String.format("%s has removed the WorldRecord for %s", sender.getName(), worldName));
-    sender.sendMessage(String.format(ChatColor.GREEN + "%s has been removed.", worldName));
-    sender.sendMessage(ChatColor.YELLOW + "You will still need to remove the world directory.");
+  
+  public void parseArguments(String[] arguments, CommandSender sender) throws CommandArgumentException {
+    
+    if (arguments.length == 0) {
+      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("load-world-hint"));
+    } else {
+      this.worldName = arguments[0];
+    }
+    
   }
 
-  @Override
-  public Map<String, Object> parseArguments(final List<String> arguments) throws CommandArgumentException {
-    final Map<String, Object> map = new HashMap<String, Object>();
-    try {
-      final String worldName = arguments.get(0);
-      final WorldRecord record = WorldRecord.findByName(this.plugin.getDatabaseHandler(), worldName);
-      if (record == null)
-        throw new CommandArgumentException(String.format("%s is not managed by DimensionDoor!", worldName), "Use /dd list for a list of worlds.");
-      else {
-        map.put("record", record);
-      }
-    } catch (final IndexOutOfBoundsException exception) {
-      throw new CommandArgumentException("You must specify a world name!", "Use /dd list for a list of worlds.");
+  public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    final WorldRecord record = WorldRecord.findByName(this.plugin.getDatabaseHandler(), worldName);
+    if (record == null) {
+      throw new CommandArgumentException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName), this.getMessage("load-world-hint"));
     }
-    return map;
+    this.plugin.removeWorld(record);
+    RemoveCommand.logger.info(String.format("%s has removed the WorldRecord for %s", sender.getName(), worldName));
+    sender.sendMessage(this.getSimpleFormattedMessage("world-removed", worldName));
+    sender.sendMessage(this.getMessage("remove-data-also"));
   }
 
 }

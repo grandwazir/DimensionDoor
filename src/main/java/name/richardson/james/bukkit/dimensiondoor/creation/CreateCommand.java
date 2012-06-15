@@ -19,106 +19,34 @@
 
 package name.richardson.james.bukkit.dimensiondoor.creation;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.LinkedList;
 
-import org.bukkit.ChatColor;
 import org.bukkit.World.Environment;
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
-import name.richardson.james.bukkit.util.command.CommandArgumentException;
-import name.richardson.james.bukkit.util.command.CommandUsageException;
-import name.richardson.james.bukkit.util.command.PlayerCommand;
+import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
+import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
+import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.PluginCommand;
+import name.richardson.james.bukkit.utilities.internals.Logger;
 
-public class CreateCommand extends PlayerCommand {
+public class CreateCommand extends PluginCommand {
 
-  public static final String NAME = "create";
-  public static final String DESCRIPTION = "Create a new world.";
-  public static final String PERMISSION_DESCRIPTION = "Allow users to create new worlds.";
-  public static final String USAGE = "<name> [e:environment] [s:seed] [g:plugin:id]";
-
-  public static final Permission PERMISSION = new Permission("dimensiondoor.create", CreateCommand.PERMISSION_DESCRIPTION, PermissionDefault.OP);
-
+  private static Logger logger = new Logger(CreateCommand.class);
+  
   private final DimensionDoor plugin;
+  
+  private String worldName;
+  private Environment environment;
+  private Long seed;
+  private String generatorPlugin;
+  private String generatorID;
 
   public CreateCommand(final DimensionDoor plugin) {
-    super(plugin, CreateCommand.NAME, CreateCommand.DESCRIPTION, CreateCommand.USAGE, CreateCommand.PERMISSION_DESCRIPTION, CreateCommand.PERMISSION);
+    super(plugin);
     this.plugin = plugin;
-  }
-
-  @Override
-  public void execute(final CommandSender sender, final Map<String, Object> arguments) throws CommandUsageException {
-    final String worldName = (String) arguments.get("worldName");
-    final Environment environment = (Environment) arguments.get("environment");
-    final Long seed = (Long) arguments.get("seed");
-
-    sender.sendMessage(String.format(ChatColor.YELLOW + "Creating %s (this may take a while)", worldName));
-
-    if (arguments.containsKey("generatorPlugin")) {
-      final String generatorPlugin = (String) arguments.get("generatorPlugin");
-      final String generatorID = (String) arguments.get("generatorID");
-      try {
-        this.plugin.createWorld(worldName, environment, seed, generatorPlugin, generatorID);
-      } catch (final IllegalArgumentException exception) {
-        throw new CommandUsageException(exception.getMessage());
-      }
-    } else {
-      this.plugin.createWorld(worldName, environment, seed);
-    }
-
-    sender.sendMessage(String.format(ChatColor.GREEN + "%s has been created.", worldName));
-    this.logger.info(String.format("%s has created a new world called %s", sender.getName(), worldName));
-
-  }
-
-  @Override
-  public Map<String, Object> parseArguments(final List<String> arguments) throws CommandArgumentException {
-    final Map<String, Object> map = new HashMap<String, Object>();
-
-    map.put("environment", this.plugin.getDefaults().get("environment"));
-    map.put("seed", System.currentTimeMillis());
-
-    // get our required arguments
-    try {
-      final String worldName = arguments.remove(0);
-      map.put("worldName", worldName);
-      if (this.plugin.getWorld(worldName) != null) throw new CommandArgumentException(worldName + " already exists!", "You must specify a name that is not in use.");
-    } catch (final IndexOutOfBoundsException exception) {
-      throw new CommandArgumentException("You must specify a world name!", "It must be a name not used by another world.");
-    }
-
-    if (arguments.isEmpty()) return map;
-
-    for (String argument : arguments) {
-      if (argument.startsWith("e:")) {
-        try {
-          map.put("environment", Environment.valueOf(argument.replaceFirst("e:", "")));
-        } catch (final IllegalArgumentException exception) {
-          throw new CommandArgumentException("The environment specified does not exist!", "Valid types are: " + this.buildEnvironmentList() + ".");
-        }
-      } else if (argument.startsWith("s:")) {
-        String stringSeed = argument.replaceFirst("s:", "");
-        int seed = 0;
-        try {
-          seed = Integer.parseInt(stringSeed);
-        } catch (NumberFormatException exception) {
-          seed = stringSeed.hashCode();
-        }
-        map.put("seed", new Long(seed));
-      } else if (argument.startsWith("g:")) {
-        argument = argument.replaceFirst("g:", "");
-        final String[] args = argument.split(":");
-        map.put("generatorPlugin", args[0]);
-        if (args.length == 2) {
-          map.put("generatorID", args[1]);
-        }
-      }
-    }
-    return map;
   }
 
   private String buildEnvironmentList() {
@@ -129,6 +57,69 @@ public class CreateCommand extends PlayerCommand {
     }
     message.delete(message.length() - 2, message.length());
     return message.toString();
+  }
+
+  
+  public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    sender.sendMessage(this.getSimpleFormattedMessage("world-creation-in-progress", this.worldName));
+
+    if (this.generatorPlugin != null) {
+      try {
+        this.plugin.createWorld(worldName, environment, seed, generatorPlugin, generatorID);
+      } catch (final IllegalArgumentException exception) {
+        throw new CommandUsageException(exception.getMessage());
+      }
+    } else {
+      this.plugin.createWorld(worldName, environment, seed);
+    }
+
+    sender.sendMessage(this.getSimpleFormattedMessage("world-creation-in-progress", this.worldName));
+    CreateCommand.logger.info(String.format("%s has created a new world called %s", sender.getName(), worldName));
+    
+  }
+  
+
+  public void parseArguments(String[] arguments, CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException {
+    final LinkedList<String> args = new LinkedList<String>();
+    args.addAll(Arrays.asList(arguments)); 
+    
+    // null old values
+    this.worldName = null;
+    this.environment = null;
+    this.generatorID = null;
+    this.generatorPlugin = null;
+    this.seed = null;
+
+    if (args.size() == 0) {
+      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("create-name-hint"));
+    } else {
+      this.worldName = args.remove(0);
+    }
+
+    for (String argument : args) {
+      if (argument.startsWith("e:")) {
+        try {
+          this.environment = Environment.valueOf(argument.replaceFirst("e:", ""));
+        } catch (final IllegalArgumentException exception) {
+          throw new CommandArgumentException(this.getMessage("invalid-environment"), this.getSimpleFormattedMessage("valid-environments", this.buildEnvironmentList()));
+        }
+      } else if (argument.startsWith("s:")) {
+        String stringSeed = argument.replaceFirst("s:", "");
+        long seed = 0;
+        try {
+          seed = Long.parseLong(stringSeed);
+        } catch (NumberFormatException exception) {
+          seed = stringSeed.hashCode();
+        }
+        this.seed = new Long(seed);
+      } else if (argument.startsWith("g:")) {
+        argument = argument.replaceFirst("g:", "");
+        final String[] a = argument.split(":");
+        this.generatorPlugin = a[0];
+        if (a.length == 2) this.generatorID = a[1];
+      }
+    }
+
   }
 
 }
