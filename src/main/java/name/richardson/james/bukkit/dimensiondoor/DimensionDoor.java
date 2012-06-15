@@ -62,8 +62,6 @@ public class DimensionDoor extends SkeletonPlugin {
   private final Set<World> creativeWorlds = new HashSet<World>();
   private final Map<String, Object> defaults = new HashMap<String, Object>();
 
-  private Server server;
-  private PluginManager pluginManager;
   private DimensionDoorConfiguration configuration;
   private WorldListener worldListener;
   private DatabaseHandler database;
@@ -107,7 +105,7 @@ public class DimensionDoor extends SkeletonPlugin {
     newWorld.seed(seed);
     this.logger.debug(String.format("Creating new world called %s.", worldName));
     this.logger.debug(String.format("name: %s, environment: %s, seed: %s.", worldName, environment.toString(), seed.toString()));
-    return this.server.createWorld(newWorld);
+    return this.getServer().createWorld(newWorld);
   }
 
   public World createWorld(final String worldName, final Environment environment, final Long seed, final String generatorPlugin, final String generatorID) {
@@ -120,7 +118,7 @@ public class DimensionDoor extends SkeletonPlugin {
     this.logger.debug(String.format("generatorPlugin: %s, generatorID: %s", generatorPlugin, generatorID));
     final ChunkGenerator chunkGenerator = this.getCustomChunkGenerator(generatorPlugin, generatorID, worldName);
     newWorld.generator(chunkGenerator);
-    final World world = this.server.createWorld(newWorld);
+    final World world = this.getServer().createWorld(newWorld);
     final WorldRecord record = WorldRecord.findByWorld(this.database, world);
     record.setGeneratorPlugin(generatorPlugin);
     record.setGeneratorID(generatorID);
@@ -171,11 +169,11 @@ public class DimensionDoor extends SkeletonPlugin {
   }
 
   public World getWorld(final String worldName) {
-    return this.server.getWorld(worldName);
+    return this.getServer().getWorld(worldName);
   }
 
   public boolean isWorldLoaded(final String worldName) {
-    final World world = this.server.getWorld(worldName);
+    final World world = this.getServer().getWorld(worldName);
     if (world == null)
       return false;
     else
@@ -183,7 +181,7 @@ public class DimensionDoor extends SkeletonPlugin {
   }
 
   public World loadWorld(final WorldRecord record) {
-    if (this.isWorldLoaded(record.getName())) return this.server.getWorld(record.getName());
+    if (this.isWorldLoaded(record.getName())) return this.getServer().getWorld(record.getName());
     this.logger.debug(String.format("Loading world called %s.", record.getName()));
     final WorldCreator newWorld = new WorldCreator(record.getName());
     newWorld.environment(record.getEnvironment());
@@ -192,7 +190,7 @@ public class DimensionDoor extends SkeletonPlugin {
       final ChunkGenerator chunkGenerator = this.getCustomChunkGenerator(record.getGeneratorPlugin(), record.getGeneratorID(), record.getName());
       newWorld.generator(chunkGenerator);
     }
-    return this.server.createWorld(newWorld);
+    return this.getServer().createWorld(newWorld);
   }
 
   public void onWorldUnload(final World world) {
@@ -223,13 +221,13 @@ public class DimensionDoor extends SkeletonPlugin {
     if (!world.getPlayers().isEmpty())
       throw new IllegalStateException("You can not unload a world which contains players.");
     else {
-      this.server.unloadWorld(world, true);
+      this.getServer().unloadWorld(world, true);
     }
   }
 
   private ChunkGenerator getCustomChunkGenerator(final String generator, final String generatorID, final String worldName) {
-    if (this.pluginManager.isPluginEnabled(generator)) {
-      final org.bukkit.plugin.Plugin plugin = this.pluginManager.getPlugin(generator);
+    if (this.getServer().getPluginManager().isPluginEnabled(generator)) {
+      final org.bukkit.plugin.Plugin plugin = this.getServer().getPluginManager().getPlugin(generator);
       final ChunkGenerator chunkGenerator = plugin.getDefaultWorldGenerator(worldName, generatorID);
       if (chunkGenerator == null)
         throw new IllegalArgumentException(String.format("%s does not support that generator!", generator));
@@ -259,19 +257,20 @@ public class DimensionDoor extends SkeletonPlugin {
   }
 
   private void setDefaults() {
-    final World world = this.server.getWorlds().get(0);
+    final World world = this.getServer().getWorlds().get(0);
     this.defaults.clear();
     this.defaults.put("pvp", world.getPVP());
     this.defaults.put("spawn-monsters", world.getAllowMonsters());
     this.defaults.put("spawn-animals", world.getAllowAnimals());
     this.defaults.put("difficulty", world.getDifficulty());
     this.defaults.put("environment", world.getEnvironment());
-    this.defaults.put("game-mode", this.server.getDefaultGameMode());
+    this.defaults.put("game-mode", this.getServer().getDefaultGameMode());
     this.defaults.put("spawn-in-memory", true);
   }
 
   protected void loadConfiguration() throws IOException {
     configuration = new DimensionDoorConfiguration(this);
+    this.setDefaults();
   }
 
   protected void registerCommands() {
@@ -289,15 +288,16 @@ public class DimensionDoor extends SkeletonPlugin {
     cm.addCommand(new UnloadCommand(this));
   }
 
-  protected void registerListeners() {
+  protected void registerEvents() {
+    PluginManager pluginManager = this.getServer().getPluginManager();
     this.worldListener = new WorldListener(this);
     this.playerListener = new PlayerListener(this);
     this.blockListener = new ContainerBlockListener(this);
     this.entityListener = new ItemListener(this);
-    this.pluginManager.registerEvents(this.worldListener, this);
-    this.pluginManager.registerEvents(this.playerListener, this);
-    if (configuration.isPreventItemSpawning()) this.pluginManager.registerEvents(this.entityListener, this);
-    if (configuration.isPreventContainerBlocks()) this.pluginManager.registerEvents(this.blockListener, this);
+    pluginManager.registerEvents(this.worldListener, this);
+    pluginManager.registerEvents(this.playerListener, this);
+    if (configuration.isPreventItemSpawning()) pluginManager.registerEvents(this.entityListener, this);
+    if (configuration.isPreventContainerBlocks()) pluginManager.registerEvents(this.blockListener, this);
     this.registerMainWorlds();
     this.registerAuxiliaryWorlds();
     this.logger.info(String.format("%d worlds loaded and configured.", this.getServer().getWorlds().size()));

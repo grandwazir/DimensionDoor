@@ -67,7 +67,7 @@ public class CreateCommand extends PluginCommand {
       this.plugin.createWorld(this.worldName, this.environment, this.seed);
     }
 
-    sender.sendMessage(this.getSimpleFormattedMessage("world-creation-in-progress", this.worldName));
+    sender.sendMessage(this.getSimpleFormattedMessage("world-created", this.worldName));
     CreateCommand.logger.info(String.format("%s has created a new world called %s", sender.getName(), this.worldName));
 
   }
@@ -78,11 +78,11 @@ public class CreateCommand extends PluginCommand {
 
     // null old values
     this.worldName = null;
-    this.environment = null;
+    this.environment = Environment.NORMAL;
+    this.seed = System.currentTimeMillis();
     this.generatorID = null;
     this.generatorPlugin = null;
-    this.seed = null;
-
+    
     if (args.size() == 0) {
       throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("create-name-hint"));
     } else {

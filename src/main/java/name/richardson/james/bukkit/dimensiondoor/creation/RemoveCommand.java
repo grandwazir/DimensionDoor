@@ -30,6 +30,7 @@ import name.richardson.james.bukkit.utilities.command.CommandPermissionException
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
+import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
 import name.richardson.james.bukkit.utilities.internals.Logger;
 
 @ConsoleCommand
@@ -55,7 +56,7 @@ public class RemoveCommand extends PluginCommand {
     this.plugin.removeWorld(record);
     RemoveCommand.logger.info(String.format("%s has removed the WorldRecord for %s", sender.getName(), this.worldName));
     sender.sendMessage(this.getSimpleFormattedMessage("world-removed", this.worldName));
-    sender.sendMessage(this.getMessage("remove-data-also"));
+    sender.sendMessage(ColourFormatter.replace("&", this.getMessage("remove-data-also")));
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {

@@ -31,8 +31,10 @@ import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
+@ConsoleCommand
 public class ListCommand extends PluginCommand {
 
   private final DimensionDoor plugin;
