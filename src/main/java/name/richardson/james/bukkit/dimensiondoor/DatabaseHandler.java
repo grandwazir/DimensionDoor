@@ -29,14 +29,14 @@ import name.richardson.james.bukkit.utilities.database.Database;
 
 public class DatabaseHandler extends Database {
 
-  public DatabaseHandler(final EbeanServer database) throws SQLException {
-    super(database);
-  }
-
   public static List<Class<?>> getDatabaseClasses() {
     final List<Class<?>> list = new ArrayList<Class<?>>();
     list.add(WorldRecord.class);
     return list;
+  }
+
+  public DatabaseHandler(final EbeanServer database) throws SQLException {
+    super(database);
   }
 
 }

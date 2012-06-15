@@ -19,16 +19,8 @@
 
 package name.richardson.james.bukkit.dimensiondoor.management;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
@@ -39,7 +31,7 @@ import name.richardson.james.bukkit.utilities.command.PluginCommand;
 public class InfoCommand extends PluginCommand {
 
   private final DimensionDoor plugin;
-  
+
   private String worldName;
 
   public InfoCommand(final DimensionDoor plugin) {
@@ -47,7 +39,6 @@ public class InfoCommand extends PluginCommand {
     this.plugin = plugin;
   }
 
-  
   public void execute(CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException, CommandPermissionException, name.richardson.james.bukkit.utilities.command.CommandUsageException {
     WorldRecord record = WorldRecord.findByName(this.plugin.getDatabaseHandler(), worldName);
 
@@ -69,18 +60,17 @@ public class InfoCommand extends PluginCommand {
       sender.sendMessage(String.format(ChatColor.YELLOW + "- generator plugin: %s", record.getGeneratorPlugin()));
       sender.sendMessage(String.format(ChatColor.YELLOW + "- generator id: %s", record.getGeneratorID()));
     }
-    
+
   }
-  
 
   public void parseArguments(String[] arguments, CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException {
-    
+
     if (arguments.length == 0) {
       throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("load-world-hint"));
     } else {
       this.worldName = arguments[0];
     }
-    
+
   }
 
 }

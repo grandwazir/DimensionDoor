@@ -19,15 +19,9 @@
 
 package name.richardson.james.bukkit.dimensiondoor.management;
 
-import java.util.Map;
-
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
@@ -47,7 +41,8 @@ public class SpawnCommand extends PluginCommand {
     final Integer y = (int) player.getLocation().getY();
     final Integer z = (int) player.getLocation().getZ();
     world.setSpawnLocation(x, y, z);
-    // this.logger.info(String.format("%s has set a new spawn location for %s", sender.getName(), world.getName()));
+    // this.logger.info(String.format("%s has set a new spawn location for %s",
+    // sender.getName(), world.getName()));
     sender.sendMessage(this.getSimpleFormattedMessage("spawn-set", world.getName()));
   }
 

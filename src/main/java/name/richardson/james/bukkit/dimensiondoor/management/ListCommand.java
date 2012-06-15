@@ -20,12 +20,9 @@
 package name.richardson.james.bukkit.dimensiondoor.management;
 
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
@@ -43,6 +40,18 @@ public class ListCommand extends PluginCommand {
     this.plugin = plugin;
   }
 
+  public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    final List<? extends Object> records = this.plugin.getDatabaseHandler().list(WorldRecord.class);
+    final String message = this.buildWorldList(records);
+    sender.sendMessage(plugin.getSimpleFormattedMessage("list-header", records.size()));
+    sender.sendMessage(message);
+  }
+
+  public void parseArguments(String[] arguments, CommandSender sender) throws CommandArgumentException {
+    // TODO Auto-generated method stub
+
+  }
+
   private String buildWorldList(final List<? extends Object> records) {
     final StringBuilder message = new StringBuilder();
     for (final Object record : records) {
@@ -56,20 +65,6 @@ public class ListCommand extends PluginCommand {
     }
     message.delete(message.length() - 2, message.length());
     return message.toString();
-  }
-
-  
-  public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final List<? extends Object> records = this.plugin.getDatabaseHandler().list(WorldRecord.class);
-    final String message = this.buildWorldList(records);
-    sender.sendMessage(plugin.getSimpleFormattedMessage("list-header", records.size()));
-    sender.sendMessage(message);
-  }
-  
-
-  public void parseArguments(String[] arguments, CommandSender sender) throws CommandArgumentException {
-    // TODO Auto-generated method stub
-    
   }
 
 }

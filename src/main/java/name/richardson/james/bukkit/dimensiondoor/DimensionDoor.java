@@ -44,10 +44,10 @@ import name.richardson.james.bukkit.dimensiondoor.creation.LoadCommand;
 import name.richardson.james.bukkit.dimensiondoor.creation.RemoveCommand;
 import name.richardson.james.bukkit.dimensiondoor.creation.UnloadCommand;
 import name.richardson.james.bukkit.dimensiondoor.creation.WorldListener;
-import name.richardson.james.bukkit.dimensiondoor.management.ContainerBlockListener;
 import name.richardson.james.bukkit.dimensiondoor.management.ClearCommand;
-import name.richardson.james.bukkit.dimensiondoor.management.ItemListener;
+import name.richardson.james.bukkit.dimensiondoor.management.ContainerBlockListener;
 import name.richardson.james.bukkit.dimensiondoor.management.InfoCommand;
+import name.richardson.james.bukkit.dimensiondoor.management.ItemListener;
 import name.richardson.james.bukkit.dimensiondoor.management.ListCommand;
 import name.richardson.james.bukkit.dimensiondoor.management.ModifyCommand;
 import name.richardson.james.bukkit.dimensiondoor.management.PlayerListener;
@@ -134,6 +134,10 @@ public class DimensionDoor extends SkeletonPlugin {
     this.database.delete(world);
   }
 
+  public String getArtifactID() {
+    return "dimension-door";
+  }
+
   public Set<World> getCreativeWorlds() {
     return Collections.unmodifiableSet(this.creativeWorlds);
   }
@@ -152,6 +156,10 @@ public class DimensionDoor extends SkeletonPlugin {
       this.setDefaults();
     }
     return Collections.unmodifiableMap(this.defaults);
+  }
+
+  public String getGroupID() {
+    return "name.richardson.james.bukkit";
   }
 
   public Set<World> getIsolatedWorlds() {
@@ -231,10 +239,6 @@ public class DimensionDoor extends SkeletonPlugin {
       throw new IllegalArgumentException(String.format("Plugin %s is not enabled!", generator));
   }
 
-  protected void loadConfiguration() throws IOException {
-    configuration = new DimensionDoorConfiguration(this);
-  }
-
   private void registerAuxiliaryWorlds() {
     for (final Object entity : this.database.list(WorldRecord.class)) {
       final WorldRecord record = (WorldRecord) entity;
@@ -244,35 +248,6 @@ public class DimensionDoor extends SkeletonPlugin {
         this.logger.warning(String.format("Unable to load %s: %s", record.getName(), exception.getMessage()));
       }
     }
-  }
-
-  protected void registerCommands() {
-    final CommandManager cm = new CommandManager(this);
-    this.getCommand("dd").setExecutor(cm);
-    cm.addCommand(new ClearCommand(this));
-    cm.addCommand(new CreateCommand(this));
-    cm.addCommand(new InfoCommand(this));
-    cm.addCommand(new ListCommand(this));
-    cm.addCommand(new LoadCommand(this));
-    cm.addCommand(new ModifyCommand(this));
-    cm.addCommand(new RemoveCommand(this));
-    cm.addCommand(new SpawnCommand(this));
-    cm.addCommand(new TeleportCommand(this));
-    cm.addCommand(new UnloadCommand(this));
-  }
-
-  protected void registerListeners() {
-    this.worldListener = new WorldListener(this);
-    this.playerListener = new PlayerListener(this);
-    this.blockListener = new ContainerBlockListener(this);
-    this.entityListener = new ItemListener(this);
-    this.pluginManager.registerEvents(this.worldListener , this);
-    this.pluginManager.registerEvents(this.playerListener , this);
-    if (configuration.isPreventItemSpawning()) this.pluginManager.registerEvents(this.entityListener, this);
-    if (configuration.isPreventContainerBlocks()) this.pluginManager.registerEvents(this.blockListener, this);
-    this.registerMainWorlds();
-    this.registerAuxiliaryWorlds();
-    this.logger.info(String.format("%d worlds loaded and configured.", this.getServer().getWorlds().size()));
   }
 
   private void registerMainWorlds() {
@@ -295,6 +270,39 @@ public class DimensionDoor extends SkeletonPlugin {
     this.defaults.put("spawn-in-memory", true);
   }
 
+  protected void loadConfiguration() throws IOException {
+    configuration = new DimensionDoorConfiguration(this);
+  }
+
+  protected void registerCommands() {
+    final CommandManager cm = new CommandManager(this);
+    this.getCommand("dd").setExecutor(cm);
+    cm.addCommand(new ClearCommand(this));
+    cm.addCommand(new CreateCommand(this));
+    cm.addCommand(new InfoCommand(this));
+    cm.addCommand(new ListCommand(this));
+    cm.addCommand(new LoadCommand(this));
+    cm.addCommand(new ModifyCommand(this));
+    cm.addCommand(new RemoveCommand(this));
+    cm.addCommand(new SpawnCommand(this));
+    cm.addCommand(new TeleportCommand(this));
+    cm.addCommand(new UnloadCommand(this));
+  }
+
+  protected void registerListeners() {
+    this.worldListener = new WorldListener(this);
+    this.playerListener = new PlayerListener(this);
+    this.blockListener = new ContainerBlockListener(this);
+    this.entityListener = new ItemListener(this);
+    this.pluginManager.registerEvents(this.worldListener, this);
+    this.pluginManager.registerEvents(this.playerListener, this);
+    if (configuration.isPreventItemSpawning()) this.pluginManager.registerEvents(this.entityListener, this);
+    if (configuration.isPreventContainerBlocks()) this.pluginManager.registerEvents(this.blockListener, this);
+    this.registerMainWorlds();
+    this.registerAuxiliaryWorlds();
+    this.logger.info(String.format("%d worlds loaded and configured.", this.getServer().getWorlds().size()));
+  }
+
   protected void setupPersistence() throws SQLException {
     try {
       this.getDatabase().find(WorldRecord.class).findRowCount();
@@ -303,15 +311,6 @@ public class DimensionDoor extends SkeletonPlugin {
       this.installDDL();
     }
     this.database = new DatabaseHandler(this.getDatabase());
-  }
-
-  
-  public String getArtifactID() {
-    return "dimension-door";
-  }
-
-  public String getGroupID() {
-    return "name.richardson.james.bukkit";
   }
 
 }

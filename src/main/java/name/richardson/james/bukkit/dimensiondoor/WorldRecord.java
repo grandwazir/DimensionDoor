@@ -47,6 +47,16 @@ public class WorldRecord {
 
   private final static Logger logger = new Logger(WorldRecord.class);
 
+  public static WorldRecord findByName(final DatabaseHandler database, final String worldName) {
+    logger.debug(String.format("Attempting to return WorldRecord matching the name %s.", worldName));
+    return database.getEbeanServer().find(WorldRecord.class).where().ieq("name", worldName).findUnique();
+  }
+
+  public static WorldRecord findByWorld(final DatabaseHandler database, final World world) {
+    logger.debug(String.format("Attempting to return WorldRecord matching the name %s.", world.getName()));
+    return database.getEbeanServer().find(WorldRecord.class).where().ieq("name", world.getName()).findUnique();
+  }
+
   @Id
   private String name;
 
@@ -81,16 +91,6 @@ public class WorldRecord {
   @NotNull
   private GameMode gamemode;
 
-  public static WorldRecord findByName(final DatabaseHandler database, final String worldName) {
-    logger.debug(String.format("Attempting to return WorldRecord matching the name %s.", worldName));
-    return database.getEbeanServer().find(WorldRecord.class).where().ieq("name", worldName).findUnique();
-  }
-
-  public static WorldRecord findByWorld(final DatabaseHandler database, final World world) {
-    logger.debug(String.format("Attempting to return WorldRecord matching the name %s.", world.getName()));
-    return database.getEbeanServer().find(WorldRecord.class).where().ieq("name", world.getName()).findUnique();
-  }
-
   public Difficulty getDifficulty() {
     return this.difficulty;
   }
@@ -121,6 +121,10 @@ public class WorldRecord {
 
   public boolean isIsolatedChat() {
     return this.isolatedChat;
+  }
+
+  public boolean isKeepSpawnInMemory() {
+    return keepSpawnInMemory;
   }
 
   public boolean isPvp() {
@@ -157,6 +161,10 @@ public class WorldRecord {
 
   public void setIsolatedChat(final boolean isolatedChat) {
     this.isolatedChat = isolatedChat;
+  }
+
+  public void setKeepSpawnInMemory(boolean keepSpawnInMemory) {
+    this.keepSpawnInMemory = keepSpawnInMemory;
   }
 
   public void setName(final String name) {
@@ -202,14 +210,6 @@ public class WorldRecord {
     message.append(", generator-id: " + this.generatorID);
     message.append("].");
     return message.toString();
-  }
-
-  public boolean isKeepSpawnInMemory() {
-    return keepSpawnInMemory;
-  }
-
-  public void setKeepSpawnInMemory(boolean keepSpawnInMemory) {
-    this.keepSpawnInMemory = keepSpawnInMemory;
   }
 
 }

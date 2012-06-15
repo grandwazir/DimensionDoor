@@ -19,18 +19,11 @@
 
 package name.richardson.james.bukkit.dimensiondoor.management;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
@@ -48,7 +41,6 @@ public class ClearCommand extends PluginCommand {
     this.plugin = plugin;
   }
 
-
   public void execute(CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException, CommandPermissionException, CommandUsageException {
     final World world = this.plugin.getWorld(worldName);
     if (world == null) {
@@ -61,10 +53,9 @@ public class ClearCommand extends PluginCommand {
         count++;
       }
     }
-    Object[] arguments = {count,world.getName()};
+    Object[] arguments = { count, world.getName() };
     sender.sendMessage(this.getSimpleFormattedMessage("clear-report", arguments));
   }
-  
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
 

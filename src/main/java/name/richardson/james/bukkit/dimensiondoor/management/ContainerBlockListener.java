@@ -60,23 +60,23 @@ public class ContainerBlockListener implements Listener {
       event.getVehicle().remove();
     }
   }
-  
+
   private boolean isBlackListed(Block block) {
     switch (block.getState().getType()) {
-      case CHEST:
-        return true;
-      case FURNACE:
-        return true;
-      case DISPENSER:
-        return true;
-      case ENCHANTMENT_TABLE:
-        return true;
-      case BREWING_STAND:
-        return true;
-      case WORKBENCH:
-        return true;
-      case STORAGE_MINECART:
-        return true;
+    case CHEST:
+      return true;
+    case FURNACE:
+      return true;
+    case DISPENSER:
+      return true;
+    case ENCHANTMENT_TABLE:
+      return true;
+    case BREWING_STAND:
+      return true;
+    case WORKBENCH:
+      return true;
+    case STORAGE_MINECART:
+      return true;
     }
     return false;
   }
