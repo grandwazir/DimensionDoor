@@ -1,5 +1,6 @@
 Changelog for DimensionDoor (v2.1.1-SNAPSHOT)
 
+2012-07-31 17:10:43 +0100    fix infinite loop (James Richardson)
 2012-07-31 16:46:02 +0100    serialise correctly (James Richardson)
 2012-07-31 16:41:16 +0100    using wrong constructor (James Richardson)
 2012-07-31 16:36:26 +0100    add toString - add forgotten fields (James Richardson)

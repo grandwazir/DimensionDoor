@@ -47,19 +47,19 @@ public class World extends Localised implements ConfigurationSerializable, Seria
   public static World deserialize(Map<String, Object> map) {
     DimensionDoor plugin = (DimensionDoor) Bukkit.getServer().getPluginManager().getPlugin("DimensionDoor");
     final World world = new World(plugin, (String) map.get("world-name"));
-    world.setAllowAnimals((Boolean) map.get("allow-animals"));
-    world.setAllowMonsters((Boolean) map.get("allow-monsters"));
-    world.setDifficulty(Difficulty.valueOf((String) map.get("difficulty")));
-    world.setEnabled((Boolean) map.get("enabled"));
-    world.setEnvironment(Environment.valueOf((String) map.get("environment")));
-    world.setGameMode(GameMode.valueOf((String) map.get("game-mode")));
-    world.setGenerateStructures((Boolean) map.get("generate-structures"));
-    world.setGeneratorID((String) map.get("generator-id"));
-    world.setGeneratorPluginName((String) map.get("generator-plugin-name"));
-    world.setIsolatedChat((Boolean) map.get("isolated-chat"));
-    world.setPVP((Boolean) map.get("pvp"));
-    world.setSeed((Long) map.get("seed"));
-    world.setWorldType(WorldType.valueOf((String) map.get("world-type")));
+    world.allowAnimals = ((Boolean) map.get("allow-animals"));
+    world.allowMonsters = ((Boolean) map.get("allow-monsters"));
+    world.difficulty = (Difficulty.valueOf((String) map.get("difficulty")));
+    world.enabled = ((Boolean) map.get("enabled"));
+    world.environment = (Environment.valueOf((String) map.get("environment")));
+    world.gameMode = (GameMode.valueOf((String) map.get("game-mode")));
+    world.generateStructures = ((Boolean) map.get("generate-structures"));
+    world.generatorID = ((String) map.get("generator-id"));
+    world.generatorPluginName = ((String) map.get("generator-plugin-name"));
+    world.isolatedChat = ((Boolean) map.get("isolated-chat"));
+    world.pvp = ((Boolean) map.get("pvp"));
+    world.seed = ((Long) map.get("seed"));
+    world.worldType = (WorldType.valueOf((String) map.get("world-type")));
     return world;
   }
 
