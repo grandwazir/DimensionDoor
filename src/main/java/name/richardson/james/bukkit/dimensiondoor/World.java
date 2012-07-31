@@ -47,17 +47,17 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     final World world = new World(plugin, (String) map.get("world-name"));
     world.setAllowAnimals((Boolean) map.get("allow-animals"));
     world.setAllowMonsters((Boolean) map.get("allow-monsters"));
-    world.setDifficulty((Difficulty) map.get("difficulty"));
+    world.setDifficulty(Difficulty.valueOf((String) map.get("difficulty")));
     world.setEnabled((Boolean) map.get("enabled"));
-    world.setEnvironment((Environment) map.get("environment"));
-    world.setGameMode((GameMode) map.get("game-mode"));
+    world.setEnvironment(Environment.valueOf((String) map.get("environment")));
+    world.setGameMode(GameMode.valueOf((String) map.get("game-mode")));
     world.setGenerateStructures((Boolean) map.get("generate-structures"));
     world.setGeneratorID((String) map.get("generator-id"));
     world.setGeneratorPluginName((String) map.get("generator-plugin-name"));
     world.setIsolatedChat((Boolean) map.get("isolated-chat"));
     world.setPVP((Boolean) map.get("pvp"));
     world.setSeed((Long) map.get("seed"));
-    world.setWorldType((WorldType) map.get("world-type"));
+    world.setWorldType(WorldType.valueOf((String) map.get("world-type")));
     return world;
   }
 
@@ -156,6 +156,8 @@ public class World extends Localised implements ConfigurationSerializable, Seria
    */
   public World(DimensionDoor plugin, String worldName) {
     super(plugin);
+    this.logger.debug("Initalising world object.");
+    this.logger.debug("Using default attributes.");
     this.plugin = plugin;
     this.worldName = worldName;
     this.checkIfWorldIsLoaded();
@@ -316,16 +318,16 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     map.put("enabled", enabled);
     map.put("allow-animals", allowAnimals);
     map.put("allow-monsters", allowMonsters);
-    map.put("difficulty", difficulty);
-    map.put("environment", environment);
-    map.put("game-mode", gameMode);
+    map.put("difficulty", difficulty.name());
+    map.put("environment", environment.name());
+    map.put("game-mode", gameMode.name());
     map.put("generate-structures", generateStructures);
     map.put("generator-id", generatorID);
     map.put("generator-plugin-name", generatorPluginName);
     map.put("isolated-chat", isolatedChat);
     map.put("pvp", pvp);
     map.put("seed", seed);
-    map.put("world-type", worldType);
+    map.put("world-type", worldType.name());
     return map;
   }
 
