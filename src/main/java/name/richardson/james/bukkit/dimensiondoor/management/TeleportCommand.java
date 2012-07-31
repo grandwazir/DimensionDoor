@@ -28,6 +28,7 @@ import org.bukkit.permissions.PermissionDefault;
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
+import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
@@ -42,20 +43,19 @@ public class TeleportCommand extends PluginCommand {
     this.registerPermissions();
   }
 
-  public void execute(CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException, CommandPermissionException, name.richardson.james.bukkit.utilities.command.CommandUsageException {
+  public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     final Player player = (Player) sender;
-    final World world = this.plugin.getWorld(worldName);
+    final World world = this.plugin.getServer().getWorld(worldName);
     if (world == null) {
-      throw new CommandArgumentException(this.getSimpleFormattedMessage("world-not-loaded", worldName), this.getMessage("load-world-hint"));
+      throw new CommandUsageException(this.getSimpleFormattedMessage("world-not-loaded", worldName));
     }
     player.teleport(world.getSpawnLocation());
-
   }
 
   public void parseArguments(String[] arguments, CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException {
 
     if (arguments.length == 0) {
-      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("load-world-hint"));
+      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("list-worlds-hint"));
     } else {
       this.worldName = arguments[0];
     }

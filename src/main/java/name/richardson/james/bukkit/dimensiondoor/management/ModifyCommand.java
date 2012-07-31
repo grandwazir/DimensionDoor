@@ -24,15 +24,14 @@ import java.util.LinkedList;
 
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
-import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
-import name.richardson.james.bukkit.dimensiondoor.WorldRecord.Attribute;
+import name.richardson.james.bukkit.dimensiondoor.World;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
+import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
@@ -44,40 +43,62 @@ public class ModifyCommand extends PluginCommand {
   private Attribute attribute;
   private String value;
 
+  private enum Attribute {
+    DIFFICULTY,
+    ENABLED,
+    GAME_MODE,
+    SPAWN_MONSTERS,
+    SPAWN_ANIMALS,
+    PVP,
+    KEEP_SPAWN_IN_MEMORY,
+    ISOLATED_CHAT
+  }
+  
   public ModifyCommand(final DimensionDoor plugin) {
     super(plugin);
     this.plugin = plugin;
     this.registerPermissions();
   }
 
-  public void execute(final CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException, name.richardson.james.bukkit.utilities.command.CommandPermissionException, CommandUsageException {
-    final WorldRecord record = WorldRecord.findByName(this.plugin.getDatabaseHandler(), this.worldName);
-
+  public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    final World world = plugin.getWorldManager().getWorld(worldName);
+    final String permissionName = this.getPermission(1).getName() + "." + attribute.toString().toLowerCase();
+    final Permission permission = plugin.getServer().getPluginManager().getPermission(permissionName);
+    if (world == null) {
+      throw new CommandUsageException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName));
+    } else if (!sender.hasPermission(permission)) {
+      throw new CommandPermissionException(null, permission);
+    }
+    
     switch (this.attribute) {
+    case ENABLED:
+      world.setEnabled(Boolean.parseBoolean(this.value));
+      this.value = Boolean.toString(Boolean.parseBoolean(this.value));
+      break;
     case PVP:
-      record.setPvp(Boolean.parseBoolean(this.value));
+      world.setPVP(Boolean.parseBoolean(this.value));
       this.value = Boolean.toString(Boolean.parseBoolean(this.value));
       break;
     case SPAWN_MONSTERS:
-      record.setSpawnMonsters(Boolean.parseBoolean(this.value));
+      world.setAllowMonsters(Boolean.parseBoolean(this.value));
       this.value = Boolean.toString(Boolean.parseBoolean(this.value));
       break;
     case SPAWN_ANIMALS:
-      record.setSpawnAnimals(Boolean.parseBoolean(this.value));
+      world.setAllowAnimals(Boolean.parseBoolean(this.value));
       this.value = Boolean.toString(Boolean.parseBoolean(this.value));
       break;
     case ISOLATED_CHAT:
-      record.setIsolatedChat(Boolean.parseBoolean(this.value));
+      world.setIsolatedChat(Boolean.parseBoolean(this.value));
       this.value = Boolean.toString(Boolean.parseBoolean(this.value));
       break;
-    case SPAWN_IN_MEMORY:
-      record.setKeepSpawnInMemory(Boolean.parseBoolean(this.value));
+    case KEEP_SPAWN_IN_MEMORY:
+      world.setKeepSpawnInMemory(Boolean.parseBoolean(this.value));
       this.value = Boolean.toString(Boolean.parseBoolean(this.value));
       break;
     case DIFFICULTY:
       try {
         this.value = this.value.toUpperCase();
-        record.setDifficulty(Difficulty.valueOf(this.value));
+        world.setDifficulty(Difficulty.valueOf(this.value));
         break;
       } catch (final IllegalArgumentException exception) {
         final StringBuilder guidence = new StringBuilder();
@@ -85,12 +106,12 @@ public class ModifyCommand extends PluginCommand {
           guidence.append(difficulty.toString() + ", ");
         }
         guidence.deleteCharAt(guidence.length() - 2);
-        throw new CommandArgumentException(this.getMessage("must-specify-valid-difficulty"), this.getSimpleFormattedMessage("difficulty-list", guidence.toString()));
+        throw new CommandArgumentException(this.getMessage("must-specify-valid-difficulty"), this.getSimpleFormattedMessage("choose-between", guidence.toString()));
       }
     case GAME_MODE:
       try {
         this.value = this.value.toUpperCase();
-        record.setGamemode(GameMode.valueOf(this.value));
+        world.setGameMode(GameMode.valueOf(this.value));
         break;
       } catch (final IllegalArgumentException exception) {
         final StringBuilder guidence = new StringBuilder();
@@ -98,38 +119,30 @@ public class ModifyCommand extends PluginCommand {
           guidence.append(gameMode.toString() + ", ");
         }
         guidence.deleteCharAt(guidence.length() - 2);
-        throw new CommandArgumentException(this.getMessage("must-specify-valid-game-mode"), this.getSimpleFormattedMessage("game-mode-list", guidence.toString()));
+        throw new CommandArgumentException(this.getMessage("must-specify-valid-game-mode"), this.getSimpleFormattedMessage("choose-between", guidence.toString()));
       }
     }
 
-    this.plugin.getDatabaseHandler().save(record);
-
-    if (this.plugin.isWorldLoaded(record.getName())) {
-      final World world = this.plugin.getWorld(record.getName());
-      this.plugin.applyWorldAttributes(world);
-    }
-
-    // this.logger.info(String.format("%s has changed %s to %s for %s",
-    // sender.getName(), attribute.toString(), value, record.getName()));
-    final Object[] arguments = { this.attribute.toString(), this.value, record.getName() };
-    sender.sendMessage(this.getSimpleFormattedMessage("change-report", arguments));
+    this.plugin.getWorldManager().save();
+    final Object[] arguments = { this.attribute.toString(), this.value, world.getName() };
+    sender.sendMessage(this.getSimpleFormattedMessage("success-report", arguments));
 
   }
 
-  public void parseArguments(final String[] arguments, final CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException {
+  public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
     final LinkedList<String> args = new LinkedList<String>();
     args.addAll(Arrays.asList(arguments));
 
     if (!args.isEmpty()) {
       this.worldName = args.remove(0);
     } else {
-      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("load-world-hint"));
+      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("list-worlds-hint"));
     }
 
     if (!args.isEmpty()) {
       try {
         final String name = args.remove(0).toUpperCase();
-        this.attribute = WorldRecord.Attribute.valueOf(name);
+        this.attribute = Attribute.valueOf(name);
       } catch (final IllegalArgumentException exception) {
         throw new CommandArgumentException(this.getMessage("must-specify-valid-attribute"), this.getSimpleFormattedMessage("attribute-list", this.getAttributesString()));
       } catch (final IndexOutOfBoundsException exception) {
@@ -149,7 +162,7 @@ public class ModifyCommand extends PluginCommand {
 
   private String getAttributesString() {
     final StringBuilder builder = new StringBuilder();
-    for (final WorldRecord.Attribute attribute : WorldRecord.Attribute.values()) {
+    for (final Attribute attribute : Attribute.values()) {
       builder.append(attribute.toString());
       builder.append(", ");
     }
@@ -157,23 +170,24 @@ public class ModifyCommand extends PluginCommand {
     return builder.toString();
   }
   
-  
-  
   private void registerPermissions() {
     final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
+    final String wildcardDescription = String.format(this.plugin.getMessage("plugincommand.wildcard-permission-description"), this.getName());
+    // create the wildcard permission
+    final Permission wildcard = new Permission(prefix + this.getName() + ".*", wildcardDescription, PermissionDefault.OP);
+    wildcard.addParent(this.plugin.getRootPermission(), true);
+    this.addPermission(wildcard);
     // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("modifycommand-permission-description"), PermissionDefault.OP);
-    base.addParent(this.plugin.getRootPermission(), true);
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
+    base.addParent(wildcard, true);
     this.addPermission(base);
-    /*
-    for (final WorldRecord.Attribute attribute : WorldRecord.Attribute.values()) {
-      final String permissionNode = ModifyCommand.PERMISSION.getName() + "." + attribute.toString().toLowerCase();
-      final String description = String.format("Allow users to modify %s attributes.", attribute.toString().toLowerCase().replace("_", " "));
+    for (final Attribute attribute : Attribute.values()) {
+      final String permissionNode = base.getName() + "." + attribute.toString().toLowerCase();
+      final String description = this.getSimpleFormattedMessage("permission-per-attribute-description", attribute.toString().toLowerCase().replace("_", " "));
       final Permission permission = new Permission(permissionNode, description, PermissionDefault.OP);
       permission.addParent(wildcard, true);
-      this.plugin.addPermission(permission, false);
+      plugin.addPermission(permission);
     }
-    */
   }
   
   

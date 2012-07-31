@@ -30,6 +30,7 @@ import name.richardson.james.bukkit.dimensiondoor.creation.UnloadCommand;
 import name.richardson.james.bukkit.dimensiondoor.management.ClearCommand;
 import name.richardson.james.bukkit.dimensiondoor.management.InfoCommand;
 import name.richardson.james.bukkit.dimensiondoor.management.ListCommand;
+import name.richardson.james.bukkit.dimensiondoor.management.ModifyCommand;
 import name.richardson.james.bukkit.utilities.command.CommandManager;
 import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
 
@@ -60,6 +61,7 @@ public class DimensionDoor extends SkeletonPlugin {
     cm.addCommand(new InfoCommand(this));
     cm.addCommand(new ListCommand(this));
     cm.addCommand(new LoadCommand(this));
+    cm.addCommand(new ModifyCommand(this));
     cm.addCommand(new RemoveCommand(this));
     cm.addCommand(new UnloadCommand(this));
   }
