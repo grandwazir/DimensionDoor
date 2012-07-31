@@ -27,6 +27,7 @@ import name.richardson.james.bukkit.dimensiondoor.creation.CreateCommand;
 import name.richardson.james.bukkit.dimensiondoor.creation.LoadCommand;
 import name.richardson.james.bukkit.dimensiondoor.creation.RemoveCommand;
 import name.richardson.james.bukkit.dimensiondoor.creation.UnloadCommand;
+import name.richardson.james.bukkit.dimensiondoor.management.ListCommand;
 import name.richardson.james.bukkit.utilities.command.CommandManager;
 import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
 

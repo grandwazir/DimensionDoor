@@ -47,7 +47,7 @@ public class ListCommand extends PluginCommand {
 
   public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     final String message = this.buildWorldList();
-    sender.sendMessage(plugin.getSimpleFormattedMessage("header", plugin.getWorldManager().configuredWorldCount()));
+    sender.sendMessage(this.getSimpleFormattedMessage("header", plugin.getWorldManager().configuredWorldCount()));
     sender.sendMessage(message);
   }
 

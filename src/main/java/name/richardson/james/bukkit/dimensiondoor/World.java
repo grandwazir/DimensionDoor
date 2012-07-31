@@ -287,7 +287,7 @@ public class World extends Localised implements ConfigurationSerializable, Seria
    *
    * @param event the event
    */
-  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
   public void onWorldLoaded(WorldLoadEvent event) {
     if (!listening) return;
     if (!event.getWorld().getName().equalsIgnoreCase(worldName)) return;
@@ -301,7 +301,7 @@ public class World extends Localised implements ConfigurationSerializable, Seria
    *
    * @param event the event
    */
-  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
   public void onWorldUnloaded(WorldUnloadEvent event) {
     if (!listening) return;
     if (!event.getWorld().getName().equalsIgnoreCase(worldName)) return;
@@ -516,7 +516,7 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     if (isMainWorld()) throw new IllegalStateException("You may not unload the main world.");
     this.logger.debug(String.format("Unloading %s.", this.worldName));
     this.removePlayers();
-    this.plugin.getServer().unloadWorld(world, true);
+    this.plugin.getServer().unloadWorld(worldName, true);
   }
 
   /**
@@ -634,7 +634,7 @@ public class World extends Localised implements ConfigurationSerializable, Seria
    final String prefix = plugin.getName().toLowerCase() + "." + getMessage("permission-name") + ".";
    // create the base permission
    final Permission base = new Permission(prefix + this.getName().toLowerCase().replaceAll(" ", "_"), this.getMessage("permission-description"), PermissionDefault.OP);
-   base.addParent(this.plugin.getRootPermission(), true);
+   base.addParent(this.getRootPermission(), true);
    this.permission = base;
    return base;
   }
