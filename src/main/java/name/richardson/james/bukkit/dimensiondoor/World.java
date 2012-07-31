@@ -117,7 +117,14 @@ public class World extends Localised implements Serializable, Listener {
     super(plugin);
     this.plugin = plugin; 
     this.worldName = worldName;
+    this.checkIfWorldIsLoaded();
     this.plugin.getServer().getPluginManager().registerEvents(this, plugin);
+  }
+  
+  private void checkIfWorldIsLoaded() {
+    for (org.bukkit.World world : this.plugin.getServer().getWorlds()) {
+      if (world.getName().equalsIgnoreCase(worldName)) this.world = world;
+    }
   }
   
   public void applyAttributes() {
@@ -252,6 +259,11 @@ public class World extends Localised implements Serializable, Listener {
     this.worldType = worldType;
   }
   
+  public void setWorld(org.bukkit.World world) {
+    if (world != null) throw new IllegalStateException("You may not change an existing world reference.");
+    this.world = world;
+  }
+  
   public void unload() {
     if (world == null) throw new IllegalStateException("You may not unload a world which is not loaded.");
     if (isMainWorld()) throw new IllegalStateException("You may not unload the main world.");
@@ -269,7 +281,6 @@ public class World extends Localised implements Serializable, Listener {
     if (difficulty == null) throw new IllegalArgumentException("Player can not be null!");
     player.setGameMode(gameMode);
   }
-
 
   private ChunkGenerator getCustomChunkGenerator() {
     if (generatorPluginName != null) {
@@ -306,6 +317,5 @@ public class World extends Localised implements Serializable, Listener {
     }
     return i;
   }
-  
   
 }
