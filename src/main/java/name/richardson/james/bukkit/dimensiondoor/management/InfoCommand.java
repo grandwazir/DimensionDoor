@@ -19,15 +19,15 @@
 
 package name.richardson.james.bukkit.dimensiondoor.management;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
-import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
+import name.richardson.james.bukkit.dimensiondoor.World;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
+import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
@@ -44,44 +44,40 @@ public class InfoCommand extends PluginCommand {
     this.registerPermissions();
   }
 
-  public void execute(CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException, CommandPermissionException, name.richardson.james.bukkit.utilities.command.CommandUsageException {
-    WorldRecord record = WorldRecord.findByName(this.plugin.getDatabaseHandler(), worldName);
-
-    if (record == null) {
-      throw new CommandArgumentException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName), this.getMessage("load-existing-world"));
+  public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    World world = this.plugin.getWorldManager().getWorld(worldName);
+    if (world != null) {
+      sender.sendMessage(this.getSimpleFormattedMessage("header", world.getName()));
+      sender.sendMessage(this.getSimpleFormattedMessage("enabled", world.getEnabled()));
+      sender.sendMessage(this.getSimpleFormattedMessage("seed", world.getSeed()));
+      sender.sendMessage(this.getSimpleFormattedMessage("environment", world.getEnvironment()));
+      sender.sendMessage(this.getSimpleFormattedMessage("difficulty", world.getDifficulty()));
+      sender.sendMessage(this.getSimpleFormattedMessage("generate_structures", world.isGeneratingStructures()));
+      sender.sendMessage(this.getSimpleFormattedMessage("isolated_chat", world.isChatIsolated()));
+      sender.sendMessage(this.getSimpleFormattedMessage("pvp", world.isPVP()));
+      sender.sendMessage(this.getSimpleFormattedMessage("spawn_animals", world.isSpawningAnimals()));
+      sender.sendMessage(this.getSimpleFormattedMessage("spawn_monsters", world.isSpawningMonsters()));
+      sender.sendMessage(this.getSimpleFormattedMessage("generator_plugin", world.getGeneratorPluginName()));
+      sender.sendMessage(this.getSimpleFormattedMessage("generator_id", world.getGeneratorID()));
+      sender.sendMessage(this.getSimpleFormattedMessage("keep_spawn_in_memory", world.isSpawnKeptInMemory()));
+      sender.sendMessage(this.getSimpleFormattedMessage("world_type", world.getWorldType()));   
+    } else {
+      throw new CommandUsageException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName));
     }
-
-    sender.sendMessage(String.format(ChatColor.LIGHT_PURPLE + "World information for %s:", record.getName()));
-    sender.sendMessage(String.format(ChatColor.YELLOW + "- seed: %d", record.getSeed()));
-    sender.sendMessage(String.format(ChatColor.YELLOW + "- environment: %s", record.getEnvironment().toString()));
-    sender.sendMessage(String.format(ChatColor.YELLOW + "- difficulty: %s", record.getDifficulty().name()));
-    sender.sendMessage(String.format(ChatColor.YELLOW + "- game mode: %s", record.getGamemode().name()));
-    sender.sendMessage(String.format(ChatColor.YELLOW + "- isolated chat: %b", record.isIsolatedChat()));
-    sender.sendMessage(String.format(ChatColor.YELLOW + "- pvp: %b", record.isPvp()));
-    sender.sendMessage(String.format(ChatColor.YELLOW + "- spawn animals: %b", record.isSpawnAnimals()));
-    sender.sendMessage(String.format(ChatColor.YELLOW + "- spawn monsters: %b", record.isSpawnMonsters()));
-    sender.sendMessage(String.format(ChatColor.YELLOW + "- keep spawn in memory: %b", record.isKeepSpawnInMemory()));
-    if (record.getGeneratorPlugin() != null) {
-      sender.sendMessage(String.format(ChatColor.YELLOW + "- generator plugin: %s", record.getGeneratorPlugin()));
-      sender.sendMessage(String.format(ChatColor.YELLOW + "- generator id: %s", record.getGeneratorID()));
-    }
-
   }
 
   public void parseArguments(String[] arguments, CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException {
-
     if (arguments.length == 0) {
       throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("load-world-hint"));
     } else {
       this.worldName = arguments[0];
     }
-
   }
 
   private void registerPermissions() {
     final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
     // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("infocommand-permission-description"), PermissionDefault.OP);
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
     base.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(base);
   }

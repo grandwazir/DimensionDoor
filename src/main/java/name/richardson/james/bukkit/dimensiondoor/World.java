@@ -639,4 +639,50 @@ public class World extends Localised implements ConfigurationSerializable, Seria
    return base;
   }
 
+  public boolean getEnabled() {
+    return enabled;
+  }
+
+  public long getSeed() {
+    return seed;
+  }
+
+  public Environment getEnvironment() {
+    return environment;
+  }
+
+  public Difficulty getDifficulty() {
+    return difficulty;
+  }
+
+  public boolean isPVP() {
+    return pvp;
+  }
+
+  public boolean isSpawningAnimals() {
+    return allowAnimals;
+  }
+  
+  public boolean isSpawningMonsters() {
+    return allowMonsters;
+  }
+
+  public String getGeneratorPluginName() {
+    return generatorPluginName;
+  }
+
+  public boolean isSpawnKeptInMemory() {
+    return keepSpawnInMemory;
+  }
+
+  public WorldType getWorldType() {
+    return worldType;
+  }
+
+  public boolean isGeneratingStructures() {
+    return generateStructures;
+  }
+  
+  
+
 }
