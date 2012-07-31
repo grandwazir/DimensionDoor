@@ -37,19 +37,17 @@ import name.richardson.james.bukkit.utilities.command.PluginCommand;
 @ConsoleCommand
 public class ClearCommand extends PluginCommand {
 
-  private final DimensionDoor plugin;
   private String worldName;
 
   public ClearCommand(final DimensionDoor plugin) {
     super(plugin);
-    this.plugin = plugin;
     this.registerPermissions();
   }
 
   public void execute(CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final World world = this.plugin.getWorld(worldName);
+    final World world = this.plugin.getServer().getWorld(worldName);
     if (world == null) {
-      throw new CommandArgumentException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName), this.getMessage("load-world-hint"));
+      throw new CommandUsageException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName));
     }
     int count = 0;
     for (Entity entity : world.getEntities()) {
@@ -75,7 +73,7 @@ public class ClearCommand extends PluginCommand {
   private void registerPermissions() {
     final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
     // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("clearcommand-permission-description"), PermissionDefault.OP);
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
     base.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(base);
   }
