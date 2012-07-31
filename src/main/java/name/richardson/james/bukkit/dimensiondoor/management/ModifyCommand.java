@@ -33,8 +33,10 @@ import name.richardson.james.bukkit.dimensiondoor.World;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
+import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
+@ConsoleCommand
 public class ModifyCommand extends PluginCommand {
 
   private final DimensionDoor plugin;
