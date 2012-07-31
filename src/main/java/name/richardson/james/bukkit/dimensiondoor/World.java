@@ -97,6 +97,9 @@ public class World extends Localised implements Serializable, Listener {
   /** Get the unique ID for this world */
   private UUID worldUUID;
   
+  /** If chat on this world is isolated */
+  private boolean isolatedChat = true;
+  
   public World(DimensionDoor plugin, org.bukkit.World world) {
     super(plugin);
     this.plugin = plugin; 
@@ -316,6 +319,14 @@ public class World extends Localised implements Serializable, Listener {
       i++;
     }
     return i;
+  }
+
+  public boolean isChatIsolated() {
+    return isolatedChat;
+  }
+
+  public void setIsolatedChat(boolean isolatedChat) {
+    this.isolatedChat = isolatedChat;
   }
   
 }
