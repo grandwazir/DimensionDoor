@@ -58,7 +58,7 @@ public class UnloadCommand extends PluginCommand {
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
 
     if (arguments.length == 0) {
-      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("load-world-hint"));
+      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("list-worlds-hint"));
     } else {
       this.worldName = arguments[0];
     }

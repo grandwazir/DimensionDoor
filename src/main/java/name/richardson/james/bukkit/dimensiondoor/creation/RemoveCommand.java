@@ -55,7 +55,7 @@ public class RemoveCommand extends PluginCommand {
       if (world.isLoaded()) world.unload();
       manager.removeWorld(world);
       sender.sendMessage(this.getSimpleFormattedMessage("world-removed", this.worldName));
-      sender.sendMessage(this.getMessage(this.getMessage("remove-data-also")));
+      sender.sendMessage(this.getMessage("remove-data-also"));
     }
   }
 

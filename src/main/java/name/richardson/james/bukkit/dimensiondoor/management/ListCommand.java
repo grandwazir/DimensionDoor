@@ -27,7 +27,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
-import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
+import name.richardson.james.bukkit.dimensiondoor.World;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
@@ -46,9 +46,8 @@ public class ListCommand extends PluginCommand {
   }
 
   public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final List<? extends Object> records = this.plugin.getDatabaseHandler().list(WorldRecord.class);
-    final String message = this.buildWorldList(records);
-    sender.sendMessage(plugin.getSimpleFormattedMessage("list-header", records.size()));
+    final String message = this.buildWorldList();
+    sender.sendMessage(plugin.getSimpleFormattedMessage("header", plugin.getWorldManager().configuredWorldCount()));
     sender.sendMessage(message);
   }
 
@@ -57,12 +56,11 @@ public class ListCommand extends PluginCommand {
 
   }
 
-  private String buildWorldList(final List<? extends Object> records) {
+  private String buildWorldList() {
     final StringBuilder message = new StringBuilder();
-    for (final Object record : records) {
-      final WorldRecord worldRecord = (WorldRecord) record;
-      final String name = worldRecord.getName();
-      if (this.plugin.isWorldLoaded(name)) {
+    for (final World world : this.plugin.getWorldManager().getWorlds().values()) {
+      final String name = world.getName();
+      if (world.isLoaded()) {
         message.append(ChatColor.GREEN + name + ", ");
       } else {
         message.append(ChatColor.RED + name + ", ");
@@ -75,7 +73,7 @@ public class ListCommand extends PluginCommand {
   private void registerPermissions() {
     final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
     // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("listcommand-permission-description"), PermissionDefault.OP);
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
     base.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(base);
   }

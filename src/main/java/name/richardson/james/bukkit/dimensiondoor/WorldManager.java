@@ -1,6 +1,7 @@
 package name.richardson.james.bukkit.dimensiondoor;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -135,4 +136,8 @@ public class WorldManager implements Listener {
     this.worlds.remove(world.getName());
   }
 
+  public Map<String, World> getWorlds() {
+    return Collections.unmodifiableMap(this.worlds);
+  }
+  
 }

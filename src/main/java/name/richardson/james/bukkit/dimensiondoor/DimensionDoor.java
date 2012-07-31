@@ -53,6 +53,7 @@ public class DimensionDoor extends SkeletonPlugin {
     CommandManager cm = new CommandManager(this);
     this.getCommand("dd").setExecutor(cm);
     cm.addCommand(new CreateCommand(this));
+    cm.addCommand(new ListCommand(this));
     cm.addCommand(new LoadCommand(this));
     cm.addCommand(new RemoveCommand(this));
     cm.addCommand(new UnloadCommand(this));
