@@ -164,8 +164,7 @@ public class World extends Localised implements Serializable, Listener {
   
   @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true)
   public void onPlayerChat(PlayerChatEvent event) {
-    if (this.isolatedChat == false) return;
-    if (event.getPlayer().getWorld() == this.world) {
+    if (this.isolatedChat == true && event.getPlayer().getWorld() == this.world) {
       event.getRecipients().clear();
       event.getRecipients().addAll(this.world.getPlayers());
     }

@@ -58,17 +58,6 @@ import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
 
 public class DimensionDoor extends SkeletonPlugin {
 
-  private final Set<World> isolatedChatWorlds = new HashSet<World>();
-  private final Set<World> creativeWorlds = new HashSet<World>();
-  private final Map<String, Object> defaults = new HashMap<String, Object>();
-
-  private DimensionDoorConfiguration configuration;
-  private WorldListener worldListener;
-  private DatabaseHandler database;
-  private PlayerListener playerListener;
-  private ContainerBlockListener blockListener;
-  private ItemListener entityListener;
-
   public String getArtifactID() {
     return "dimension-door";
   }
