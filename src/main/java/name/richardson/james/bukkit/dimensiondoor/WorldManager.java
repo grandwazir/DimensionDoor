@@ -31,20 +31,6 @@ public class WorldManager implements Listener {
     this.worlds = this.storage.getWorlds();
   }
   
-  @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true)
-  public void onPlayerChat(PlayerChatEvent event) {
-    if (this.isolatedWorlds.isEmpty()) return;
-    final List<Player> players = Arrays.asList(this.plugin.getServer().getOnlinePlayers());
-    final String originWorld = event.getPlayer().getWorld().getName();
-    for (Player player : players) {
-      String playerWorld = player.getWorld().getName();
-      if (this.isolatedWorlds.contains(originWorld) && !playerWorld.equalsIgnoreCase(originWorld)) {
-        // TODO: Test if this actually works. Would be nice if it does, I am guessing it does not.
-        event.getRecipients().remove(player);
-      }
-    }
-  }
-  
   @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true) 
   public void onWorldInit(WorldInitEvent event) {
     if (worlds.containsKey(event.getWorld().getName())) return;

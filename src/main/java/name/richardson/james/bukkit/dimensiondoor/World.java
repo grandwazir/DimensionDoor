@@ -1,7 +1,9 @@
 package name.richardson.james.bukkit.dimensiondoor;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -16,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.event.world.WorldLoadEvent;
@@ -157,6 +160,15 @@ public class World extends Localised implements Serializable, Listener {
   public void load() {
     if (world != null) throw new IllegalStateException("You may not load a world which is already loaded.");
     this.getWorldCreator().createWorld();
+  }
+  
+  @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true)
+  public void onPlayerChat(PlayerChatEvent event) {
+    if (this.isolatedChat == false) return;
+    if (event.getPlayer().getWorld() == this.world) {
+      event.getRecipients().clear();
+      event.getRecipients().addAll(this.world.getPlayers());
+    }
   }
   
   @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true)
