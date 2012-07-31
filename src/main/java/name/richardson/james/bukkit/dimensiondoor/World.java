@@ -2,6 +2,7 @@ package name.richardson.james.bukkit.dimensiondoor;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -12,6 +13,8 @@ import org.bukkit.Location;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -28,12 +31,13 @@ import org.bukkit.plugin.Plugin;
 import name.richardson.james.bukkit.utilities.internals.Logger;
 import name.richardson.james.bukkit.utilities.localisation.Localised;
 
-public class World extends Localised implements Serializable, Listener {
+@SerializableAs("World")
+public class World extends Localised implements ConfigurationSerializable, Serializable, Listener {
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 8551768503578434301L;
 
-  /**
+  /**s
    * Deserialize a world into a new object.
    *
    * @param map the map containing the data
@@ -45,13 +49,16 @@ public class World extends Localised implements Serializable, Listener {
     world.setAllowAnimals((Boolean) map.get("allow-animals"));
     world.setAllowMonsters((Boolean) map.get("allow-monsters"));
     world.setDifficulty((Difficulty) map.get("difficulty"));
+    world.setEnabled((Boolean) map.get("enabled"));
     world.setEnvironment((Environment) map.get("environment"));
     world.setGameMode((GameMode) map.get("game-mode"));
     world.setGenerateStructures((Boolean) map.get("generate-structures"));
     world.setGeneratorID((String) map.get("generator-id"));
     world.setGeneratorPluginName((String) map.get("generator-plugin-name"));
+    world.setIsolatedChat((Boolean) map.get("isolated-chat"));
     world.setPVP((Boolean) map.get("pvp"));
     world.setSeed((Long) map.get("seed"));
+    world.setWorldType((WorldType) map.get("world-type"));
     return world;
   }
 
@@ -130,15 +137,15 @@ public class World extends Localised implements Serializable, Listener {
     this.logger.debug(String.format("Using attributes from %s as a base.", world.getName()));
     this.plugin = plugin;
     this.world = world;
-    this.worldName = world.getName();
-    this.allowAnimals = world.getAllowAnimals();
-    this.allowMonsters = world.getAllowMonsters();
-    this.environment = world.getEnvironment();
+    this.worldName = this.world.getName();
+    this.allowAnimals = this.world.getAllowAnimals();
+    this.allowMonsters = this.world.getAllowMonsters();
+    this.environment = this.world.getEnvironment();
     this.gameMode = this.plugin.getServer().getDefaultGameMode();
-    this.pvp = world.getPVP();
-    this.seed = world.getSeed();
-    this.worldType = world.getWorldType();
-    this.worldUUID = world.getUID();
+    this.pvp = this.world.getPVP();
+    this.seed = this.world.getSeed();
+    this.worldType = this.world.getWorldType();
+    this.worldUUID = this.world.getUID();
     this.plugin.getServer().getPluginManager().registerEvents(this, plugin);
   }
 
@@ -229,7 +236,11 @@ public class World extends Localised implements Serializable, Listener {
     this.logger.debug(String.format("Loading %s into memory.", this.worldName));
     if (world != null) {
       this.getWorldCreator().createWorld();
-    }
+    } 
+  }
+  
+  public boolean isLoaded() {
+    return (this.world != null);
   }
 
   /**
@@ -301,8 +312,9 @@ public class World extends Localised implements Serializable, Listener {
    */
   public Map<String, Object> serialize() {
     this.logger.debug(String.format("Serializing %s.", world.getName()));
-    final Map<String, Object> map = new HashMap<String, Object>();
+    final Map<String, Object> map = new LinkedHashMap<String, Object>();
     map.put("world-name", worldName);
+    map.put("enabled", enabled);
     map.put("allow-animals", allowAnimals);
     map.put("allow-monsters", allowMonsters);
     map.put("difficulty", difficulty);
@@ -311,8 +323,10 @@ public class World extends Localised implements Serializable, Listener {
     map.put("generate-structures", generateStructures);
     map.put("generator-id", generatorID);
     map.put("generator-plugin-name", generatorPluginName);
+    map.put("isolated-chat", isolatedChat);
     map.put("pvp", pvp);
     map.put("seed", seed);
+    map.put("world-type", worldType);
     return map;
   }
 
@@ -600,6 +614,10 @@ public class World extends Localised implements Serializable, Listener {
     }
     this.logger.debug(String.format("Removed %d players from %s.", i, this.worldName));
     return i;
+  }
+  
+  public String toString() {
+    return this.serialize().toString();
   }
 
 }
