@@ -29,6 +29,9 @@ public class WorldManager implements Listener {
     this.storage = new WorldConfiguration(plugin);
     this.plugin = plugin;
     this.worlds = this.storage.getWorlds();
+    for (World world : this.worlds.values()) {
+      if (world.isEnabled()) world.load();
+    }
   }
   
   @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true) 
@@ -39,6 +42,16 @@ public class WorldManager implements Listener {
   
   public World getWorld(String name) {
     return worlds.get(name);
+  }
+  
+  public void removeWorld(String name) {
+    World world = this.getWorld(name);
+    if (world != null) {
+      world.unload();
+      world.unregisterEvents();
+      this.worlds.remove(name);
+      this.save();
+    }
   }
   
   public void refresh() {

@@ -58,17 +58,14 @@ import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
 
 public class DimensionDoor extends SkeletonPlugin {
 
+  private WorldManager manager;
+
   public String getArtifactID() {
     return "dimension-door";
   }
 
-  public String getGroupID() {
-    return "name.richardson.james.bukkit";
-  }
-
   protected void loadConfiguration() throws IOException {
     configuration = new DimensionDoorConfiguration(this);
-    this.setDefaults();
   }
 
   protected void registerCommands() {
@@ -102,13 +99,8 @@ public class DimensionDoor extends SkeletonPlugin {
   }
 
   protected void setupPersistence() throws SQLException {
-    try {
-      this.getDatabase().find(WorldRecord.class).findRowCount();
-    } catch (final PersistenceException ex) {
-      this.logger.warning(this.getMessage("no-database"));
-      this.installDDL();
-    }
-    this.database = new DatabaseHandler(this.getDatabase());
+    this.manager = new WorldManager(this);
+    this.logger.info(String.format("%d worlds loaded and configured.", this.manager.configuredWorldCount());
   }
 
 }

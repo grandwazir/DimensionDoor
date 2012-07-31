@@ -103,6 +103,12 @@ public class World extends Localised implements Serializable, Listener {
   /** If chat on this world is isolated */
   private boolean isolatedChat = true;
   
+  /** Is the world enabled (automatically load on startup) */
+  private boolean enabled = true;
+  
+  /** Do we listen for events or not? */
+  private boolean listening = true;
+  
   public World(DimensionDoor plugin, org.bukkit.World world) {
     super(plugin);
     this.plugin = plugin; 
@@ -127,12 +133,6 @@ public class World extends Localised implements Serializable, Listener {
     this.plugin.getServer().getPluginManager().registerEvents(this, plugin);
   }
   
-  private void checkIfWorldIsLoaded() {
-    for (org.bukkit.World world : this.plugin.getServer().getWorlds()) {
-      if (world.getName().equalsIgnoreCase(worldName)) this.world = world;
-    }
-  }
-  
   public void applyAttributes() {
     world.setDifficulty(difficulty);
     world.setKeepSpawnInMemory(keepSpawnInMemory);
@@ -141,16 +141,24 @@ public class World extends Localised implements Serializable, Listener {
     this.applyGameMode();
   }
   
-  public UUID getUUID() {
-    return this.worldUUID;
+  public String getGeneratorID() {
+    return generatorID;
   }
   
   public String getName() {
     return this.worldName;
   }
   
-  public String getGeneratorID() {
-    return generatorID;
+  public UUID getUUID() {
+    return this.worldUUID;
+  }
+  
+  public boolean isChatIsolated() {
+    return isolatedChat;
+  }
+  
+  public boolean isEnabled() {
+    return enabled;
   }
   
   public boolean isMainWorld() {
@@ -158,12 +166,14 @@ public class World extends Localised implements Serializable, Listener {
   }
   
   public void load() {
-    if (world != null) throw new IllegalStateException("You may not load a world which is already loaded.");
-    this.getWorldCreator().createWorld();
+    if (world != null) {
+      this.getWorldCreator().createWorld();
+    }
   }
   
   @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true)
   public void onPlayerChat(PlayerChatEvent event) {
+    if (!listening) return;
     if (this.isolatedChat == true && event.getPlayer().getWorld() == this.world) {
       event.getRecipients().clear();
       event.getRecipients().addAll(this.world.getPlayers());
@@ -172,8 +182,9 @@ public class World extends Localised implements Serializable, Listener {
   
   @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true)
   public void onPlayerTeleportEvent(PlayerTeleportEvent event) {
+    if (!listening) return;
     if (event.getTo().getWorld() == this.world) {
-      if (event.getPlayer().hasPermission(permission)) {
+      if (event.getPlayer().hasPermission(permission) || this.isMainWorld()) {
         this.applyGameMode(event.getPlayer());
       } else {
         this.getMessage("not-allowed-to-enter-world");
@@ -184,6 +195,7 @@ public class World extends Localised implements Serializable, Listener {
   
   @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
   public void onWorldLoaded(WorldLoadEvent event) {
+    if (!listening) return;
     if (!event.getWorld().getName().equalsIgnoreCase(worldName)) return;
     if (world == null) this.world = event.getWorld();
     this.applyAttributes();
@@ -191,6 +203,7 @@ public class World extends Localised implements Serializable, Listener {
   
   @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
   public void onWorldUnloaded(WorldUnloadEvent event) {
+    if (!listening) return;
     if (!event.getWorld().getName().equalsIgnoreCase(worldName)) return;
     this.world = null;
   }
@@ -227,6 +240,10 @@ public class World extends Localised implements Serializable, Listener {
     world.setDifficulty(difficulty);
   }
   
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
+  
   public void setEnvironment(Environment environment) {
     if (environment == null) throw new IllegalArgumentException("Environment can not be null!");
     this.environment = environment;
@@ -253,9 +270,17 @@ public class World extends Localised implements Serializable, Listener {
     this.generatorPluginName = generatorPluginName;
   }
   
+  public void setIsolatedChat(boolean isolatedChat) {
+    this.isolatedChat = isolatedChat;
+  }
+  
   public void setKeepSpawnInMemory(boolean keepSpawnInMemory) {
     this.keepSpawnInMemory = keepSpawnInMemory;
     world.setKeepSpawnInMemory(keepSpawnInMemory);
+  }
+  
+  public void unregisterEvents() {
+    this.listening = false;
   }
   
   public void setPVP(boolean pvp) {
@@ -268,16 +293,16 @@ public class World extends Localised implements Serializable, Listener {
     this.seed = seed;
   }
   
-  public void setWorldType(WorldType worldType) {
-    if (world != null) throw new IllegalStateException("You may not change the type of a world which is loaded.");
-    this.worldType = worldType;
-  }
-  
   public void setWorld(org.bukkit.World world) {
     if (world != null) throw new IllegalStateException("You may not change an existing world reference.");
     this.world = world;
   }
   
+  public void setWorldType(WorldType worldType) {
+    if (world != null) throw new IllegalStateException("You may not change the type of a world which is loaded.");
+    this.worldType = worldType;
+  }
+
   public void unload() {
     if (world == null) throw new IllegalStateException("You may not unload a world which is not loaded.");
     if (isMainWorld()) throw new IllegalStateException("You may not unload the main world.");
@@ -290,10 +315,16 @@ public class World extends Localised implements Serializable, Listener {
       player.setGameMode(gameMode);
     }
   }
-  
+
   private void applyGameMode(Player player) {
     if (difficulty == null) throw new IllegalArgumentException("Player can not be null!");
     player.setGameMode(gameMode);
+  }
+
+  private void checkIfWorldIsLoaded() {
+    for (org.bukkit.World world : this.plugin.getServer().getWorlds()) {
+      if (world.getName().equalsIgnoreCase(worldName)) this.world = world;
+    }
   }
 
   private ChunkGenerator getCustomChunkGenerator() {
@@ -307,7 +338,7 @@ public class World extends Localised implements Serializable, Listener {
     } 
     return null;
   }
-  
+
   private Location getMainWorldSpawn() {
     return plugin.getServer().getWorlds().get(0).getSpawnLocation();
   }
@@ -330,14 +361,6 @@ public class World extends Localised implements Serializable, Listener {
       i++;
     }
     return i;
-  }
-
-  public boolean isChatIsolated() {
-    return isolatedChat;
-  }
-
-  public void setIsolatedChat(boolean isolatedChat) {
-    this.isolatedChat = isolatedChat;
   }
   
 }
