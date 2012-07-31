@@ -24,6 +24,7 @@ import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 
 import name.richardson.james.bukkit.utilities.internals.Logger;
@@ -147,6 +148,7 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     this.seed = this.world.getSeed();
     this.worldType = this.world.getWorldType();
     this.worldUUID = this.world.getUID();
+    this.setPermission();
     this.plugin.getServer().getPluginManager().registerEvents(this, plugin);
   }
 
@@ -161,6 +163,7 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     this.plugin = plugin;
     this.worldName = worldName;
     this.checkIfWorldIsLoaded();
+    this.setPermission();
     this.plugin.getServer().getPluginManager().registerEvents(this, plugin);
   }
 
@@ -312,7 +315,7 @@ public class World extends Localised implements ConfigurationSerializable, Seria
    * @return the map
    */
   public Map<String, Object> serialize() {
-    this.logger.debug(String.format("Serializing %s.", world.getName()));
+    this.logger.debug(String.format("Serializing %s.", worldName));
     final Map<String, Object> map = new LinkedHashMap<String, Object>();
     map.put("world-name", worldName);
     map.put("enabled", enabled);
@@ -382,8 +385,8 @@ public class World extends Localised implements ConfigurationSerializable, Seria
    */
   public void setEnvironment(Environment environment) {
     if (environment == null) throw new IllegalArgumentException("Environment can not be null!");
-    this.logger.debug(String.format("Setting environment to %b for %s.", environment, this.worldName));
-    if (world != null) this.environment = environment;
+    this.logger.debug(String.format("Setting environment to %s for %s.", environment, this.worldName));
+    if (world == null) this.environment = environment;
   }
 
   /**
@@ -620,10 +623,20 @@ public class World extends Localised implements ConfigurationSerializable, Seria
   public String toString() {
     return this.serialize().toString();
   }
-
-  public void create() {
-    
-    
+  
+  private Permission getRootPermission() {
+    final String permission = plugin.getName().toLowerCase() + "." + getMessage("permission-name") + ".*";
+    return Bukkit.getServer().getPluginManager().getPermission(permission);
+  }
+  
+  private Permission setPermission() {
+   if (permission != null) return permission;
+   final String prefix = plugin.getName().toLowerCase() + "." + getMessage("permission-name") + ".";
+   // create the base permission
+   final Permission base = new Permission(prefix + this.getName().toLowerCase().replaceAll(" ", "_"), this.getMessage("permission-description"), PermissionDefault.OP);
+   base.addParent(this.plugin.getRootPermission(), true);
+   this.permission = base;
+   return base;
   }
 
 }

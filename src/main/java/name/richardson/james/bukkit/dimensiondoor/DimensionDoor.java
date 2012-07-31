@@ -24,6 +24,9 @@ import java.io.IOException;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
 import name.richardson.james.bukkit.dimensiondoor.creation.CreateCommand;
+import name.richardson.james.bukkit.dimensiondoor.creation.LoadCommand;
+import name.richardson.james.bukkit.dimensiondoor.creation.RemoveCommand;
+import name.richardson.james.bukkit.dimensiondoor.creation.UnloadCommand;
 import name.richardson.james.bukkit.utilities.command.CommandManager;
 import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
 
@@ -50,6 +53,9 @@ public class DimensionDoor extends SkeletonPlugin {
     CommandManager cm = new CommandManager(this);
     this.getCommand("dd").setExecutor(cm);
     cm.addCommand(new CreateCommand(this));
+    cm.addCommand(new LoadCommand(this));
+    cm.addCommand(new RemoveCommand(this));
+    cm.addCommand(new UnloadCommand(this));
   }
 
   protected void registerEvents() {

@@ -164,11 +164,33 @@ public class CreateCommand extends PluginCommand {
       } else {
         context.setSessionData("seed", message.hashCode());
       }
-      return new WorldGeneratorPluginPrompt();
+      return new WorldGenerateStructuresPrompt();
     }
 
     public String getPromptText(ConversationContext context) {
       return getSimpleFormattedMessage("prompt-world-seed", getMessage("random"));
+    }
+    
+  }
+  
+  private class WorldGenerateStructuresPrompt extends FixedSetPrompt {
+
+    public WorldGenerateStructuresPrompt() {
+      super(getMessage("yes"), getMessage("no"));
+    }
+    
+    public Prompt acceptValidatedInput(ConversationContext context, String message) {
+      if (message.equalsIgnoreCase(getMessage("no"))) {
+        context.setSessionData("generate-structures", false);
+      } else {
+        context.setSessionData("generate-structures", true);
+      }
+      context.setSessionData("step", 6);
+      return new WorldGeneratorPluginPrompt();
+    }
+
+    public String getPromptText(ConversationContext context) {
+      return getSimpleFormattedMessage("prompt-generate-structures", formatFixedSet().toString());
     }
     
   }
@@ -179,10 +201,10 @@ public class CreateCommand extends PluginCommand {
       
       if (!message.equalsIgnoreCase(getMessage("none"))) {
         context.setSessionData("generator-plugin", message);
-        context.setSessionData("step", 6);
+        context.setSessionData("step", 7);
         return new WorldGeneratorIdPrompt();
       } else {
-        context.setSessionData("step", 7);
+        context.setSessionData("step", 8);
         return new CreateWorldPrompt();
       }
     }
@@ -205,7 +227,7 @@ public class CreateCommand extends PluginCommand {
   private class WorldGeneratorIdPrompt extends StringPrompt {
     
     public Prompt acceptInput(ConversationContext context, String message) {
-      context.setSessionData("step", 7);
+      context.setSessionData("step", 8);
       if (!message.equalsIgnoreCase(getMessage("none"))) context.setSessionData("generator-id", message);
       return new CreateWorldPrompt();
     }
@@ -220,14 +242,22 @@ public class CreateCommand extends PluginCommand {
     
     public String getPromptText(ConversationContext context) {
       World world = new World(plugin, context.getSessionData("world-name").toString());
+      context.getForWhom().sendRawMessage(getSimpleFormattedMessage("creating-world", world.getName()));
       world.setEnvironment(Environment.valueOf(context.getSessionData("environment").toString()));
       world.setWorldType(WorldType.valueOf(context.getSessionData("world-type").toString()));
       world.setSeed(Long.parseLong(context.getSessionData("seed").toString()));
-      String pluginName = context.getSessionData("generator-plugin").toString();
-      if (pluginName == null) world.setGeneratorPluginName(pluginName);
-      String pluginId = context.getSessionData("generator-id").toString();
-      if (pluginId == null) world.setGeneratorPluginName(pluginId);
+      if (context.getSessionData("generator-plugin") != null) {
+        String pluginName = (String) context.getSessionData("generator-plugin");
+        world.setGeneratorPluginName(pluginName);
+      }
+      if (context.getSessionData("generator-id") != null) {
+        String pluginName = (String) context.getSessionData("generator-id");
+        world.setGeneratorPluginName(pluginName);
+      }
+      System.out.print(world.toString());
       world.load();
+      manager.addWorld(world);
+      manager.save();
       return getSimpleFormattedMessage("world-created", world.getName());
     }
 
@@ -241,11 +271,7 @@ public class CreateCommand extends PluginCommand {
   private class WorldCreatePrefix implements ConversationPrefix {
 
     public String getPrefix(ConversationContext context) {
-      if (!context.getSessionData("step").toString().equalsIgnoreCase("finished")) {
-        return getSimpleFormattedMessage("prefix", context.getSessionData("step"));
-      } else {
-        return getMessage("creating-world");
-      }
+      return getSimpleFormattedMessage("prefix", context.getSessionData("step"));
     } 
     
   }

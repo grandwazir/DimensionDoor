@@ -1,5 +1,7 @@
 Changelog for DimensionDoor (v2.1.1-SNAPSHOT)
 
+2012-07-31 22:09:43 +0100    better end of command notification fixed NPE (James Richardson)
+2012-07-31 22:05:17 +0100    add Conversation to create worlds - fully localisable - better error checking (James Richardson)
 2012-07-31 20:06:21 +0100    update RemoveCommand (James Richardson)
 2012-07-31 19:58:20 +0100    update LoadCommand (James Richardson)
 2012-07-31 17:14:12 +0100    revert to setting fields directly (James Richardson)

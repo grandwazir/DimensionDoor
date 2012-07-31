@@ -3,10 +3,13 @@ package name.richardson.james.bukkit.dimensiondoor;
 import java.io.IOException;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldInitEvent;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.utilities.internals.Logger;
 
@@ -34,6 +37,7 @@ public class WorldManager implements Listener {
     this.logger.debug("Initalising world manager.");
     this.storage = new WorldConfiguration(plugin);
     this.plugin = plugin;
+    this.setRootPermission();
     this.worlds = this.storage.getWorlds();
     this.checkForMainWorlds();
     int i = 0;
@@ -78,6 +82,12 @@ public class WorldManager implements Listener {
   
   public void addWorld(World world) {
     this.worlds.put(world.getName(), world);
+  }
+  
+  private void setRootPermission() {
+    final String permission = plugin.getName().toLowerCase() + "." + this.plugin.getMessage("world.permission-name") + ".*";
+    final Permission base = new Permission(permission, this.plugin.getMessage("world.wildcard-permission-description"), PermissionDefault.OP);
+    base.addParent(this.plugin.getRootPermission(), true);
   }
   
   /**
