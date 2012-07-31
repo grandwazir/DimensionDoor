@@ -1,5 +1,21 @@
-Changelog for DimensionDoor (v2.1.0-SNAPSHOT)
+Changelog for DimensionDoor (v2.1.1-SNAPSHOT)
 
+2012-07-31 15:37:27 +0100    comment out old commands (James Richardson)
+2012-07-31 15:34:39 +0100    add documentation (James Richardson)
+2012-07-31 15:15:43 +0100    added debugging (James Richardson)
+2012-07-31 07:06:01 +0100    always allow players to enter the main world (James Richardson)
+2012-07-31 06:45:41 +0100    mass cleanup (James Richardson)
+2012-07-31 06:43:36 +0100    changed my mind and moved it into World (James Richardson)
+2012-07-31 06:40:39 +0100    implement isolated chat (James Richardson)
+2012-07-31 06:08:16 +0100    remove old style methods (James Richardson)
+2012-07-31 06:07:12 +0100    now check to see if a world is loaded when deserialising this will enable transparent enabling of main worlds (James Richardson)
+2012-07-31 05:47:44 +0100    remove database handler (James Richardson)
+2012-07-31 05:47:24 +0100    remove WorldListener (James Richardson)
+2012-07-31 05:46:52 +0100    remove WorldRecord (yaml storage now) (James Richardson)
+2012-07-31 05:46:31 +0100    implementing new world manager (James Richardson)
+
+v2.1.0
+2012-06-16 00:47:07 +0100    Finished debugging (James Richardson)
 2012-06-16 00:21:07 +0100    added Permissions to all commands (James Richardson)
 2012-06-16 00:02:57 +0100    added localisation (James Richardson)
 2012-06-16 00:02:37 +0100    code clean up (James Richardson)
@@ -10,8 +26,6 @@ Changelog for DimensionDoor (v2.1.0-SNAPSHOT)
 
 v2.0.3
 2012-02-02 03:16:15 +0000    updated POM to reflect correct github location (James Richardson)
-
-v2.0.2
 2012-02-02 03:09:21 +0000    updated POM to shade bukkit utilities (James Richardson)
 2012-02-02 02:58:27 +0000    converting to use with maven (James Richardson)
 2012-01-31 20:27:55 +0000    fixed bug where prevent item drops was not being applied (James Richardson)

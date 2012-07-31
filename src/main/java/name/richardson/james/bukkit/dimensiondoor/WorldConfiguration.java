@@ -19,6 +19,13 @@ public class WorldConfiguration extends YAMLStorage {
     super(plugin, FILE_NAME);
     worlds = this.configuration.getConfigurationSection("worlds");
   }
+  
+  public void setDefaults() throws IOException {
+    super.setDefaults();
+    if (!configuration.isConfigurationSection("worlds")) {
+      this.configuration.set("worlds", "");
+    }
+  }
 
   public Map<String, World> getWorlds() {
     Map<String, World> worlds = new HashMap<String, World>(8);
