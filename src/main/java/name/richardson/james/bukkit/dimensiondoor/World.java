@@ -179,6 +179,18 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     this.applyGameMode();
   }
 
+  public Difficulty getDifficulty() {
+    return difficulty;
+  }
+
+  public boolean getEnabled() {
+    return enabled;
+  }
+
+  public Environment getEnvironment() {
+    return environment;
+  }
+
   /**
    * Gets the generator id.
    *
@@ -186,6 +198,10 @@ public class World extends Localised implements ConfigurationSerializable, Seria
    */
   public String getGeneratorID() {
     return generatorID;
+  }
+
+  public String getGeneratorPluginName() {
+    return generatorPluginName;
   }
 
   /**
@@ -197,6 +213,10 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     return this.worldName;
   }
 
+  public long getSeed() {
+    return seed;
+  }
+  
   /**
    * Gets the UUID.
    *
@@ -204,6 +224,10 @@ public class World extends Localised implements ConfigurationSerializable, Seria
    */
   public UUID getUUID() {
     return this.worldUUID;
+  }
+
+  public WorldType getWorldType() {
+    return worldType;
   }
 
   /**
@@ -224,6 +248,14 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     return enabled;
   }
 
+  public boolean isGeneratingStructures() {
+    return generateStructures;
+  }
+
+  public boolean isLoaded() {
+    return (this.world != null);
+  }
+
   /**
    * Checks if is main world.
    *
@@ -231,6 +263,22 @@ public class World extends Localised implements ConfigurationSerializable, Seria
    */
   public boolean isMainWorld() {
     return (plugin.getServer().getWorlds().get(0) == world);
+  }
+
+  public boolean isPVP() {
+    return pvp;
+  }
+
+  public boolean isSpawningAnimals() {
+    return allowAnimals;
+  }
+
+  public boolean isSpawningMonsters() {
+    return allowMonsters;
+  }
+
+  public boolean isSpawnKeptInMemory() {
+    return keepSpawnInMemory;
   }
 
   /**
@@ -241,10 +289,6 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     if (world == null) {
       this.getWorldCreator().createWorld();
     } 
-  }
-  
-  public boolean isLoaded() {
-    return (this.world != null);
   }
 
   /**
@@ -442,6 +486,7 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     this.logger.debug(String.format("Setting generatorPluginName to %s for %s.", generatorPluginName, this.worldName));
     this.generatorPluginName = generatorPluginName;
   }
+  
 
   /**
    * Sets if chat in this world should be isolated.
@@ -452,6 +497,7 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     this.logger.debug(String.format("Setting isolatedChat to %b for %s.", isolatedChat, this.worldName));
     this.isolatedChat = isolatedChat;
   }
+  
 
   /**
    * Sets if we should keep the spawn of the world in memory.
@@ -485,7 +531,7 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     this.logger.debug(String.format("Setting seed to %d for %s.", seed, this.worldName));
     this.seed = seed;
   }
-
+  
   /**
    * Sets a reference to a loaded world.
    *
@@ -496,7 +542,7 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     this.logger.debug(String.format("Setting world reference for %s.", this.worldName));
     this.world = world;
   }
-
+  
   /**
    * Sets the type of world.
    *
@@ -506,6 +552,10 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     if (world != null) throw new IllegalStateException("You may not change the type of a world which is loaded.");
     this.logger.debug(String.format("Setting worldType to %s for %s.", worldType.name(), this.worldName));
     this.worldType = worldType;
+  }
+  
+  public String toString() {
+    return this.serialize().toString();
   }
 
   /**
@@ -560,7 +610,6 @@ public class World extends Localised implements ConfigurationSerializable, Seria
       if (world.getName().equalsIgnoreCase(worldName)) this.world = world;
     }
   }
-  
 
   /**
    * Gets the custom chunk generator.
@@ -579,7 +628,6 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     return null;
   }
   
-
   /**
    * Gets the main world spawn.
    *
@@ -587,6 +635,12 @@ public class World extends Localised implements ConfigurationSerializable, Seria
    */
   private Location getMainWorldSpawn() {
     return plugin.getServer().getWorlds().get(0).getSpawnLocation();
+  }
+
+  private Permission getRootPermission() {
+    final String permission = plugin.getName().toLowerCase() + "." + this.getMessage("permission-name") + ".*";
+    System.out.print(permission);
+    return Bukkit.getServer().getPluginManager().getPermission(permission);
   }
 
   /**
@@ -619,68 +673,16 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     this.logger.debug(String.format("Removed %d players from %s.", i, this.worldName));
     return i;
   }
-  
-  public String toString() {
-    return this.serialize().toString();
-  }
-  
-  private Permission getRootPermission() {
-    final String permission = plugin.getName().toLowerCase() + "." + getMessage("permission-name") + ".*";
-    return Bukkit.getServer().getPluginManager().getPermission(permission);
-  }
-  
+
   private Permission setPermission() {
    if (permission != null) return permission;
    final String prefix = plugin.getName().toLowerCase() + "." + getMessage("permission-name") + ".";
    // create the base permission
    final Permission base = new Permission(prefix + this.getName().toLowerCase().replaceAll(" ", "_"), this.getMessage("permission-description"), PermissionDefault.OP);
    base.addParent(this.getRootPermission(), true);
+   plugin.addPermission(base);
    this.permission = base;
    return base;
-  }
-
-  public boolean getEnabled() {
-    return enabled;
-  }
-
-  public long getSeed() {
-    return seed;
-  }
-
-  public Environment getEnvironment() {
-    return environment;
-  }
-
-  public Difficulty getDifficulty() {
-    return difficulty;
-  }
-
-  public boolean isPVP() {
-    return pvp;
-  }
-
-  public boolean isSpawningAnimals() {
-    return allowAnimals;
-  }
-  
-  public boolean isSpawningMonsters() {
-    return allowMonsters;
-  }
-
-  public String getGeneratorPluginName() {
-    return generatorPluginName;
-  }
-
-  public boolean isSpawnKeptInMemory() {
-    return keepSpawnInMemory;
-  }
-
-  public WorldType getWorldType() {
-    return worldType;
-  }
-
-  public boolean isGeneratingStructures() {
-    return generateStructures;
   }
   
   

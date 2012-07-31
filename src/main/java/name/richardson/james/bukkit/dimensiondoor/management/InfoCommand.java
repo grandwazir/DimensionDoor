@@ -48,19 +48,19 @@ public class InfoCommand extends PluginCommand {
     World world = this.plugin.getWorldManager().getWorld(worldName);
     if (world != null) {
       sender.sendMessage(this.getSimpleFormattedMessage("header", world.getName()));
-      sender.sendMessage(this.getSimpleFormattedMessage("enabled", world.getEnabled()));
-      sender.sendMessage(this.getSimpleFormattedMessage("seed", world.getSeed()));
-      sender.sendMessage(this.getSimpleFormattedMessage("environment", world.getEnvironment()));
-      sender.sendMessage(this.getSimpleFormattedMessage("difficulty", world.getDifficulty()));
-      sender.sendMessage(this.getSimpleFormattedMessage("generate_structures", world.isGeneratingStructures()));
-      sender.sendMessage(this.getSimpleFormattedMessage("isolated_chat", world.isChatIsolated()));
-      sender.sendMessage(this.getSimpleFormattedMessage("pvp", world.isPVP()));
-      sender.sendMessage(this.getSimpleFormattedMessage("spawn_animals", world.isSpawningAnimals()));
-      sender.sendMessage(this.getSimpleFormattedMessage("spawn_monsters", world.isSpawningMonsters()));
-      sender.sendMessage(this.getSimpleFormattedMessage("generator_plugin", world.getGeneratorPluginName()));
-      sender.sendMessage(this.getSimpleFormattedMessage("generator_id", world.getGeneratorID()));
-      sender.sendMessage(this.getSimpleFormattedMessage("keep_spawn_in_memory", world.isSpawnKeptInMemory()));
-      sender.sendMessage(this.getSimpleFormattedMessage("world_type", world.getWorldType()));   
+      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("enabled"), world.getEnabled()}));
+      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("seed"), String.valueOf(world.getSeed())}));
+      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("environment"), world.getEnvironment()}));
+      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("difficulty"), world.getDifficulty()}));
+      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("generate_structures"), world.isGeneratingStructures()}));
+      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("isolated_chat"), world.isChatIsolated()}));
+      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("pvp"), world.isPVP()}));
+      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("spawn_animals"), world.isSpawningAnimals()}));
+      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("spawn_monsters"), world.isSpawningMonsters()}));
+      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("generator_plugin"), world.getGeneratorPluginName()}));
+      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("generator_id"), world.getGeneratorID()}));
+      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("keep_spawn_in_memory"), world.isSpawnKeptInMemory()}));
+      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("world_type"), world.getWorldType()}));  
     } else {
       throw new CommandUsageException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName));
     }
@@ -68,7 +68,7 @@ public class InfoCommand extends PluginCommand {
 
   public void parseArguments(String[] arguments, CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException {
     if (arguments.length == 0) {
-      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("load-world-hint"));
+      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("list-worlds-hint"));
     } else {
       this.worldName = arguments[0];
     }

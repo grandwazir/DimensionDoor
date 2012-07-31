@@ -36,9 +36,9 @@ public class WorldManager implements Listener {
    */
   public WorldManager(DimensionDoor plugin) throws IOException {
     this.logger.debug("Initalising world manager.");
-    this.storage = new WorldConfiguration(plugin);
     this.plugin = plugin;
     this.setRootPermission();
+    this.storage = new WorldConfiguration(plugin);
     this.worlds = this.storage.getWorlds();
     this.checkForMainWorlds();
     int i = 0;
@@ -86,9 +86,10 @@ public class WorldManager implements Listener {
   }
   
   private void setRootPermission() {
-    final String permission = plugin.getName().toLowerCase() + "." + this.plugin.getMessage("world.permission-name") + ".*";
+    final String permission = this.plugin.getName().toLowerCase() + "." + this.plugin.getMessage("world.permission-name") + ".*";
     final Permission base = new Permission(permission, this.plugin.getMessage("world.wildcard-permission-description"), PermissionDefault.OP);
     base.addParent(this.plugin.getRootPermission(), true);
+    this.plugin.addPermission(base);
   }
   
   /**
