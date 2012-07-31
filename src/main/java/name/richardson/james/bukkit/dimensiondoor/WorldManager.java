@@ -38,7 +38,7 @@ public class WorldManager implements Listener {
     this.checkForMainWorlds();
     int i = 0;
     for (World world : this.worlds.values()) {
-      logger.debug(world.toString());
+      logger.debug(world.toString());      
       if (world.isEnabled()) {
         if (!world.isLoaded()) {
           world.load();
@@ -56,7 +56,7 @@ public class WorldManager implements Listener {
     for (org.bukkit.World world : this.plugin.getServer().getWorlds()) {
       if (!this.worlds.containsKey(world.getName())) {
         this.logger.debug(String.format("%s has not been configured by DimensionDoor.", world.getName()));
-        this.worlds.put(world.getName(), new World(this.plugin, world.getName()));
+        this.worlds.put(world.getName(), new World(this.plugin, world));
       }
     }
     this.save();
