@@ -176,11 +176,13 @@ public class CreateCommand extends PluginCommand {
   private class WorldGeneratorPluginPrompt extends ValidatingPrompt {
     
     public Prompt acceptValidatedInput(ConversationContext context, String message) {
-      context.setSessionData("step", 6);
+      
       if (!message.equalsIgnoreCase(getMessage("none"))) {
         context.setSessionData("generator-plugin", message);
+        context.setSessionData("step", 6);
         return new WorldGeneratorIdPrompt();
       } else {
+        context.setSessionData("step", 7);
         return new CreateWorldPrompt();
       }
     }
@@ -222,9 +224,9 @@ public class CreateCommand extends PluginCommand {
       world.setWorldType(WorldType.valueOf(context.getSessionData("world-type").toString()));
       world.setSeed(Long.parseLong(context.getSessionData("seed").toString()));
       String pluginName = context.getSessionData("generator-plugin").toString();
-      if (pluginName == null || pluginName.isEmpty()) world.setGeneratorPluginName(pluginName);
+      if (pluginName == null) world.setGeneratorPluginName(pluginName);
       String pluginId = context.getSessionData("generator-id").toString();
-      if (pluginId == null || pluginId.isEmpty()) world.setGeneratorPluginName(pluginId);
+      if (pluginId == null) world.setGeneratorPluginName(pluginId);
       world.load();
       return getSimpleFormattedMessage("world-created", world.getName());
     }
@@ -239,7 +241,11 @@ public class CreateCommand extends PluginCommand {
   private class WorldCreatePrefix implements ConversationPrefix {
 
     public String getPrefix(ConversationContext context) {
-      return getSimpleFormattedMessage("prefix", context.getSessionData("step"));
+      if (!context.getSessionData("step").toString().equalsIgnoreCase("finished")) {
+        return getSimpleFormattedMessage("prefix", context.getSessionData("step"));
+      } else {
+        return getMessage("creating-world");
+      }
     } 
     
   }
