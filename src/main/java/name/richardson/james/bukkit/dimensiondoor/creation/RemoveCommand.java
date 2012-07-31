@@ -24,39 +24,38 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
-import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
+import name.richardson.james.bukkit.dimensiondoor.World;
+import name.richardson.james.bukkit.dimensiondoor.WorldManager;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
-import name.richardson.james.bukkit.utilities.formatters.ColourFormatter;
-import name.richardson.james.bukkit.utilities.internals.Logger;
 
 @ConsoleCommand
 public class RemoveCommand extends PluginCommand {
 
-  private static Logger logger = new Logger(RemoveCommand.class);
+  /** The world manager */
+  private final WorldManager manager;
 
-  private final DimensionDoor plugin;
-
+  /** The name of the world we are attempting to remove */
   private String worldName;
 
   public RemoveCommand(final DimensionDoor plugin) {
     super(plugin);
-    this.plugin = plugin;
+    this.manager = plugin.getWorldManager();
     this.registerPermissions();
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final WorldRecord record = WorldRecord.findByName(this.plugin.getDatabaseHandler(), this.worldName);
-    if (record == null) {
-      throw new CommandArgumentException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName), this.getMessage("load-world-hint"));
+    final World world = this.manager.getWorld(worldName);
+    if (world == null) {
+      throw new CommandUsageException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName));
+    } else {
+      world.unload();
+      sender.sendMessage(this.getSimpleFormattedMessage("world-removed", this.worldName));
+      sender.sendMessage(this.getMessage(this.getMessage("remove-data-also")));
     }
-    this.plugin.removeWorld(record);
-    RemoveCommand.logger.info(String.format("%s has removed the WorldRecord for %s", sender.getName(), this.worldName));
-    sender.sendMessage(this.getSimpleFormattedMessage("world-removed", this.worldName));
-    sender.sendMessage(ColourFormatter.replace("&", this.getMessage("remove-data-also")));
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
@@ -72,7 +71,7 @@ public class RemoveCommand extends PluginCommand {
   private void registerPermissions() {
     final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
     // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("removecommand-permission-description"), PermissionDefault.OP);
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
     base.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(base);
   }
