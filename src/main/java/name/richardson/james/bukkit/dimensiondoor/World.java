@@ -27,6 +27,7 @@ import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
 
+import name.richardson.james.bukkit.utilities.internals.Logger;
 import name.richardson.james.bukkit.utilities.localisation.Localised;
 
 public class World extends Localised implements Serializable, Listener {
@@ -48,6 +49,8 @@ public class World extends Localised implements Serializable, Listener {
     world.setSeed((Long) map.get("seed"));
     return world;
   }
+  
+  private final Logger logger = new Logger(this.getClass());
   
   /** The loaded world */
   private org.bukkit.World world;
@@ -111,6 +114,8 @@ public class World extends Localised implements Serializable, Listener {
   
   public World(DimensionDoor plugin, org.bukkit.World world) {
     super(plugin);
+    this.logger.debug("Initalising world object.");
+    this.logger.debug(String.format("Using attributes from %s as a base.", world.getName()));
     this.plugin = plugin; 
     this.world = world;
     this.worldName = world.getName();
@@ -134,6 +139,7 @@ public class World extends Localised implements Serializable, Listener {
   }
   
   public void applyAttributes() {
+    this.logger.debug(String.format("Applying saved attributes for %s.", this.worldName));
     world.setDifficulty(difficulty);
     world.setKeepSpawnInMemory(keepSpawnInMemory);
     world.setPVP(pvp);
@@ -166,6 +172,7 @@ public class World extends Localised implements Serializable, Listener {
   }
   
   public void load() {
+    this.logger.debug(String.format("Loading %s into memory.", this.worldName));
     if (world != null) {
       this.getWorldCreator().createWorld();
     }
@@ -175,6 +182,7 @@ public class World extends Localised implements Serializable, Listener {
   public void onPlayerChat(PlayerChatEvent event) {
     if (!listening) return;
     if (this.isolatedChat == true && event.getPlayer().getWorld() == this.world) {
+      this.logger.debug(String.format("Isolating chat message by %s within %s.", event.getPlayer().getName(), this.worldName));
       event.getRecipients().clear();
       event.getRecipients().addAll(this.world.getPlayers());
     }
@@ -185,8 +193,10 @@ public class World extends Localised implements Serializable, Listener {
     if (!listening) return;
     if (event.getTo().getWorld() == this.world) {
       if (event.getPlayer().hasPermission(permission) || this.isMainWorld()) {
+        this.logger.debug(String.format("Allowing %s to enter %s", event.getPlayer().getName(), this.worldName));
         this.applyGameMode(event.getPlayer());
       } else {
+        this.logger.debug(String.format("Preventing %s from entering %s", event.getPlayer().getName(), this.worldName));
         this.getMessage("not-allowed-to-enter-world");
         event.setCancelled(true);
       }
@@ -197,6 +207,7 @@ public class World extends Localised implements Serializable, Listener {
   public void onWorldLoaded(WorldLoadEvent event) {
     if (!listening) return;
     if (!event.getWorld().getName().equalsIgnoreCase(worldName)) return;
+    this.logger.debug(String.format("%s has loaded.", this.worldName));
     if (world == null) this.world = event.getWorld();
     this.applyAttributes();
   }
@@ -205,10 +216,12 @@ public class World extends Localised implements Serializable, Listener {
   public void onWorldUnloaded(WorldUnloadEvent event) {
     if (!listening) return;
     if (!event.getWorld().getName().equalsIgnoreCase(worldName)) return;
+    this.logger.debug(String.format("%s has unloaded, setting world to null.", this.worldName));
     this.world = null;
   }
   
   public Map<String, Object> serialize() {
+    this.logger.debug(String.format("Serializing %s.", world.getName()));
     final Map<String, Object> map = new HashMap<String, Object>();
     map.put("world-name", worldName);
     map.put("allow-animals", allowAnimals);
@@ -225,95 +238,120 @@ public class World extends Localised implements Serializable, Listener {
   }
   
   public void setAllowAnimals(boolean allowAnimals) {
+    this.logger.debug(String.format("Setting allowAnimals to %b for %s.", allowAnimals, this.worldName));
     this.allowAnimals = allowAnimals;
-    world.setSpawnFlags(allowMonsters, allowAnimals);
+    if (world != null) world.setSpawnFlags(allowMonsters, allowAnimals);
   }
   
   public void setAllowMonsters(boolean allowMonsters) {
+    this.logger.debug(String.format("Setting allowMonsters to %b for %s.", allowMonsters, this.worldName));
     this.allowMonsters = allowMonsters;
-    world.setSpawnFlags(allowMonsters, allowAnimals);
+    if (world != null) world.setSpawnFlags(allowMonsters, allowAnimals);
   }
   
   public void setDifficulty(Difficulty difficulty) {
     if (difficulty == null) throw new IllegalArgumentException("Difficulty can not be null!");
+    this.logger.debug(String.format("Setting difficulty to %s for %s.", difficulty.name(), this.worldName));
     this.difficulty = difficulty;
-    world.setDifficulty(difficulty);
+    if (world != null) world.setDifficulty(difficulty);
   }
   
   public void setEnabled(boolean enabled) {
+    this.logger.debug(String.format("Setting enabled to %s for %s.", enabled, this.worldName));
     this.enabled = enabled;
   }
   
   public void setEnvironment(Environment environment) {
     if (environment == null) throw new IllegalArgumentException("Environment can not be null!");
-    this.environment = environment;
+    this.logger.debug(String.format("Setting environment to %b for %s.", environment, this.worldName));
+    if (world != null) this.environment = environment;
   }
   
   public void setGameMode(GameMode gameMode) {
+    if (environment == null) throw new IllegalArgumentException("GameMode can not be null!");
+    this.logger.debug(String.format("Setting gameMode to %s for %s.", gameMode.name(), this.worldName));
     this.gameMode = gameMode;
     this.applyGameMode();
   }
   
   public void setGenerateStructures(boolean generateStructures) {
+    this.logger.debug(String.format("Setting generateStructures to %s for %s.", generateStructures, this.worldName));
     this.setGenerateStructures(generateStructures);
   }
   
   public void setGeneratorID(String generatorID) {
+    this.logger.debug(String.format("Setting generatorID to %s for %s.", generatorID, this.worldName));
     this.generatorID = generatorID;
   }
   
   public void setGeneratorPluginName(Plugin generatorPlugin) {
+    if (generatorPlugin == null) throw new IllegalArgumentException("GeneratorPlugin can not be null!");
+    this.logger.debug(String.format("Setting generatorPluginName to %s for %s.", generatorPlugin.getName(), this.worldName));
     this.generatorPluginName = generatorPlugin.getName();
   }
   
   public void setGeneratorPluginName(String generatorPluginName) {
+    if (generatorPluginName == null) throw new IllegalArgumentException("GeneratorPluginName can not be null!");
+    this.logger.debug(String.format("Setting generatorPluginName to %s for %s.", generatorPluginName, this.worldName));
     this.generatorPluginName = generatorPluginName;
   }
   
   public void setIsolatedChat(boolean isolatedChat) {
+    this.logger.debug(String.format("Setting isolatedChat to %b for %s.", isolatedChat, this.worldName));
     this.isolatedChat = isolatedChat;
   }
   
   public void setKeepSpawnInMemory(boolean keepSpawnInMemory) {
+    this.logger.debug(String.format("Setting keepSpawnInMemory to %b for %s.", keepSpawnInMemory, this.worldName));
     this.keepSpawnInMemory = keepSpawnInMemory;
-    world.setKeepSpawnInMemory(keepSpawnInMemory);
+    if (world != null) world.setKeepSpawnInMemory(keepSpawnInMemory);
   }
   
   public void unregisterEvents() {
+    this.logger.debug(String.format("Unregistering events for %s.", this.worldName));
     this.listening = false;
   }
   
   public void setPVP(boolean pvp) {
+    this.logger.debug(String.format("Setting pvp to %b for %s.", pvp, this.worldName));
     this.pvp = pvp;
-    world.setPVP(pvp);
+    if (world != null) world.setPVP(pvp);
   }
   
   public void setSeed(long seed) {
     if (seed != 0) throw new IllegalStateException("You may not change the seed of a world.");
+    this.logger.debug(String.format("Setting seed to %d for %s.", seed, this.worldName));
     this.seed = seed;
   }
   
   public void setWorld(org.bukkit.World world) {
     if (world != null) throw new IllegalStateException("You may not change an existing world reference.");
+    this.logger.debug(String.format("Setting world reference for %s.", this.worldName));
     this.world = world;
   }
   
   public void setWorldType(WorldType worldType) {
     if (world != null) throw new IllegalStateException("You may not change the type of a world which is loaded.");
+    this.logger.debug(String.format("Setting worldType to %s for %s.", worldType.name(), this.worldName));
     this.worldType = worldType;
   }
 
   public void unload() {
     if (world == null) throw new IllegalStateException("You may not unload a world which is not loaded.");
     if (isMainWorld()) throw new IllegalStateException("You may not unload the main world.");
+    this.logger.debug(String.format("Unloading %s.", this.worldName));
     this.removePlayers();
     this.plugin.getServer().unloadWorld(world, true);
   }
   
-  private void applyGameMode() {
+  private int applyGameMode() {
+    int i = 0;
     for (Player player : world.getPlayers()) {
       player.setGameMode(gameMode);
+      i++;
     }
+    this.logger.debug(String.format("Applied %s GameMode to %d players in %s.", this.gameMode.name(), i, this.worldName));
+    return i;
   }
 
   private void applyGameMode(Player player) {
@@ -360,6 +398,7 @@ public class World extends Localised implements Serializable, Listener {
       player.teleport(this.getMainWorldSpawn(), TeleportCause.PLUGIN);
       i++;
     }
+    this.logger.debug(String.format("Removed %d players from %s.", i, this.worldName));
     return i;
   }
   
