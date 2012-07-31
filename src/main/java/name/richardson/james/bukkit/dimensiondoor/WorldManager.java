@@ -3,7 +3,6 @@ package name.richardson.james.bukkit.dimensiondoor;
 import java.io.IOException;
 import java.util.Map;
 
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -38,8 +37,7 @@ public class WorldManager implements Listener {
     this.worlds = this.storage.getWorlds();
     this.checkForMainWorlds();
     int i = 0;
-    for (World world : this.worlds.values()) {
-      logger.debug(world.toString());      
+    for (World world : this.worlds.values()) {    
       if (world.isEnabled()) {
         if (!world.isLoaded()) {
           world.load();
@@ -54,13 +52,15 @@ public class WorldManager implements Listener {
   
   private void checkForMainWorlds() {
     this.logger.debug("Checking for early loaded worlds");
+    boolean saveRequired = false;
     for (org.bukkit.World world : this.plugin.getServer().getWorlds()) {
       if (!this.worlds.containsKey(world.getName())) {
         this.logger.warning(String.format("%s has not been configured by DimensionDoor.", world.getName()));
         this.worlds.put(world.getName(), new World(this.plugin, world));
+        saveRequired= true;
       }
     }
-    this.save();
+    if (saveRequired) this.save();
   }
 
   /**

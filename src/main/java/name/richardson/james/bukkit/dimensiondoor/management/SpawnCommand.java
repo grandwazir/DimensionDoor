@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License along with
  * DimensionDoor. If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-
 package name.richardson.james.bukkit.dimensiondoor.management;
 
 import org.bukkit.World;
@@ -28,7 +27,6 @@ import org.bukkit.permissions.PermissionDefault;
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
-import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
 public class SpawnCommand extends PluginCommand {
@@ -45,8 +43,6 @@ public class SpawnCommand extends PluginCommand {
     final Integer y = (int) player.getLocation().getY();
     final Integer z = (int) player.getLocation().getZ();
     world.setSpawnLocation(x, y, z);
-    // this.logger.info(String.format("%s has set a new spawn location for %s",
-    // sender.getName(), world.getName()));
     sender.sendMessage(this.getSimpleFormattedMessage("spawn-set", world.getName()));
   }
 
@@ -57,7 +53,7 @@ public class SpawnCommand extends PluginCommand {
   private void registerPermissions() {
     final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
     // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("spawncommand-permission-description"), PermissionDefault.OP);
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
     base.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(base);
   }

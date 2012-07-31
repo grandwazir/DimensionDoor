@@ -40,6 +40,10 @@ public class DimensionDoor extends SkeletonPlugin {
     this.logger.info(String.format("%d worlds loaded and configured.", this.manager.configuredWorldCount()));;
   }
 
+  public WorldManager getWorldManager() {
+    return manager;
+  }
+  
   protected void registerCommands() {
     /*
     final CommandManager cm = new CommandManager(this);

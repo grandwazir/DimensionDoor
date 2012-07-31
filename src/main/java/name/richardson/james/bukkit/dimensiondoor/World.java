@@ -158,8 +158,6 @@ public class World extends Localised implements ConfigurationSerializable, Seria
    */
   public World(DimensionDoor plugin, String worldName) {
     super(plugin);
-    this.logger.debug("Initalising world object.");
-    this.logger.debug("Using default attributes.");
     this.plugin = plugin;
     this.worldName = worldName;
     this.checkIfWorldIsLoaded();

@@ -24,7 +24,8 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
-import name.richardson.james.bukkit.dimensiondoor.WorldRecord;
+import name.richardson.james.bukkit.dimensiondoor.World;
+import name.richardson.james.bukkit.dimensiondoor.WorldManager;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
@@ -35,51 +36,48 @@ import name.richardson.james.bukkit.utilities.internals.Logger;
 @ConsoleCommand
 public class LoadCommand extends PluginCommand {
 
-  private static Logger logger = new Logger(LoadCommand.class);
+  private final Logger logger = new Logger(LoadCommand.class);
 
-  private final DimensionDoor plugin;
+  private final WorldManager worldManager;
 
   private String worldName;
 
   public LoadCommand(final DimensionDoor plugin) {
     super(plugin);
-    this.plugin = plugin;
+    this.worldManager = plugin.getWorldManager();
     this.registerPermissions();
   }
 
-  public void execute(final CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final WorldRecord record = WorldRecord.findByName(this.plugin.getDatabaseHandler(), this.worldName);
-
-    if (this.plugin.isWorldLoaded(this.worldName)) {
-      throw new CommandArgumentException(this.getSimpleFormattedMessage("world-is-already-loaded", this.worldName), this.getMessage("may-not-load-world-twice"));
-    } else if (record == null) {
+  public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
+    final World world = this.worldManager.getWorld(worldName);
+    if (world == null) {
       throw new CommandArgumentException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName), this.getMessage("load-existing-world"));
+    } else if (world.isLoaded()) {
+      throw new CommandArgumentException(this.getSimpleFormattedMessage("world-is-already-loaded", this.worldName), this.getMessage("may-not-load-world-twice"));
     } else {
       try {
-        this.plugin.loadWorld(record);
-      } catch (final IllegalArgumentException exception) {
-        LoadCommand.logger.warning(this.getSimpleFormattedMessage("unable-to-load-world", this.worldName));
-        throw new CommandUsageException(this.getMessage("unable-to-load-world"));
+        world.load();
+      } catch (final Exception exception) {
+        final String message = this.getSimpleFormattedMessage("unable-to-load-world", this.worldName);
+        logger.warning(message);
+        throw new CommandUsageException(message);
       }
-      LoadCommand.logger.info(String.format("%s has loaded the world %s", sender.getName(), record.getName()));
       sender.sendMessage(this.getSimpleFormattedMessage("world-loaded", this.worldName));
     }
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException {
-
     if (arguments.length == 0) {
       throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("load-world-hint"));
     } else {
       this.worldName = arguments[0];
     }
-
   }
 
   private void registerPermissions() {
     final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
     // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("loadcommand-permission-description"), PermissionDefault.OP);
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
     base.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(base);
   }
