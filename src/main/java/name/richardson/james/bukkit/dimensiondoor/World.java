@@ -106,7 +106,7 @@ public class World extends Localised implements ConfigurationSerializable, Seria
   private boolean generateStructures = true;
 
   /** The seed of this world. */
-  private long seed;
+  private long seed = 0;
 
   /** The name of the generator plugin. */
   private String generatorPluginName;
@@ -118,7 +118,7 @@ public class World extends Localised implements ConfigurationSerializable, Seria
   private UUID worldUUID;
 
   /** If chat on this world is isolated. */
-  private boolean isolatedChat = true;
+  private boolean isolatedChat = false;
 
   /** Is the world enabled (automatically load on startup). */
   private boolean enabled = true;
@@ -235,7 +235,7 @@ public class World extends Localised implements ConfigurationSerializable, Seria
    */
   public void load() {
     this.logger.debug(String.format("Loading %s into memory.", this.worldName));
-    if (world != null) {
+    if (world == null) {
       this.getWorldCreator().createWorld();
     } 
   }
@@ -478,7 +478,7 @@ public class World extends Localised implements ConfigurationSerializable, Seria
    * @param seed the new value
    */
   public void setSeed(long seed) {
-    if (seed != 0) throw new IllegalStateException("You may not change the seed of a world.");
+    // if (seed != 0) throw new IllegalStateException("You may not change the seed of a world.");
     this.logger.debug(String.format("Setting seed to %d for %s.", seed, this.worldName));
     this.seed = seed;
   }
@@ -619,6 +619,11 @@ public class World extends Localised implements ConfigurationSerializable, Seria
   
   public String toString() {
     return this.serialize().toString();
+  }
+
+  public void create() {
+    
+    
   }
 
 }

@@ -1,5 +1,7 @@
 Changelog for DimensionDoor (v2.1.1-SNAPSHOT)
 
+2012-07-31 20:06:21 +0100    update RemoveCommand (James Richardson)
+2012-07-31 19:58:20 +0100    update LoadCommand (James Richardson)
 2012-07-31 17:14:12 +0100    revert to setting fields directly (James Richardson)
 2012-07-31 17:10:43 +0100    fix infinite loop (James Richardson)
 2012-07-31 16:46:02 +0100    serialise correctly (James Richardson)

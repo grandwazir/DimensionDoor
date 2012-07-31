@@ -19,42 +19,40 @@
 
 package name.richardson.james.bukkit.dimensiondoor.creation;
 
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
+import name.richardson.james.bukkit.dimensiondoor.World;
+import name.richardson.james.bukkit.dimensiondoor.WorldManager;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
-import name.richardson.james.bukkit.utilities.internals.Logger;
 
 @ConsoleCommand
 public class UnloadCommand extends PluginCommand {
 
-  private static Logger logger = new Logger(RemoveCommand.class);
-
-  private final DimensionDoor plugin;
+  private final WorldManager manager;
 
   private String worldName;
 
   public UnloadCommand(final DimensionDoor plugin) {
     super(plugin);
-    this.plugin = plugin;
+    this.manager = plugin.getWorldManager();
     this.registerPermissions();
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final World world = this.plugin.getWorld(this.worldName);
+    final World world = manager.getWorld(worldName);
     if (world == null) {
       throw new CommandArgumentException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName), this.getMessage("load-world-hint"));
-    }
-    this.plugin.unloadWorld(world);
-    UnloadCommand.logger.info(String.format("%s has unloaded the world %s", sender.getName(), world.getName()));
-    sender.sendMessage(this.getSimpleFormattedMessage("world-unloaded", this.worldName));
+    } else {
+      world.unload();
+      sender.sendMessage(this.getSimpleFormattedMessage("world-unloaded", this.worldName));
+    }  
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
@@ -70,7 +68,7 @@ public class UnloadCommand extends PluginCommand {
   private void registerPermissions() {
     final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
     // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("unloadcommand-permission-description"), PermissionDefault.OP);
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
     base.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(base);
   }

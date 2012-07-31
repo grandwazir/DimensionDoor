@@ -76,6 +76,10 @@ public class WorldManager implements Listener {
     this.worlds.put(event.getWorld().getName(), new World(this.plugin, event.getWorld()));
   }
   
+  public void addWorld(World world) {
+    this.worlds.put(world.getName(), world);
+  }
+  
   /**
    * Gets a configured world.
    *
@@ -115,6 +119,10 @@ public class WorldManager implements Listener {
    */
   public int configuredWorldCount() {
     return this.worlds.size();
+  }
+
+  public void removeWorld(World world) {
+    this.worlds.remove(world.getName());
   }
 
 }

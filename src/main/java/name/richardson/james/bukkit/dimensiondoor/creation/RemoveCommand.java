@@ -52,7 +52,8 @@ public class RemoveCommand extends PluginCommand {
     if (world == null) {
       throw new CommandUsageException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName));
     } else {
-      world.unload();
+      if (world.isLoaded()) world.unload();
+      manager.removeWorld(world);
       sender.sendMessage(this.getSimpleFormattedMessage("world-removed", this.worldName));
       sender.sendMessage(this.getMessage(this.getMessage("remove-data-also")));
     }
@@ -61,7 +62,7 @@ public class RemoveCommand extends PluginCommand {
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
 
     if (arguments.length == 0) {
-      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("load-world-hint"));
+      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("list-worlds-hint"));
     } else {
       this.worldName = arguments[0];
     }

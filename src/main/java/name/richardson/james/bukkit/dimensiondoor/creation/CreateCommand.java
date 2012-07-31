@@ -19,120 +19,230 @@
 
 package name.richardson.james.bukkit.dimensiondoor.creation;
 
-import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.bukkit.Bukkit;
+import org.bukkit.WorldType;
 import org.bukkit.World.Environment;
 import org.bukkit.command.CommandSender;
+import org.bukkit.conversations.Conversable;
+import org.bukkit.conversations.ConversationContext;
+import org.bukkit.conversations.ConversationFactory;
+import org.bukkit.conversations.ConversationPrefix;
+import org.bukkit.conversations.FixedSetPrompt;
+import org.bukkit.conversations.MessagePrompt;
+import org.bukkit.conversations.Prompt;
+import org.bukkit.conversations.StringPrompt;
+import org.bukkit.conversations.ValidatingPrompt;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
+import name.richardson.james.bukkit.dimensiondoor.World;
+import name.richardson.james.bukkit.dimensiondoor.WorldManager;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
 import name.richardson.james.bukkit.utilities.command.PluginCommand;
-import name.richardson.james.bukkit.utilities.internals.Logger;
 
 @ConsoleCommand
 public class CreateCommand extends PluginCommand {
-
-  private static Logger logger = new Logger(CreateCommand.class);
-
+  
+  private final ConversationFactory factory;
+  
+  private final WorldManager manager;
+  
   private final DimensionDoor plugin;
-
-  private String worldName;
-  private Environment environment;
-  private Long seed;
-  private String generatorPlugin;
-  private String generatorID;
 
   public CreateCommand(final DimensionDoor plugin) {
     super(plugin);
+    this.manager = plugin.getWorldManager();
+    this.factory = new ConversationFactory(plugin)
+    .withModality(true)
+    .withPrefix(new WorldCreatePrefix())
+    .withFirstPrompt(new WorldNamePrompt())
+    .withEscapeSequence("/quit")
+    .withTimeout(10)
+    .withInitialSessionData(this.getInitalSessionData());
     this.plugin = plugin;
     this.registerPermissions();
   }
 
+  private Map<Object, Object> getInitalSessionData() {
+    Map<Object, Object> map = new HashMap<Object, Object>();
+    map.put("step", 1);
+    return map;
+  }
+  
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
-    sender.sendMessage(this.getSimpleFormattedMessage("world-creation-in-progress", this.worldName));
-
-    if (this.generatorPlugin != null) {
-      try {
-        this.plugin.createWorld(this.worldName, this.environment, this.seed, this.generatorPlugin, this.generatorID);
-      } catch (final IllegalArgumentException exception) {
-        throw new CommandUsageException(exception.getMessage());
-      }
-    } else {
-      this.plugin.createWorld(this.worldName, this.environment, this.seed);
+    if (sender instanceof Conversable) {
+      factory.buildConversation((Conversable) sender).begin();
     }
-
-    sender.sendMessage(this.getSimpleFormattedMessage("world-created", this.worldName));
-    CreateCommand.logger.info(String.format("%s has created a new world called %s", sender.getName(), this.worldName));
-
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException {
-    final LinkedList<String> args = new LinkedList<String>();
-    args.addAll(Arrays.asList(arguments));
-
-    // null old values
-    this.worldName = null;
-    this.environment = Environment.NORMAL;
-    this.seed = System.currentTimeMillis();
-    this.generatorID = null;
-    this.generatorPlugin = null;
-    
-    if (args.size() == 0) {
-      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("create-name-hint"));
-    } else {
-      this.worldName = args.remove(0);
-    }
-
-    for (String argument : args) {
-      if (argument.startsWith("e:")) {
-        try {
-          this.environment = Environment.valueOf(argument.replaceFirst("e:", ""));
-        } catch (final IllegalArgumentException exception) {
-          throw new CommandArgumentException(this.getMessage("invalid-environment"), this.getSimpleFormattedMessage("valid-environments", this.buildEnvironmentList()));
-        }
-      } else if (argument.startsWith("s:")) {
-        final String stringSeed = argument.replaceFirst("s:", "");
-        long seed = 0;
-        try {
-          seed = Long.parseLong(stringSeed);
-        } catch (final NumberFormatException exception) {
-          seed = stringSeed.hashCode();
-        }
-        this.seed = new Long(seed);
-      } else if (argument.startsWith("g:")) {
-        argument = argument.replaceFirst("g:", "");
-        final String[] a = argument.split(":");
-        this.generatorPlugin = a[0];
-        if (a.length == 2) {
-          this.generatorID = a[1];
-        }
-      }
-    }
-
-  }
-
-  private String buildEnvironmentList() {
-    final StringBuilder message = new StringBuilder();
-    for (final Environment environment : Environment.values()) {
-      message.append(environment.name());
-      message.append(", ");
-    }
-    message.delete(message.length() - 2, message.length());
-    return message.toString();
+    return;
   }
 
   private void registerPermissions() {
     final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
     // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("createcommand-permission-description"), PermissionDefault.OP);
+    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
     base.addParent(this.plugin.getRootPermission(), true);
     this.addPermission(base);
   }
+
+  
+  private class WorldNamePrompt extends ValidatingPrompt {
+
+    public String getPromptText(ConversationContext context) {
+      return getMessage("prompt-world-name");
+    }
+
+    @Override
+    protected Prompt acceptValidatedInput(ConversationContext context, String message) {
+      context.setSessionData("world-name", message);
+      context.setSessionData("step", 2);
+      return new WorldEnvironmentPrompt();
+    }
+
+    @Override
+    protected boolean isInputValid(ConversationContext context, String message) {
+      return (manager.getWorld(message) == null);
+    }
+    
+    protected String getFailedValidationText(ConversationContext context, String message) {
+      return getSimpleFormattedMessage("world-already-exists", message);
+    }
+    
+  }
+  
+  private class WorldEnvironmentPrompt extends FixedSetPrompt {
+
+    public WorldEnvironmentPrompt() {
+      super(Environment.NORMAL.toString(), Environment.NETHER.toString(), Environment.THE_END.toString());
+    }
+    
+    public Prompt acceptValidatedInput(ConversationContext context, String message) {
+      context.setSessionData("environment", message);
+      context.setSessionData("step", 3);
+      return new WorldTypePrompt();
+    }
+
+    public String getPromptText(ConversationContext context) {
+      return getSimpleFormattedMessage("prompt-world-environment", formatFixedSet().toString());
+    }
+    
+  }
+  
+  private class WorldTypePrompt extends FixedSetPrompt {
+
+    public WorldTypePrompt() {
+      super(WorldType.NORMAL.name(), WorldType.FLAT.name());
+    }
+    
+    public Prompt acceptValidatedInput(ConversationContext context, String message) {
+      context.setSessionData("world-type", message);
+      context.setSessionData("step", 4);
+      return new WorldSeedPrompt();
+    }
+
+    public String getPromptText(ConversationContext context) {
+      return getSimpleFormattedMessage("prompt-world-type", formatFixedSet().toString());
+    }
+    
+  }
+  
+  private class WorldSeedPrompt extends StringPrompt {
+
+    public Prompt acceptInput(ConversationContext context, String message) {
+      context.setSessionData("step", 5);
+      if (message.isEmpty() || message.equalsIgnoreCase(getMessage("random"))) {
+        context.setSessionData("seed", System.currentTimeMillis());
+      } else {
+        context.setSessionData("seed", message.hashCode());
+      }
+      return new WorldGeneratorPluginPrompt();
+    }
+
+    public String getPromptText(ConversationContext context) {
+      return getSimpleFormattedMessage("prompt-world-seed", getMessage("random"));
+    }
+    
+  }
+  
+  private class WorldGeneratorPluginPrompt extends ValidatingPrompt {
+    
+    public Prompt acceptValidatedInput(ConversationContext context, String message) {
+      context.setSessionData("step", 6);
+      if (!message.equalsIgnoreCase(getMessage("none"))) {
+        context.setSessionData("generator-plugin", message);
+        return new WorldGeneratorIdPrompt();
+      } else {
+        return new CreateWorldPrompt();
+      }
+    }
+    
+    @Override
+    protected boolean isInputValid(ConversationContext context, String message) {
+      return (message.equalsIgnoreCase(getMessage("none")) || Bukkit.getPluginManager().getPlugin(message) != null);
+    }
+    
+    protected String getFailedValidationText(ConversationContext context, String message) {
+      return getSimpleFormattedMessage("world-already-exists", message);
+    }
+
+    public String getPromptText(ConversationContext context) {
+      return getSimpleFormattedMessage("prompt-world-generator", getMessage("none"));
+    }
+    
+  }
+  
+  private class WorldGeneratorIdPrompt extends StringPrompt {
+    
+    public Prompt acceptInput(ConversationContext context, String message) {
+      context.setSessionData("step", 7);
+      if (!message.equalsIgnoreCase(getMessage("none"))) context.setSessionData("generator-id", message);
+      return new CreateWorldPrompt();
+    }
+
+    public String getPromptText(ConversationContext context) {
+      return getSimpleFormattedMessage("prompt-world-generator-id", getMessage("none"));
+    }
+    
+  }
+  
+  private class CreateWorldPrompt extends MessagePrompt {
+    
+    public String getPromptText(ConversationContext context) {
+      World world = new World(plugin, context.getSessionData("world-name").toString());
+      world.setEnvironment(Environment.valueOf(context.getSessionData("environment").toString()));
+      world.setWorldType(WorldType.valueOf(context.getSessionData("world-type").toString()));
+      world.setSeed(Long.parseLong(context.getSessionData("seed").toString()));
+      String pluginName = context.getSessionData("generator-plugin").toString();
+      if (pluginName == null || pluginName.isEmpty()) world.setGeneratorPluginName(pluginName);
+      String pluginId = context.getSessionData("generator-id").toString();
+      if (pluginId == null || pluginId.isEmpty()) world.setGeneratorPluginName(pluginId);
+      world.load();
+      return getSimpleFormattedMessage("world-created", world.getName());
+    }
+
+    @Override
+    protected Prompt getNextPrompt(ConversationContext arg0) {
+      return Prompt.END_OF_CONVERSATION;
+    }
+    
+  }
+  
+  private class WorldCreatePrefix implements ConversationPrefix {
+
+    public String getPrefix(ConversationContext context) {
+      return getSimpleFormattedMessage("prefix", context.getSessionData("step"));
+    } 
+    
+  }
+
   
 }
