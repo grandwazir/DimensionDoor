@@ -19,7 +19,6 @@ public class WorldConfiguration extends YAMLStorage {
   public WorldConfiguration(JavaPlugin plugin) throws IOException {
     super(plugin, FILE_NAME);
     section = this.configuration.getConfigurationSection("worlds");
-    ConfigurationSerialization.registerClass(World.class, "World");
   }
   
   public void setDefaults() throws IOException {

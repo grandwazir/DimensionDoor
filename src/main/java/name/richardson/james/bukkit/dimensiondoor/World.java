@@ -13,7 +13,6 @@ import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -30,9 +29,12 @@ import org.bukkit.plugin.Plugin;
 import name.richardson.james.bukkit.utilities.internals.Logger;
 import name.richardson.james.bukkit.utilities.localisation.Localised;
 
-@SerializableAs("World")
 public class World extends Localised implements ConfigurationSerializable, Serializable, Listener {
 
+  static {
+
+  }
+  
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 8551768503578434301L;
 
@@ -42,7 +44,7 @@ public class World extends Localised implements ConfigurationSerializable, Seria
    * @param map the map containing the data
    * @return a new world object
    */
-  public static World deserialize(final Map<String, Object> map) {
+  public static World deserialize(Map<String, Object> map) {
     DimensionDoor plugin = (DimensionDoor) Bukkit.getServer().getPluginManager().getPlugin("DimensionDoor");
     final World world = new World(plugin, (String) map.get("world-name"));
     world.setAllowAnimals((Boolean) map.get("allow-animals"));
@@ -318,16 +320,16 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     map.put("enabled", enabled);
     map.put("allow-animals", allowAnimals);
     map.put("allow-monsters", allowMonsters);
-    map.put("difficulty", difficulty.name());
-    map.put("environment", environment.name());
-    map.put("game-mode", gameMode.name());
+    map.put("difficulty", difficulty.toString());
+    map.put("environment", environment.toString());
+    map.put("game-mode", gameMode.toString());
     map.put("generate-structures", generateStructures);
     map.put("generator-id", generatorID);
     map.put("generator-plugin-name", generatorPluginName);
     map.put("isolated-chat", isolatedChat);
     map.put("pvp", pvp);
     map.put("seed", seed);
-    map.put("world-type", worldType.name());
+    map.put("world-type", worldType.toString());
     return map;
   }
 
@@ -405,7 +407,7 @@ public class World extends Localised implements ConfigurationSerializable, Seria
    */
   public void setGenerateStructures(boolean generateStructures) {
     this.logger.debug(String.format("Setting generateStructures to %s for %s.", generateStructures, this.worldName));
-    this.setGenerateStructures(generateStructures);
+    this.generateStructures = generateStructures;
   }
 
   /**

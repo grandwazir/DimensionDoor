@@ -21,6 +21,8 @@ package name.richardson.james.bukkit.dimensiondoor;
 
 import java.io.IOException;
 
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
+
 import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
 
 public class DimensionDoor extends SkeletonPlugin {
@@ -33,6 +35,7 @@ public class DimensionDoor extends SkeletonPlugin {
 
   protected void loadConfiguration() throws IOException {
     configuration = new DimensionDoorConfiguration(this);
+    ConfigurationSerialization.registerClass(World.class);
     this.manager = new WorldManager(this);
     this.logger.info(String.format("%d worlds loaded and configured.", this.manager.configuredWorldCount()));;
   }
