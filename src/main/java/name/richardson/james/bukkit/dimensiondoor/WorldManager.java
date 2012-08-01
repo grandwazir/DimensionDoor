@@ -5,9 +5,11 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
@@ -79,6 +81,17 @@ public class WorldManager implements Listener {
     if (worlds.containsKey(event.getWorld().getName())) return;
     this.logger.debug(String.format("%s has not been configured by DimensionDoor.", event.getWorld().getName()));
     this.worlds.put(event.getWorld().getName(), new World(this.plugin, event.getWorld()));
+  }
+  
+  @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true) 
+  public void onPlayerTeleport(PlayerTeleportEvent event) {
+    if (plugin.isClearingCreativeInventories()) {
+      GameMode origin = this.worlds.get(event.getFrom().getWorld().getName()).getGameMode();
+      GameMode destination = this.worlds.get(event.getTo().getWorld().getName()).getGameMode();
+      if (origin == GameMode.CREATIVE && destination != GameMode.CREATIVE) {
+        event.getPlayer().getInventory().clear();
+      }
+    }
   }
   
   public void addWorld(World world) {

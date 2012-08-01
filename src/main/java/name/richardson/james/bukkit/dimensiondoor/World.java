@@ -455,6 +455,10 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     this.generateStructures = generateStructures;
   }
 
+  public GameMode getGameMode() {
+    return gameMode;
+  }
+  
   /**
    * Sets the generator id.
    *

@@ -52,6 +52,7 @@ public class InfoCommand extends PluginCommand {
       sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("seed"), String.valueOf(world.getSeed())}));
       sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("environment"), world.getEnvironment()}));
       sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("difficulty"), world.getDifficulty()}));
+      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("gamemode"), world.getGameMode()}));
       sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("generate_structures"), world.isGeneratingStructures()}));
       sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("isolated_chat"), world.isChatIsolated()}));
       sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("pvp"), world.isPVP()}));

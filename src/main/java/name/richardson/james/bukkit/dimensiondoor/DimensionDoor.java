@@ -39,12 +39,14 @@ public class DimensionDoor extends SkeletonPlugin {
 
   private WorldManager manager;
 
+  private DimensionDoorConfiguration configuration;
+  
   public String getArtifactID() {
     return "dimension-door";
   }
 
   protected void loadConfiguration() throws IOException {
-    configuration = new DimensionDoorConfiguration(this);
+    this.configuration = new DimensionDoorConfiguration(this);
     ConfigurationSerialization.registerClass(World.class);
     this.manager = new WorldManager(this);
     this.logger.info(String.format("%d worlds loaded and configured.", this.manager.configuredWorldCount()));;
@@ -70,6 +72,10 @@ public class DimensionDoor extends SkeletonPlugin {
 
   protected void registerEvents() {
     this.logger.info(String.format("%d worlds loaded and configured.", this.getServer().getWorlds().size()));
+  }
+  
+  public boolean isClearingCreativeInventories() {
+    return this.configuration.isClearingCreativeInventories();
   }
   
 }

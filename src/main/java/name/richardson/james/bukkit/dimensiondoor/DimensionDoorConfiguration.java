@@ -30,24 +30,12 @@ public class DimensionDoorConfiguration extends PluginConfiguration {
     super(plugin);
   }
 
-  public boolean isClearActionBar() {
-    return this.configuration.getBoolean("creative-world-transfer-settings.clear-action-bar");
-  }
-
-  public boolean isClearHand() {
-    return this.configuration.getBoolean("creative-world-transfer-settings.clear-hand");
+  public boolean isClearingCreativeInventories() {
+    return this.configuration.getBoolean("creative-world-transfer-settings.clear-inventory");
   }
 
   public boolean isDebugging() {
     return this.configuration.getBoolean("debugging");
-  }
-
-  public boolean isPreventContainerBlocks() {
-    return this.configuration.getBoolean("creative-world-settings.prevent-container-blocks");
-  }
-
-  public boolean isPreventItemSpawning() {
-    return this.configuration.getBoolean("creative-world-settings.prevent-item-drops");
   }
 
 }
