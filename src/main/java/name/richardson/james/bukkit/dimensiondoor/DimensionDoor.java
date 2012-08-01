@@ -49,7 +49,6 @@ public class DimensionDoor extends SkeletonPlugin {
     this.configuration = new DimensionDoorConfiguration(this);
     ConfigurationSerialization.registerClass(World.class);
     this.manager = new WorldManager(this);
-    this.logger.info(String.format("%d worlds loaded and configured.", this.manager.configuredWorldCount()));;
   }
 
   public WorldManager getWorldManager() {

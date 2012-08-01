@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.event.world.WorldLoadEvent;
@@ -326,6 +327,16 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     }
   }
 
+  @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+  public void onPlayerTeleportEvent(PlayerRespawnEvent event) {
+    if (this.environment == Environment.THE_END) return;
+    if (event.getPlayer().getWorld() == this.world) {
+      if (event.getPlayer().getWorld() != event.getRespawnLocation().getWorld()) {
+        event.setRespawnLocation(this.world.getSpawnLocation());
+      }
+    }
+  }
+  
   /**
    * When a world is loaded, set a reference to the world if it isn't present and apply attributes.
    *
@@ -643,7 +654,6 @@ public class World extends Localised implements ConfigurationSerializable, Seria
 
   private Permission getRootPermission() {
     final String permission = plugin.getName().toLowerCase() + "." + this.getMessage("permission-name") + ".*";
-    System.out.print(permission);
     return Bukkit.getServer().getPluginManager().getPermission(permission);
   }
 

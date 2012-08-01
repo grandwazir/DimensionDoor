@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -54,7 +53,8 @@ public class WorldManager implements Listener {
       }
       i++;
     }
-    this.logger.info(String.format("Enabled %d of %d configured worlds.", i, this.worlds.size()));
+    this.plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    this.logger.debug((String.format("Enabled %d of %d configured worlds.", i, this.worlds.size())));
   }
   
   private void checkForMainWorlds() {
@@ -85,10 +85,12 @@ public class WorldManager implements Listener {
   
   @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true) 
   public void onPlayerTeleport(PlayerTeleportEvent event) {
+    logger.debug("Checking if we need to clear inventory for " + event.getPlayer().getName());
     if (plugin.isClearingCreativeInventories()) {
       GameMode origin = this.worlds.get(event.getFrom().getWorld().getName()).getGameMode();
       GameMode destination = this.worlds.get(event.getTo().getWorld().getName()).getGameMode();
-      if (origin == GameMode.CREATIVE && destination != GameMode.CREATIVE) {
+      if (origin.equals(GameMode.CREATIVE) && !destination.equals(GameMode.CREATIVE)) {
+        logger.debug("Clearing inventory");
         event.getPlayer().getInventory().clear();
       }
     }

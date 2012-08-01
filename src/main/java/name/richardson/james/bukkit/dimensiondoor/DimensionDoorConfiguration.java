@@ -31,7 +31,7 @@ public class DimensionDoorConfiguration extends PluginConfiguration {
   }
 
   public boolean isClearingCreativeInventories() {
-    return this.configuration.getBoolean("creative-world-transfer-settings.clear-inventory");
+    return this.configuration.getBoolean("creative-world-transfer-settings.clear-inventories");
   }
 
   public boolean isDebugging() {
