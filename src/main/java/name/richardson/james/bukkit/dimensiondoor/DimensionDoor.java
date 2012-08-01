@@ -69,8 +69,8 @@ public class DimensionDoor extends SkeletonPlugin {
     cm.addCommand(new UnloadCommand(this));
   }
 
-  protected void registerEvents() {
-    this.logger.info(String.format("%d worlds loaded and configured.", this.getServer().getWorlds().size()));
+  protected void setupMetrics() throws IOException {
+    if (configuration.isCollectingStats()) new MetricsListener(this);
   }
   
   public boolean isClearingCreativeInventories() {
