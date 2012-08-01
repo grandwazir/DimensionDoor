@@ -321,7 +321,7 @@ public class World extends Localised implements ConfigurationSerializable, Seria
         this.applyGameMode(event.getPlayer());
       } else {
         this.logger.debug(String.format("Preventing %s from entering %s", event.getPlayer().getName(), this.worldName));
-        this.getMessage("not-allowed-to-enter-world");
+        event.getPlayer().sendMessage("not-allowed-to-enter-world");
         event.setCancelled(true);
       }
     }
