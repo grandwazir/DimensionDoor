@@ -4,7 +4,6 @@ version: ${project.version}
 author: James Richardson (grandwazir)
 description: Multiworld management made easy.
 website: https://github.com/grandwazir/DimensionDoor 
-database: true
 commands:
   "dd":
     description: 'Main command for dimension door'

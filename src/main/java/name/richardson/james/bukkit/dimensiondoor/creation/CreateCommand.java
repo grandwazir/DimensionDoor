@@ -251,12 +251,11 @@ public class CreateCommand extends PluginCommand {
         world.setGeneratorPluginName(pluginName);
       }
       if (context.getSessionData("generator-id") != null) {
-        String pluginName = (String) context.getSessionData("generator-id");
-        world.setGeneratorPluginName(pluginName);
+        String pluginId = (String) context.getSessionData("generator-id");
+        world.setGeneratorID(pluginId);
       }
-      System.out.print(world.toString());
-      world.load();
       manager.addWorld(world);
+      world.load();
       manager.save();
       return getSimpleFormattedMessage("world-created", world.getName());
     }

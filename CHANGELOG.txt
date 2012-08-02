@@ -1,5 +1,7 @@
 Changelog for DimensionDoor (v2.1.1-SNAPSHOT)
 
+2012-08-01 07:39:58 +0100    helps to remember to get the message (James Richardson)
+2012-08-01 07:38:46 +0100    send message to players when a teleport is cancelled (James Richardson)
 2012-08-01 07:33:18 +0100    enable spawn command (James Richardson)
 2012-08-01 01:41:05 +0100    implement metrics (James Richardson)
 2012-08-01 01:38:36 +0100    implement same world spawning - exception for the end (James Richardson)
