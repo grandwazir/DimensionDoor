@@ -60,7 +60,7 @@ public class World extends Localised implements ConfigurationSerializable, Seria
     world.generatorPluginName = ((String) map.get("generator-plugin-name"));
     world.isolatedChat = ((Boolean) map.get("isolated-chat"));
     world.pvp = ((Boolean) map.get("pvp"));
-    world.seed = ((Long) map.get("seed"));
+    world.seed = (Long.parseLong((String) map.get("seed")));
     world.worldType = (WorldType.valueOf((String) map.get("world-type")));
     return world;
   }
