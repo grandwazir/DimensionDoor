@@ -323,7 +323,7 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
     if (!this.listening) {
       return;
     }
-    if (event.getTo().getWorld() == this.world) {
+    if (event.getTo().getWorld() == this.world && event.getFrom().getWorld() != this.world) {
       if (event.getPlayer().hasPermission(this.permission) || this.isMainWorld()) {
         this.applyGameMode(event.getPlayer());
       } else {
