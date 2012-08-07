@@ -711,8 +711,8 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
   private void setRootPermission() {
     final String prefix = plugin.getPermissionManager().getRootPermission().getName().replace("*", "");
     final Permission permission = new Permission(
-        prefix + "." + this.plugin.getLocalisation().getMessage(this, "permission-wildcard-name") + ".*",
-        this.plugin.getLocalisation().getMessage(this, "permission-wildcard-description"),
+        prefix + this.plugin.getLocalisation().getMessage(this, "wildcard-permission-name") + ".*",
+        this.plugin.getLocalisation().getMessage(this, "wildcard-permission-description"),
         PermissionDefault.OP
     );
     plugin.getPermissionManager().addPermission(permission, true);
@@ -722,7 +722,7 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
   private void setPermission() {
     final String prefix = this.getRootPermission().getName().replace("*", "");
     final Permission permission = new Permission(
-        prefix + "." + this.getName().toLowerCase().replaceAll(" ", "_"),
+        prefix + this.getName().toLowerCase().replaceAll(" ", "_"),
         this.plugin.getLocalisation().getMessage(this, "permission-description"),
         PermissionDefault.OP
     );

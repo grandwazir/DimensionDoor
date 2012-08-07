@@ -1,5 +1,6 @@
 Changelog for DimensionDoor (v2.1.1-SNAPSHOT)
 
+2012-08-07 03:07:32 +0100    added additional keys (James Richardson)
 2012-08-07 03:01:22 +0100    localisation fixes (James Richardson)
 2012-08-07 02:55:01 +0100    remember to call super loadConfiguration (James Richardson)
 2012-08-07 02:52:29 +0100    register world root permission (James Richardson)
