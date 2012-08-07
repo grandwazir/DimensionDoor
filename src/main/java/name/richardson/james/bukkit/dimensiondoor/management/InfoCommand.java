@@ -20,8 +20,6 @@
 package name.richardson.james.bukkit.dimensiondoor.management;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.World;
