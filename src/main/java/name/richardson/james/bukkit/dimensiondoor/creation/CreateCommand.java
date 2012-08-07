@@ -86,7 +86,7 @@ public class CreateCommand extends AbstractCommand {
   private class WorldNamePrompt extends ValidatingPrompt {
 
     public String getPromptText(ConversationContext context) {
-      return getLocalisation().getMessage(this, "prompt-world-name");
+      return getLocalisation().getMessage(CreateCommand.class, "prompt-world-name");
     }
 
     @Override
@@ -102,7 +102,7 @@ public class CreateCommand extends AbstractCommand {
     }
     
     protected String getFailedValidationText(ConversationContext context, String message) {
-      return getLocalisation().getMessage(this, "world-already-exists", message);
+      return getLocalisation().getMessage(CreateCommand.class, "world-already-exists", message);
     }
     
   }
@@ -120,7 +120,7 @@ public class CreateCommand extends AbstractCommand {
     }
 
     public String getPromptText(ConversationContext context) {
-      return getLocalisation().getMessage(this, "prompt-world-environment", formatFixedSet().toString());
+      return getLocalisation().getMessage(CreateCommand.class, "prompt-world-environment", formatFixedSet().toString());
     }
     
   }
