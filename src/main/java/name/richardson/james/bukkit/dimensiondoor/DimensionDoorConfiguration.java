@@ -22,20 +22,19 @@ package name.richardson.james.bukkit.dimensiondoor;
 import java.io.IOException;
 
 import name.richardson.james.bukkit.utilities.configuration.PluginConfiguration;
-import name.richardson.james.bukkit.utilities.plugin.SkeletonPlugin;
 
 public class DimensionDoorConfiguration extends PluginConfiguration {
 
-  public DimensionDoorConfiguration(final SkeletonPlugin plugin) throws IOException {
+  public DimensionDoorConfiguration(final DimensionDoor plugin) throws IOException {
     super(plugin);
   }
 
   public boolean isClearingCreativeInventories() {
-    return this.configuration.getBoolean("creative-world-transfer-settings.clear-inventories");
+    return this.getConfiguration().getBoolean("creative-world-transfer-settings.clear-inventories");
   }
 
   public boolean isDebugging() {
-    return this.configuration.getBoolean("debugging");
+    return this.getConfiguration().getBoolean("debugging");
   }
 
 }

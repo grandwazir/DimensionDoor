@@ -30,19 +30,21 @@ import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.World;
+import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
-import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
 @ConsoleCommand
-public class ModifyCommand extends PluginCommand {
+public class ModifyCommand extends AbstractCommand {
 
   private final DimensionDoor plugin;
 
   private String worldName;
+  
   private Attribute attribute;
+  
   private String value;
 
   private enum Attribute {
@@ -57,17 +59,16 @@ public class ModifyCommand extends PluginCommand {
   }
   
   public ModifyCommand(final DimensionDoor plugin) {
-    super(plugin);
+    super(plugin, true);
     this.plugin = plugin;
-    this.registerPermissions();
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     final World world = plugin.getWorldManager().getWorld(worldName);
-    final String permissionName = this.getPermission(1).getName() + "." + attribute.toString().toLowerCase();
+    final String permissionName = this.getRootPermission().getName().replace("*", "") + "." + attribute.toString().toLowerCase();
     final Permission permission = plugin.getServer().getPluginManager().getPermission(permissionName);
     if (world == null) {
-      throw new CommandUsageException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName));
+      throw new CommandUsageException(this.getLocalisation().getMessage(DimensionDoor.class, "world-is-not-managed", this.worldName));
     } else if (!sender.hasPermission(permission)) {
       throw new CommandPermissionException(null, permission);
     }
@@ -108,7 +109,7 @@ public class ModifyCommand extends PluginCommand {
           guidence.append(difficulty.toString() + ", ");
         }
         guidence.deleteCharAt(guidence.length() - 2);
-        throw new CommandArgumentException(this.getMessage("must-specify-valid-difficulty"), this.getSimpleFormattedMessage("choose-between", guidence.toString()));
+        throw new CommandArgumentException(this.getLocalisation().getMessage(this, "must-specify-valid-difficulty"), this.getLocalisation().getMessage(this, "choose-between", guidence.toString()));
       }
     case GAME_MODE:
       try {
@@ -121,14 +122,12 @@ public class ModifyCommand extends PluginCommand {
           guidence.append(gameMode.toString() + ", ");
         }
         guidence.deleteCharAt(guidence.length() - 2);
-        throw new CommandArgumentException(this.getMessage("must-specify-valid-game-mode"), this.getSimpleFormattedMessage("choose-between", guidence.toString()));
+        throw new CommandArgumentException(this.getLocalisation().getMessage(this, "must-specify-valid-game-mode"), this.getLocalisation().getMessage(this, "choose-between", guidence.toString()));
       }
     }
-
     this.plugin.getWorldManager().save();
     final Object[] arguments = { this.attribute.toString(), this.value, world.getName() };
-    sender.sendMessage(this.getSimpleFormattedMessage("success-report", arguments));
-
+    sender.sendMessage(this.getLocalisation().getMessage(this, "success-report", arguments));
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
@@ -138,7 +137,7 @@ public class ModifyCommand extends PluginCommand {
     if (!args.isEmpty()) {
       this.worldName = args.remove(0);
     } else {
-      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("list-worlds-hint"));
+      throw new CommandArgumentException(this.getLocalisation().getMessage(DimensionDoor.class, "must-specify-a-world-name"), null);
     }
 
     if (!args.isEmpty()) {
@@ -146,20 +145,19 @@ public class ModifyCommand extends PluginCommand {
         final String name = args.remove(0).toUpperCase();
         this.attribute = Attribute.valueOf(name);
       } catch (final IllegalArgumentException exception) {
-        throw new CommandArgumentException(this.getMessage("must-specify-valid-attribute"), this.getSimpleFormattedMessage("attribute-list", this.getAttributesString()));
+        throw new CommandArgumentException(this.getLocalisation().getMessage(this, "must-specify-valid-attribute"), this.getLocalisation().getMessage(this, "attribute-list", this.getAttributesString()));
       } catch (final IndexOutOfBoundsException exception) {
-        throw new CommandArgumentException(this.getMessage("must-specify-valid-attribute"), this.getSimpleFormattedMessage("attribute-list", this.getAttributesString()));
+        throw new CommandArgumentException(this.getLocalisation().getMessage(this, "must-specify-valid-attribute"), this.getLocalisation().getMessage(this, "attribute-list", this.getAttributesString()));
       }
     } else {
-      throw new CommandArgumentException(this.getMessage("must-specify-valid-value"), this.getSimpleFormattedMessage("value-hint", this.getAttributesString()));
+      throw new CommandArgumentException(this.getLocalisation().getMessage(this, "must-specify-valid-attribute"), this.getLocalisation().getMessage(this, "attribute-list", this.getAttributesString()));
     }
 
     if (!args.isEmpty()) {
       this.value = args.remove(0);
     } else {
-      throw new CommandArgumentException("You must specify a value!", "This value varies depending on the attribute.");
+      throw new CommandArgumentException(this.getLocalisation().getMessage(this, "must-specify-valid-value"), this.getLocalisation().getMessage(this, "value-hint", this.getAttributesString()));
     }
-
   }
 
   private String getAttributesString() {
@@ -172,23 +170,15 @@ public class ModifyCommand extends PluginCommand {
     return builder.toString();
   }
   
-  private void registerPermissions() {
-    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    final String wildcardDescription = String.format(this.plugin.getMessage("plugincommand.wildcard-permission-description"), this.getName());
-    // create the wildcard permission
-    final Permission wildcard = new Permission(prefix + this.getName() + ".*", wildcardDescription, PermissionDefault.OP);
-    wildcard.addParent(this.plugin.getRootPermission(), true);
-    this.addPermission(wildcard);
-    // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
-    base.addParent(wildcard, true);
-    this.addPermission(base);
+  protected void registerPermissions(boolean wildcard) {
+    super.registerPermissions(true);
+    final String base = this.getRootPermission().getName().replace("*", "");
     for (final Attribute attribute : Attribute.values()) {
-      final String permissionNode = base.getName() + "." + attribute.toString().toLowerCase();
-      final String description = this.getSimpleFormattedMessage("permission-per-attribute-description", attribute.toString().toLowerCase().replace("_", " "));
+      final String permissionNode = base + "." + attribute.toString().toLowerCase();
+      final String description = this.getLocalisation().getMessage(this, "permission-per-attribute-description", attribute.toString().toLowerCase().replace("_", " "));
       final Permission permission = new Permission(permissionNode, description, PermissionDefault.OP);
-      permission.addParent(wildcard, true);
-      plugin.addPermission(permission);
+      permission.addParent(this.getRootPermission(), true);
+      this.getPermissionManager().addPermission(permission, false);
     }
   }
   

@@ -20,66 +20,53 @@
 package name.richardson.james.bukkit.dimensiondoor.creation;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.World;
 import name.richardson.james.bukkit.dimensiondoor.WorldManager;
+import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
-import name.richardson.james.bukkit.utilities.command.PluginCommand;
-import name.richardson.james.bukkit.utilities.internals.Logger;
 
 @ConsoleCommand
-public class LoadCommand extends PluginCommand {
-
-  private final Logger logger = new Logger(LoadCommand.class);
+public class LoadCommand extends AbstractCommand {
 
   private final WorldManager worldManager;
 
   private String worldName;
 
   public LoadCommand(final DimensionDoor plugin) {
-    super(plugin);
+    super(plugin, false);
     this.worldManager = plugin.getWorldManager();
-    this.registerPermissions();
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     final World world = this.worldManager.getWorld(worldName);
     if (world == null) {
-      throw new CommandArgumentException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName), this.getMessage("load-existing-world"));
+      throw new CommandArgumentException(this.getLocalisation().getMessage(DimensionDoor.class, "world-is-not-managed", this.worldName), this.getLocalisation().getMessage(this, "load-existing-world"));
     } else if (world.isLoaded()) {
-      throw new CommandArgumentException(this.getSimpleFormattedMessage("world-is-already-loaded", this.worldName), this.getMessage("may-not-load-world-twice"));
+      throw new CommandArgumentException(this.getLocalisation().getMessage(this, "world-is-already-loaded", this.worldName), this.getLocalisation().getMessage(this, "may-not-load-world-twice"));
     } else {
       try {
         world.load();
       } catch (final Exception exception) {
-        final String message = this.getSimpleFormattedMessage("unable-to-load-world", this.worldName);
-        logger.warning(message);
+        final String message = this.getLocalisation().getMessage(this, "unable-to-load-world", this.worldName);
+        this.getLogger().warning(this, "unable-to-load-world", this.worldName);
         throw new CommandUsageException(message);
       }
-      sender.sendMessage(this.getSimpleFormattedMessage("world-loaded", this.worldName));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "world-loaded", this.worldName));
     }
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException {
     if (arguments.length == 0) {
-      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("load-world-hint"));
+      throw new CommandArgumentException(this.getLocalisation().getMessage(DimensionDoor.class, "must-specify-a-world-name"), null);
     } else {
       this.worldName = arguments[0];
     }
   }
 
-  private void registerPermissions() {
-    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
-    base.addParent(this.plugin.getRootPermission(), true);
-    this.addPermission(base);
-  }
   
 }

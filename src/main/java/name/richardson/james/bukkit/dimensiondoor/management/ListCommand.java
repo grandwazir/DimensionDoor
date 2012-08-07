@@ -28,26 +28,25 @@ import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.World;
+import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
-import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
 @ConsoleCommand
-public class ListCommand extends PluginCommand {
+public class ListCommand extends AbstractCommand {
 
   private final DimensionDoor plugin;
 
   public ListCommand(final DimensionDoor plugin) {
-    super(plugin);
+    super(plugin, false);
     this.plugin = plugin;
-    this.registerPermissions();
   }
 
   public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     final String message = this.buildWorldList();
-    sender.sendMessage(this.getSimpleFormattedMessage("header", plugin.getWorldManager().configuredWorldCount()));
+    sender.sendMessage(this.getLocalisation().getMessage(this, "header", plugin.getWorldManager().configuredWorldCount()));
     sender.sendMessage(message);
   }
 
@@ -68,14 +67,6 @@ public class ListCommand extends PluginCommand {
     }
     message.delete(message.length() - 2, message.length());
     return message.toString();
-  }
-
-  private void registerPermissions() {
-    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
-    base.addParent(this.plugin.getRootPermission(), true);
-    this.addPermission(base);
   }
   
 }

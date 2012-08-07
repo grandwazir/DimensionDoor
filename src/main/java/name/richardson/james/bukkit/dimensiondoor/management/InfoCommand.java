@@ -25,62 +25,53 @@ import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.World;
+import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
-import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
 @ConsoleCommand
-public class InfoCommand extends PluginCommand {
+public class InfoCommand extends AbstractCommand {
 
   private final DimensionDoor plugin;
 
   private String worldName;
 
   public InfoCommand(final DimensionDoor plugin) {
-    super(plugin);
+    super(plugin, false);
     this.plugin = plugin;
-    this.registerPermissions();
   }
 
   public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     World world = this.plugin.getWorldManager().getWorld(worldName);
     if (world != null) {
-      sender.sendMessage(this.getSimpleFormattedMessage("header", world.getName()));
-      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("enabled"), world.getEnabled()}));
-      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("seed"), String.valueOf(world.getSeed())}));
-      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("environment"), world.getEnvironment()}));
-      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("difficulty"), world.getDifficulty()}));
-      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("gamemode"), world.getGameMode()}));
-      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("generate_structures"), world.isGeneratingStructures()}));
-      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("isolated_chat"), world.isChatIsolated()}));
-      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("pvp"), world.isPVP()}));
-      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("spawn_animals"), world.isSpawningAnimals()}));
-      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("spawn_monsters"), world.isSpawningMonsters()}));
-      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("generator_plugin"), world.getGeneratorPluginName()}));
-      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("generator_id"), world.getGeneratorID()}));
-      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("keep_spawn_in_memory"), world.isSpawnKeptInMemory()}));
-      sender.sendMessage(this.getSimpleFormattedMessage("list-item", new Object[]{this.getMessage("world_type"), world.getWorldType()}));  
+      sender.sendMessage(this.getLocalisation().getMessage(this, "header", world.getName()));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "enabled"), world.getEnabled()));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "seed"), String.valueOf(world.getSeed())));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "environment"), world.getEnvironment()));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "difficulty"), world.getDifficulty()));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "gamemode"), world.getGameMode()));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "generate_structures"), world.isGeneratingStructures()));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "isolated_chat"), world.isChatIsolated()));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "pvp"), world.isPVP()));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "spawn_animals"), world.isSpawningAnimals()));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "spawn_monsters"), world.isSpawningMonsters()));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "generator_plugin"), world.getGeneratorPluginName()));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "generator_id"), world.getGeneratorID()));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "keep_spawn_in_memory"), world.isSpawnKeptInMemory()));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "world_type"), world.getWorldType()));  
     } else {
-      throw new CommandUsageException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName));
+      throw new CommandUsageException(this.getLocalisation().getMessage(DimensionDoor.class, "world-is-not-managed", this.worldName));
     }
   }
 
   public void parseArguments(String[] arguments, CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException {
     if (arguments.length == 0) {
-      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("list-worlds-hint"));
+      throw new CommandArgumentException(this.getLocalisation().getMessage(DimensionDoor.class,"must-specify-a-world-name"), null);
     } else {
       this.worldName = arguments[0];
     }
-  }
-
-  private void registerPermissions() {
-    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
-    base.addParent(this.plugin.getRootPermission(), true);
-    this.addPermission(base);
   }
   
 }

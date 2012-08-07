@@ -7,18 +7,12 @@ import java.util.Map;
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.world.WorldInitEvent;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
-import name.richardson.james.bukkit.utilities.internals.Logger;
+import name.richardson.james.bukkit.utilities.listener.LoggableListener;
 
-public class WorldManager implements Listener {
-
-  /** The logger for this class. */
-  private final Logger logger = new Logger(this.getClass());
+public class WorldManager extends LoggableListener {
   
   /** The storage backing the WorldManager. */
   private final WorldConfiguration storage;
@@ -36,9 +30,8 @@ public class WorldManager implements Listener {
    * @throws IOException Signals that an I/O exception has occurred loading the configuration
    */
   public WorldManager(DimensionDoor plugin) throws IOException {
-    this.logger.debug("Initalising world manager.");
+    super(plugin);
     this.plugin = plugin;
-    this.setRootPermission();
     this.storage = new WorldConfiguration(plugin);
     this.worlds = this.storage.getWorlds();
     this.checkForMainWorlds();
@@ -53,18 +46,15 @@ public class WorldManager implements Listener {
       }
       i++;
     }
-    this.plugin.getServer().getPluginManager().registerEvents(this, plugin);
-    this.logger.debug((String.format("Enabled %d of %d configured worlds.", i, this.worlds.size())));
+    this.getLogger().debug(this, "configured-worlds",i, this.worlds.size());
   }
   
   private void checkForMainWorlds() {
-    this.logger.debug("Checking for early loaded worlds");
     boolean saveRequired = false;
     for (org.bukkit.World world : this.plugin.getServer().getWorlds()) {
       if (!this.worlds.containsKey(world.getName())) {
-        this.logger.warning(String.format("%s has not been configured by DimensionDoor.", world.getName()));
         this.worlds.put(world.getName(), new World(this.plugin, world));
-        saveRequired= true;
+        saveRequired = true;
       }
     }
     if (saveRequired) this.save();
@@ -77,20 +67,18 @@ public class WorldManager implements Listener {
    */
   @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true) 
   public void onWorldInit(WorldInitEvent event) {
-    this.logger.debug(String.format("A world called %s has initalised.", event.getWorld().getName()));
+    this.getLogger().debug(this, "new-world", event.getWorld().getName());
     if (worlds.containsKey(event.getWorld().getName())) return;
-    this.logger.debug(String.format("%s has not been configured by DimensionDoor.", event.getWorld().getName()));
+    this.getLogger().warning(this, "unexpected-world", event.getWorld().getName());
     this.worlds.put(event.getWorld().getName(), new World(this.plugin, event.getWorld()));
   }
   
   @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true) 
   public void onPlayerTeleport(PlayerTeleportEvent event) {
-    logger.debug("Checking if we need to clear inventory for " + event.getPlayer().getName());
     if (plugin.isClearingCreativeInventories()) {
       GameMode origin = this.worlds.get(event.getFrom().getWorld().getName()).getGameMode();
       GameMode destination = this.worlds.get(event.getTo().getWorld().getName()).getGameMode();
       if (origin.equals(GameMode.CREATIVE) && !destination.equals(GameMode.CREATIVE)) {
-        logger.debug("Clearing inventory");
         event.getPlayer().getInventory().clear();
       }
     }
@@ -98,13 +86,6 @@ public class WorldManager implements Listener {
   
   public void addWorld(World world) {
     this.worlds.put(world.getName(), world);
-  }
-  
-  private void setRootPermission() {
-    final String permission = this.plugin.getName().toLowerCase() + "." + this.plugin.getMessage("world.permission-name") + ".*";
-    final Permission base = new Permission(permission, this.plugin.getMessage("world.wildcard-permission-description"), PermissionDefault.OP);
-    base.addParent(this.plugin.getRootPermission(), true);
-    this.plugin.addPermission(base);
   }
   
   /**

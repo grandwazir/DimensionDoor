@@ -19,35 +19,33 @@
 
 package name.richardson.james.bukkit.dimensiondoor.management;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
+import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
-import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
 @ConsoleCommand
-public class ClearCommand extends PluginCommand {
+public class ClearCommand extends AbstractCommand {
 
   private String worldName;
 
   public ClearCommand(final DimensionDoor plugin) {
-    super(plugin);
-    this.registerPermissions();
+    super(plugin, false);
   }
 
   public void execute(CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException, CommandPermissionException, CommandUsageException {
-    final World world = this.plugin.getServer().getWorld(worldName);
+    final World world = Bukkit.getServer().getWorld(worldName);
     if (world == null) {
-      throw new CommandUsageException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName));
+      throw new CommandUsageException(this.getLocalisation().getMessage(DimensionDoor.class, "world-is-not-managed", this.worldName));
     }
     int count = 0;
     for (Entity entity : world.getEntities()) {
@@ -57,25 +55,16 @@ public class ClearCommand extends PluginCommand {
       }
     }
     Object[] arguments = { count, world.getName() };
-    sender.sendMessage(this.getSimpleFormattedMessage("clear-report", arguments));
+    sender.sendMessage(this.getLocalisation().getMessage(this, "clear-report", arguments));
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
-
     if (arguments.length == 0) {
-      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("load-world-hint"));
+      throw new CommandArgumentException(this.getLocalisation().getMessage(DimensionDoor.class, "must-specify-a-world-name"), null);
     } else {
       this.worldName = arguments[0];
     }
-
   }
   
-  private void registerPermissions() {
-    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
-    base.addParent(this.plugin.getRootPermission(), true);
-    this.addPermission(base);
-  }
 
 }

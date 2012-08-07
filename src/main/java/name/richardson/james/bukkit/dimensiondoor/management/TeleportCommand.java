@@ -22,51 +22,39 @@ package name.richardson.james.bukkit.dimensiondoor.management;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
+import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
-import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
-public class TeleportCommand extends PluginCommand {
+public class TeleportCommand extends AbstractCommand {
 
   private final DimensionDoor plugin;
+  
   private String worldName;
 
   public TeleportCommand(final DimensionDoor plugin) {
-    super(plugin);
+    super(plugin, false);
     this.plugin = plugin;
-    this.registerPermissions();
   }
 
   public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     final Player player = (Player) sender;
     final World world = this.plugin.getServer().getWorld(worldName);
     if (world == null) {
-      throw new CommandUsageException(this.getSimpleFormattedMessage("world-not-loaded", worldName));
+      throw new CommandUsageException(this.getLocalisation().getMessage(DimensionDoor.class, "world-not-loaded", worldName));
     }
     player.teleport(world.getSpawnLocation());
   }
 
   public void parseArguments(String[] arguments, CommandSender sender) throws name.richardson.james.bukkit.utilities.command.CommandArgumentException {
-
     if (arguments.length == 0) {
-      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("list-worlds-hint"));
+      throw new CommandArgumentException(this.getLocalisation().getMessage(DimensionDoor.class, "must-specify-a-world-name"), null);
     } else {
       this.worldName = arguments[0];
     }
-
-  }
-
-  private void registerPermissions() {
-    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
-    base.addParent(this.plugin.getRootPermission(), true);
-    this.addPermission(base);
   }
   
 }

@@ -5,25 +5,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import name.richardson.james.bukkit.utilities.persistence.YAMLStorage;
+import name.richardson.james.bukkit.utilities.persistence.AbstractYAMLStorage;
+import name.richardson.james.bukkit.utilities.plugin.Plugin;
 
-public class WorldConfiguration extends YAMLStorage {
+public class WorldConfiguration extends AbstractYAMLStorage {
 
   public static final String FILE_NAME = "worlds.yml";
   
   private final ConfigurationSection section;
   
-  public WorldConfiguration(JavaPlugin plugin) throws IOException {
+  public WorldConfiguration(Plugin plugin) throws IOException {
     super(plugin, FILE_NAME);
-    section = this.configuration.getConfigurationSection("worlds");
+    this.setDefaultWorlds();
+    section = this.getConfiguration().getConfigurationSection("worlds");
   }
   
-  public void setDefaults() throws IOException {
-    super.setDefaults();
-    if (!configuration.isConfigurationSection("worlds")) {
-      this.configuration.createSection("worlds");
+  private void setDefaultWorlds() throws IOException {
+    if (!this.getConfiguration().isConfigurationSection("worlds")) {
+      this.getConfiguration().createSection("worlds");
       this.save();
     }
   }
@@ -43,11 +43,7 @@ public class WorldConfiguration extends YAMLStorage {
     for (World world : worlds.values()) {
       this.section.set(world.getName(), world);
     }
-    try {
-      this.save();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    this.save();
   }
   
 }

@@ -20,20 +20,18 @@
 package name.richardson.james.bukkit.dimensiondoor.creation;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.World;
 import name.richardson.james.bukkit.dimensiondoor.WorldManager;
+import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
-import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
 @ConsoleCommand
-public class RemoveCommand extends PluginCommand {
+public class RemoveCommand extends AbstractCommand {
 
   /** The world manager */
   private final WorldManager manager;
@@ -42,39 +40,29 @@ public class RemoveCommand extends PluginCommand {
   private String worldName;
 
   public RemoveCommand(final DimensionDoor plugin) {
-    super(plugin);
+    super(plugin, false);
     this.manager = plugin.getWorldManager();
-    this.registerPermissions();
   }
 
   public void execute(final CommandSender sender) throws CommandArgumentException, CommandPermissionException, CommandUsageException {
     final World world = this.manager.getWorld(worldName);
     if (world == null) {
-      throw new CommandUsageException(this.getSimpleFormattedMessage("world-is-not-managed", this.worldName));
+      throw new CommandUsageException(this.getLocalisation().getMessage(DimensionDoor.class, "world-is-not-managed", this.worldName));
     } else {
       if (world.isLoaded()) world.unload();
       manager.removeWorld(world);
-      sender.sendMessage(this.getSimpleFormattedMessage("world-removed", this.worldName));
-      sender.sendMessage(this.getMessage("remove-data-also"));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "world-removed", this.worldName));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "remove-data-also"));
     }
   }
 
   public void parseArguments(final String[] arguments, final CommandSender sender) throws CommandArgumentException {
 
     if (arguments.length == 0) {
-      throw new CommandArgumentException(this.getMessage("must-specify-a-world-name"), this.getMessage("list-worlds-hint"));
+      throw new CommandArgumentException(this.getLocalisation().getMessage(DimensionDoor.class, "must-specify-a-world-name"), null);
     } else {
       this.worldName = arguments[0];
     }
-
-  }
-
-  private void registerPermissions() {
-    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
-    base.addParent(this.plugin.getRootPermission(), true);
-    this.addPermission(base);
   }
   
 }

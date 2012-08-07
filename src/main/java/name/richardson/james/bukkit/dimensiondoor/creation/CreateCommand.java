@@ -35,20 +35,18 @@ import org.bukkit.conversations.MessagePrompt;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.StringPrompt;
 import org.bukkit.conversations.ValidatingPrompt;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
 import name.richardson.james.bukkit.dimensiondoor.World;
 import name.richardson.james.bukkit.dimensiondoor.WorldManager;
+import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
 import name.richardson.james.bukkit.utilities.command.CommandUsageException;
 import name.richardson.james.bukkit.utilities.command.ConsoleCommand;
-import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
 @ConsoleCommand
-public class CreateCommand extends PluginCommand {
+public class CreateCommand extends AbstractCommand {
   
   private final ConversationFactory factory;
   
@@ -57,7 +55,7 @@ public class CreateCommand extends PluginCommand {
   private final DimensionDoor plugin;
 
   public CreateCommand(final DimensionDoor plugin) {
-    super(plugin);
+    super(plugin, false);
     this.manager = plugin.getWorldManager();
     this.factory = new ConversationFactory(plugin)
     .withModality(true)
@@ -67,7 +65,6 @@ public class CreateCommand extends PluginCommand {
     .withTimeout(10)
     .withInitialSessionData(this.getInitalSessionData());
     this.plugin = plugin;
-    this.registerPermissions();
   }
 
   private Map<Object, Object> getInitalSessionData() {
@@ -86,19 +83,10 @@ public class CreateCommand extends PluginCommand {
     return;
   }
 
-  private void registerPermissions() {
-    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
-    base.addParent(this.plugin.getRootPermission(), true);
-    this.addPermission(base);
-  }
-
-  
   private class WorldNamePrompt extends ValidatingPrompt {
 
     public String getPromptText(ConversationContext context) {
-      return getMessage("prompt-world-name");
+      return getLocalisation().getMessage(this, "prompt-world-name");
     }
 
     @Override
@@ -114,7 +102,7 @@ public class CreateCommand extends PluginCommand {
     }
     
     protected String getFailedValidationText(ConversationContext context, String message) {
-      return getSimpleFormattedMessage("world-already-exists", message);
+      return getLocalisation().getMessage(this, "world-already-exists", message);
     }
     
   }
@@ -132,7 +120,7 @@ public class CreateCommand extends PluginCommand {
     }
 
     public String getPromptText(ConversationContext context) {
-      return getSimpleFormattedMessage("prompt-world-environment", formatFixedSet().toString());
+      return getLocalisation().getMessage(this, "prompt-world-environment", formatFixedSet().toString());
     }
     
   }
@@ -150,7 +138,7 @@ public class CreateCommand extends PluginCommand {
     }
 
     public String getPromptText(ConversationContext context) {
-      return getSimpleFormattedMessage("prompt-world-type", formatFixedSet().toString());
+      return getLocalisation().getMessage(CreateCommand.class, "prompt-world-type", formatFixedSet().toString());
     }
     
   }
@@ -159,7 +147,7 @@ public class CreateCommand extends PluginCommand {
 
     public Prompt acceptInput(ConversationContext context, String message) {
       context.setSessionData("step", 5);
-      if (message.isEmpty() || message.equalsIgnoreCase(getMessage("random"))) {
+      if (message.isEmpty() || message.equalsIgnoreCase(getLocalisation().getMessage(CreateCommand.class, "random"))) {
         context.setSessionData("seed", System.currentTimeMillis());
       } else {
         context.setSessionData("seed", message.hashCode());
@@ -168,7 +156,7 @@ public class CreateCommand extends PluginCommand {
     }
 
     public String getPromptText(ConversationContext context) {
-      return getSimpleFormattedMessage("prompt-world-seed", getMessage("random"));
+      return getLocalisation().getMessage(CreateCommand.class, "prompt-world-seed", getLocalisation().getMessage(CreateCommand.class, "random"));
     }
     
   }
@@ -176,11 +164,11 @@ public class CreateCommand extends PluginCommand {
   private class WorldGenerateStructuresPrompt extends FixedSetPrompt {
 
     public WorldGenerateStructuresPrompt() {
-      super(getMessage("yes"), getMessage("no"));
+      super(getLocalisation().getMessage(CreateCommand.class, "yes"), getLocalisation().getMessage(CreateCommand.class, "no"));
     }
     
     public Prompt acceptValidatedInput(ConversationContext context, String message) {
-      if (message.equalsIgnoreCase(getMessage("no"))) {
+      if (message.equalsIgnoreCase(getLocalisation().getMessage(CreateCommand.class, "no"))) {
         context.setSessionData("generate-structures", false);
       } else {
         context.setSessionData("generate-structures", true);
@@ -190,7 +178,7 @@ public class CreateCommand extends PluginCommand {
     }
 
     public String getPromptText(ConversationContext context) {
-      return getSimpleFormattedMessage("prompt-generate-structures", formatFixedSet().toString());
+      return getLocalisation().getMessage(CreateCommand.class, "prompt-generate-structures", formatFixedSet().toString());
     }
     
   }
@@ -199,7 +187,7 @@ public class CreateCommand extends PluginCommand {
     
     public Prompt acceptValidatedInput(ConversationContext context, String message) {
       
-      if (!message.equalsIgnoreCase(getMessage("none"))) {
+      if (!message.equalsIgnoreCase(getLocalisation().getMessage(CreateCommand.class, "none"))) {
         context.setSessionData("generator-plugin", message);
         context.setSessionData("step", 7);
         return new WorldGeneratorIdPrompt();
@@ -211,15 +199,15 @@ public class CreateCommand extends PluginCommand {
     
     @Override
     protected boolean isInputValid(ConversationContext context, String message) {
-      return (message.equalsIgnoreCase(getMessage("none")) || Bukkit.getPluginManager().getPlugin(message) != null);
+      return (message.equalsIgnoreCase(getLocalisation().getMessage(CreateCommand.class, "none")) || Bukkit.getPluginManager().getPlugin(message) != null);
     }
     
     protected String getFailedValidationText(ConversationContext context, String message) {
-      return getSimpleFormattedMessage("world-already-exists", message);
+      return getLocalisation().getMessage(CreateCommand.class, "world-already-exists", message);
     }
 
     public String getPromptText(ConversationContext context) {
-      return getSimpleFormattedMessage("prompt-world-generator", getMessage("none"));
+      return getLocalisation().getMessage(CreateCommand.class, "prompt-world-generator", getLocalisation().getMessage(CreateCommand.class, "none"));
     }
     
   }
@@ -228,12 +216,12 @@ public class CreateCommand extends PluginCommand {
     
     public Prompt acceptInput(ConversationContext context, String message) {
       context.setSessionData("step", 8);
-      if (!message.equalsIgnoreCase(getMessage("none"))) context.setSessionData("generator-id", message);
+      if (!message.equalsIgnoreCase(getLocalisation().getMessage(CreateCommand.class, "none"))) context.setSessionData("generator-id", message);
       return new CreateWorldPrompt();
     }
 
     public String getPromptText(ConversationContext context) {
-      return getSimpleFormattedMessage("prompt-world-generator-id", getMessage("none"));
+      return getLocalisation().getMessage(CreateCommand.class, "prompt-world-generator-id", getLocalisation().getMessage(this, "none"));
     }
     
   }
@@ -242,7 +230,7 @@ public class CreateCommand extends PluginCommand {
     
     public String getPromptText(ConversationContext context) {
       World world = new World(plugin, context.getSessionData("world-name").toString());
-      context.getForWhom().sendRawMessage(getSimpleFormattedMessage("creating-world", world.getName()));
+      context.getForWhom().sendRawMessage(getLocalisation().getMessage(CreateCommand.class, "creating-world", world.getName()));
       world.setEnvironment(Environment.valueOf(context.getSessionData("environment").toString()));
       world.setWorldType(WorldType.valueOf(context.getSessionData("world-type").toString()));
       world.setSeed(Long.parseLong(context.getSessionData("seed").toString()));
@@ -257,7 +245,7 @@ public class CreateCommand extends PluginCommand {
       manager.addWorld(world);
       world.load();
       manager.save();
-      return getSimpleFormattedMessage("world-created", world.getName());
+      return getLocalisation().getMessage(CreateCommand.class, "world-created", world.getName());
     }
 
     @Override
@@ -270,7 +258,7 @@ public class CreateCommand extends PluginCommand {
   private class WorldCreatePrefix implements ConversationPrefix {
 
     public String getPrefix(ConversationContext context) {
-      return getSimpleFormattedMessage("prefix", context.getSessionData("step"));
+      return getLocalisation().getMessage(CreateCommand.class, "prefix", context.getSessionData("step"));
     } 
     
   }

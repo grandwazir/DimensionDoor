@@ -21,19 +21,16 @@ package name.richardson.james.bukkit.dimensiondoor.management;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
+import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
 import name.richardson.james.bukkit.utilities.command.CommandPermissionException;
-import name.richardson.james.bukkit.utilities.command.PluginCommand;
 
-public class SpawnCommand extends PluginCommand {
+public class SpawnCommand extends AbstractCommand {
 
   public SpawnCommand(final DimensionDoor plugin) {
-    super(plugin);
-    this.registerPermissions();
+    super(plugin, false);
   }
 
   public void execute(CommandSender sender) throws CommandArgumentException, CommandPermissionException, name.richardson.james.bukkit.utilities.command.CommandUsageException {
@@ -43,19 +40,11 @@ public class SpawnCommand extends PluginCommand {
     final Integer y = (int) player.getLocation().getY();
     final Integer z = (int) player.getLocation().getZ();
     world.setSpawnLocation(x, y, z);
-    sender.sendMessage(this.getSimpleFormattedMessage("spawn-set", world.getName()));
+    sender.sendMessage(this.getLocalisation().getMessage(this, "spawn-set", world.getName()));
   }
 
   public void parseArguments(String[] arguments, CommandSender sender) throws CommandArgumentException {
     return;
-  }
-
-  private void registerPermissions() {
-    final String prefix = this.plugin.getDescription().getName().toLowerCase() + ".";
-    // create the base permission
-    final Permission base = new Permission(prefix + this.getName(), this.getMessage("permission-description"), PermissionDefault.OP);
-    base.addParent(this.plugin.getRootPermission(), true);
-    this.addPermission(base);
   }
   
 }
