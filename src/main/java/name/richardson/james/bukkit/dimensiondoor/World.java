@@ -716,6 +716,7 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
         PermissionDefault.OP
     );
     plugin.getPermissionManager().addPermission(permission, true);
+    World.rootPermission = permission;
   }
   
   private void setPermission() {

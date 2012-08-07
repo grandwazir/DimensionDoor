@@ -1,5 +1,9 @@
 Changelog for DimensionDoor (v2.1.1-SNAPSHOT)
 
+2012-08-07 02:49:12 +0100    remove unused imports (James Richardson)
+2012-08-07 02:48:42 +0100    only set gamemode when teleporting between worlds (James Richardson)
+2012-08-07 02:47:34 +0100    support large biomes (James Richardson)
+2012-08-07 02:46:59 +0100    converted to new bukkit utils (James Richardson)
 2012-08-02 14:47:56 +0100    fix ClassCastException (James Richardson)
 2012-08-02 10:21:40 +0100    switch to using parent pom (James Richardson)
 2012-08-02 10:20:16 +0100    fix attempting to save the world before we add it (James Richardson)
