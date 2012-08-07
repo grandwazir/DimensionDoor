@@ -721,10 +721,11 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
   
   private void setPermission() {
     final String prefix = this.getRootPermission().getName().replace("*", "");
+    final PermissionDefault defaultPermission = (this.isMainWorld()) ? PermissionDefault.TRUE : PermissionDefault.OP;
     final Permission permission = new Permission(
         prefix + this.getName().toLowerCase().replaceAll(" ", "_"),
         this.plugin.getLocalisation().getMessage(this, "permission-description"),
-        PermissionDefault.OP
+        defaultPermission
     );
     permission.addParent(this.getRootPermission(), true);
     plugin.getPermissionManager().addPermission(permission, false);
