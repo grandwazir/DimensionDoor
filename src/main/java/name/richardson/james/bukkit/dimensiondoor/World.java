@@ -302,7 +302,7 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
   }
 
   @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-  public void onPlayerTeleportEvent(final PlayerRespawnEvent event) {
+  public void onPlayerRespawnEvent(final PlayerRespawnEvent event) {
     if (this.environment == Environment.THE_END) {
       return;
     }
@@ -729,6 +729,7 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
     );
     permission.addParent(this.getRootPermission(), true);
     plugin.getPermissionManager().addPermission(permission, false);
+    this.permission = permission;
   }
 
 }
