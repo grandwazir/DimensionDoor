@@ -48,6 +48,7 @@ public class DimensionDoor extends AbstractPlugin {
   }
 
   protected void loadConfiguration() throws IOException {
+    super.loadConfiguration();
     this.configuration = new DimensionDoorConfiguration(this);
     ConfigurationSerialization.registerClass(World.class);
     this.manager = new WorldManager(this);
