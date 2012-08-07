@@ -128,7 +128,7 @@ public class CreateCommand extends AbstractCommand {
   private class WorldTypePrompt extends FixedSetPrompt {
 
     public WorldTypePrompt() {
-      super(WorldType.NORMAL.name(), WorldType.FLAT.name());
+      super(WorldType.NORMAL.name(), WorldType.FLAT.name(), WorldType.LARGE_BIOMES.name());
     }
     
     public Prompt acceptValidatedInput(ConversationContext context, String message) {
