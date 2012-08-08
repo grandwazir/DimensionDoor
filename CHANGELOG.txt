@@ -1,5 +1,6 @@
 Changelog for DimensionDoor (v2.1.1-SNAPSHOT)
 
+2012-08-07 07:51:05 +0100    add missing key (James Richardson)
 2012-08-07 07:49:30 +0100    key mismatch (James Richardson)
 2012-08-07 07:46:56 +0100    NPE when checking permission (James Richardson)
 2012-08-07 03:13:34 +0100    allow players to access main world by default (James Richardson)
