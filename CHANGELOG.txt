@@ -1,5 +1,8 @@
 Changelog for DimensionDoor (v2.1.2-SNAPSHOT)
 
+2012-08-10 10:56:11 +0100    more useful metrics (James Richardson)
+2012-08-10 10:33:29 +0100    add warning when a generator plugin is required but not loaded (James Richardson)
+2012-08-10 10:27:38 +0100    Fix ClassCastException (James Richardson)
 2012-08-10 09:44:49 +0100    update readme (James Richardson)
 
 v2.1.1

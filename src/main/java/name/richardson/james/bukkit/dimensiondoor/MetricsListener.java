@@ -4,13 +4,14 @@ import java.io.IOException;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldInitEvent;
 
 import name.richardson.james.bukkit.utilities.metrics.Metrics;
 import name.richardson.james.bukkit.utilities.metrics.Metrics.Graph;
 import name.richardson.james.bukkit.utilities.metrics.Metrics.Plotter;
 
-public final class MetricsListener {
+public final class MetricsListener implements Listener {
 
   private int normal = 0;
   
@@ -38,6 +39,7 @@ public final class MetricsListener {
     this.refreshStatistics();
     this.setupUsageStatistics();
     this.metrics.start();
+    plugin.getServer().getPluginManager().registerEvents(this, plugin);
   }
 
   private void refreshStatistics() {
