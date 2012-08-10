@@ -278,9 +278,12 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
    * Attempt to load the world.
    */
   public void load() {
-
     if (this.world == null) {
-      this.getWorldCreator().createWorld();
+      try {
+        this.getWorldCreator().createWorld();
+      } catch (IllegalStateException exception) {
+        this.plugin.getCustomLogger().warning(this, "generator-plugin-not-loaded", this.worldName, this.generatorPluginName);
+      }
     }
   }
 
