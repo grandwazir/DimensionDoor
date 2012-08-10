@@ -5,7 +5,7 @@ DimensionDoor is a plugin for the Minecraft wrapper [Bukkit](http://bukkit.org/)
 
 ## Features
 
-- Simple and easy to configure.
+- Simple and easy to use and configure.
 * Custom chunk generator support.
 * Lightweight: only manages worlds.
 * Create and remove worlds without restarting the server.
@@ -15,6 +15,7 @@ DimensionDoor is a plugin for the Minecraft wrapper [Bukkit](http://bukkit.org/)
 * Teleport to any world.
 * Change the spawn location of each world
 * Players respawn in the world they died in.
+* Prevent access to certain worlds with permissions
 * Set world specific settings.
 * Automatically manages worlds which are loaded unexpectedly by other plugins.
 * Automatically loads all managed worlds on server start.
