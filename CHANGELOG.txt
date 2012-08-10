@@ -1,5 +1,6 @@
 Changelog for DimensionDoor (v2.1.2-SNAPSHOT)
 
+2012-08-10 09:44:49 +0100    update readme (James Richardson)
 
 v2.1.1
 2012-08-08 06:12:33 +0100    added missing key (James Richardson)

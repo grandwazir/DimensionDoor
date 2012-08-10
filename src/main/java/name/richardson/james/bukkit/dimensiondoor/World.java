@@ -53,7 +53,7 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
     world.generatorPluginName = ((String) map.get("generator-plugin-name"));
     world.isolatedChat = ((Boolean) map.get("isolated-chat"));
     world.pvp = ((Boolean) map.get("pvp"));
-    world.seed = (Long) map.get("seed");
+    world.seed = Long.parseLong(String.valueOf(map.get("seed")));
     world.worldType = (WorldType.valueOf((String) map.get("world-type")));
     return world;
   }
