@@ -34,7 +34,6 @@ import name.richardson.james.bukkit.dimensiondoor.management.ModifyCommand;
 import name.richardson.james.bukkit.dimensiondoor.management.SpawnCommand;
 import name.richardson.james.bukkit.dimensiondoor.management.TeleportCommand;
 import name.richardson.james.bukkit.utilities.command.CommandManager;
-import name.richardson.james.bukkit.utilities.metrics.MetricsListener;
 import name.richardson.james.bukkit.utilities.plugin.AbstractPlugin;
 
 public class DimensionDoor extends AbstractPlugin {
