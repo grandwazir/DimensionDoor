@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.world.WorldInitEvent;
+import org.bukkit.inventory.PlayerInventory;
 
 import name.richardson.james.bukkit.utilities.listener.LoggableListener;
 
@@ -79,7 +80,9 @@ public class WorldManager extends LoggableListener {
       GameMode origin = this.worlds.get(event.getFrom().getWorld().getName()).getGameMode();
       GameMode destination = this.worlds.get(event.getTo().getWorld().getName()).getGameMode();
       if (origin.equals(GameMode.CREATIVE) && !destination.equals(GameMode.CREATIVE)) {
-        event.getPlayer().getInventory().clear();
+    	  final PlayerInventory inventory = event.getPlayer().getInventory();
+    	  inventory.setArmorContents(null);
+    	  inventory.clear();
       }
     }
   }
