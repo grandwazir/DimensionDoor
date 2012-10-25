@@ -1,5 +1,9 @@
-Changelog for DimensionDoor (v2.1.3-SNAPSHOT)
+Changelog for DimensionDoor (v2.1.4-SNAPSHOT)
 
+
+v2.1.3
+2012-10-25 21:22:18 +0100    add default description for uploaded files (James Richardson)
+2012-10-25 21:10:17 +0100    add bukkitdev uploader (James Richardson)
 2012-10-25 20:55:03 +0100    fix case sensitivity with enums (fix #24) (James Richardson)
 2012-10-25 20:46:44 +0100    Fix localisation key mix up (fixes #21 and #23) (James Richardson)
 2012-10-25 20:31:35 +0100    clear armour when changing worlds (fixes #8 and #20) (James Richardson)
