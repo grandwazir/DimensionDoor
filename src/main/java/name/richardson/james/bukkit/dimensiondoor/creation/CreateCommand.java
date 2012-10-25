@@ -203,7 +203,7 @@ public class CreateCommand extends AbstractCommand {
     }
     
     protected String getFailedValidationText(ConversationContext context, String message) {
-      return getLocalisation().getMessage(CreateCommand.class, "world-already-exists", message);
+      return getLocalisation().getMessage(CreateCommand.class, "plugin-not-loaded", message);
     }
 
     public String getPromptText(ConversationContext context) {
@@ -221,7 +221,7 @@ public class CreateCommand extends AbstractCommand {
     }
 
     public String getPromptText(ConversationContext context) {
-      return getLocalisation().getMessage(CreateCommand.class, "prompt-world-generator-id", getLocalisation().getMessage(this, "none"));
+      return getLocalisation().getMessage(CreateCommand.class, "prompt-world-generator-id", getLocalisation().getMessage(CreateCommand.class, "none"));
     }
     
   }
