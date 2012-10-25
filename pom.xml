@@ -22,6 +22,19 @@
 
   <build>
       <plugins>
+         <plugin>
+           <groupId>name.richardson.james.maven</groupId>
+           <artifactId>bukkit-dev-uploader</artifactId>
+           <version>1.0.0</version>
+             <executions>
+              <execution>
+                <goals>
+                  <goal>upload</goal>
+                </goals>
+                <phase>deploy</phase>
+              </execution>
+            </executions>
+          </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-shade-plugin</artifactId>
