@@ -6,6 +6,10 @@
   <description>DimensionDoor is a lightweight but powerful solution to managing multiple worlds</description>
   <url>http://grandwazir.github.com/${project.name}/</url>
 
+  <properties>
+    <bukkitdevuploader.changeLog>Please see the [changelog](${project.url}wiki/Feature-changes) on GitHub.</bukkitdevuploader.changeLog>
+  </properties>
+
   <parent>
      <groupId>name.richardson.james.bukkit</groupId>
      <artifactId>parent-pom</artifactId>
