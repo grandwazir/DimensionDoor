@@ -20,6 +20,7 @@
 package name.richardson.james.bukkit.dimensiondoor.creation;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -119,6 +120,14 @@ public class CreateCommand extends AbstractCommand {
       return new WorldTypePrompt();
     }
 
+    public boolean isInputValid(ConversationContext context, String input) {
+      Iterator<String> validStringsIter = fixedSet.iterator();
+      while (validStringsIter.hasNext()) {
+    	  if (validStringsIter.next().equalsIgnoreCase(input)) return true;
+      }
+      return false;
+    }
+    
     public String getPromptText(ConversationContext context) {
       return getLocalisation().getMessage(CreateCommand.class, "prompt-world-environment", formatFixedSet().toString());
     }
@@ -135,6 +144,14 @@ public class CreateCommand extends AbstractCommand {
       context.setSessionData("world-type", message);
       context.setSessionData("step", 4);
       return new WorldSeedPrompt();
+    }
+    
+    public boolean isInputValid(ConversationContext context, String input) {
+      Iterator<String> validStringsIter = fixedSet.iterator();
+      while (validStringsIter.hasNext()) {
+      	if (validStringsIter.next().equalsIgnoreCase(input)) return true;
+      }
+      return false;
     }
 
     public String getPromptText(ConversationContext context) {
@@ -177,6 +194,14 @@ public class CreateCommand extends AbstractCommand {
       return new WorldGeneratorPluginPrompt();
     }
 
+    public boolean isInputValid(ConversationContext context, String input) {
+      Iterator<String> validStringsIter = fixedSet.iterator();
+      while (validStringsIter.hasNext()) {
+        if (validStringsIter.next().equalsIgnoreCase(input)) return true;
+      }
+      return false;
+    }
+    
     public String getPromptText(ConversationContext context) {
       return getLocalisation().getMessage(CreateCommand.class, "prompt-generate-structures", formatFixedSet().toString());
     }
@@ -231,8 +256,8 @@ public class CreateCommand extends AbstractCommand {
     public String getPromptText(ConversationContext context) {
       World world = new World(plugin, context.getSessionData("world-name").toString());
       context.getForWhom().sendRawMessage(getLocalisation().getMessage(CreateCommand.class, "creating-world", world.getName()));
-      world.setEnvironment(Environment.valueOf(context.getSessionData("environment").toString()));
-      world.setWorldType(WorldType.valueOf(context.getSessionData("world-type").toString()));
+      world.setEnvironment(Environment.valueOf(context.getSessionData("environment").toString().toUpperCase()));
+      world.setWorldType(WorldType.valueOf(context.getSessionData("world-type").toString().toUpperCase()));
       world.setSeed(Long.parseLong(context.getSessionData("seed").toString()));
       if (context.getSessionData("generator-plugin") != null) {
         String pluginName = (String) context.getSessionData("generator-plugin");
