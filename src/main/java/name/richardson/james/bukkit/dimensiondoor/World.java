@@ -52,6 +52,7 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
     world.generatorID = ((String) map.get("generator-id"));
     world.generatorPluginName = ((String) map.get("generator-plugin-name"));
     world.isolatedChat = ((Boolean) map.get("isolated-chat"));
+    world.keepSpawnInMemory = ((Boolean) map.get("keep-spawn-in-memory"));
     world.pvp = ((Boolean) map.get("pvp"));
     world.seed = Long.parseLong(String.valueOf(map.get("seed")));
     world.worldType = (WorldType.valueOf((String) map.get("world-type")));
@@ -160,7 +161,6 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
    * Apply world attributes.
    */
   public void applyAttributes() {
-
     this.world.setDifficulty(this.difficulty);
     this.world.setKeepSpawnInMemory(this.keepSpawnInMemory);
     this.world.setPVP(this.pvp);
@@ -393,6 +393,7 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
     map.put("generator-id", this.generatorID);
     map.put("generator-plugin-name", this.generatorPluginName);
     map.put("isolated-chat", this.isolatedChat);
+    map.put("keep-spawn-in-memory", this.keepSpawnInMemory);
     map.put("pvp", this.pvp);
     map.put("seed", this.seed);
     map.put("world-type", this.worldType.toString());
