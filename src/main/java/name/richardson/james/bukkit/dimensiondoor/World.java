@@ -1,6 +1,8 @@
 package name.richardson.james.bukkit.dimensiondoor;
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -55,6 +57,7 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
     world.keepSpawnInMemory = ((Boolean) map.get("keep-spawn-in-memory"));
     world.pvp = ((Boolean) map.get("pvp"));
     world.seed = Long.parseLong(String.valueOf(map.get("seed")));
+	  world.texturePack = (String) map.get("texture-pack");
     world.worldType = (WorldType.valueOf((String) map.get("world-type")));
     return world;
   }
@@ -108,6 +111,9 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
 
   /** The seed of this world. */
   private long seed = 0;
+  
+  /** The address of the texture pack for this world */
+  private String texturePack = "Default";
 
   /** The loaded world. */
   private org.bukkit.World world;
@@ -210,6 +216,10 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
     return this.seed;
   }
 
+  public String getTexturePack() {
+  	return this.texturePack;
+  }
+  
   /**
    * Gets the UUID.
    * 
@@ -396,6 +406,7 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
     map.put("keep-spawn-in-memory", this.keepSpawnInMemory);
     map.put("pvp", this.pvp);
     map.put("seed", this.seed);
+    map.put("texture-pack", this.texturePack.toString());
     map.put("world-type", this.worldType.toString());
     return map;
   }
@@ -562,6 +573,10 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
     this.seed = seed;
   }
 
+  public void setTexturePack(String url) {
+  	this.texturePack = url;
+  }
+  
   /**
    * Sets a reference to a loaded world.
    * 

@@ -48,6 +48,7 @@ public class InfoCommand extends AbstractCommand {
       sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "enabled"), world.getEnabled()));
       sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "seed"), String.valueOf(world.getSeed())));
       sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "environment"), world.getEnvironment()));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "texture-pack"), world.getTexturePack()));
       sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "difficulty"), world.getDifficulty()));
       sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "gamemode"), world.getGameMode()));
       sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "generate_structures"), world.isGeneratingStructures()));

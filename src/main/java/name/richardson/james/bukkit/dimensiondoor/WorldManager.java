@@ -1,8 +1,10 @@
 package name.richardson.james.bukkit.dimensiondoor;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
@@ -85,6 +87,8 @@ public class WorldManager extends LoggableListener {
     	  inventory.clear();
       }
     }
+    final String texturePack = this.worlds.get(event.getTo().getWorld().getName()).getTexturePack();
+    event.getPlayer().setTexturePack(texturePack);
   }
   
   public void addWorld(World world) {

@@ -8,7 +8,7 @@
 
   <parent>
      <groupId>name.richardson.james.bukkit</groupId>
-     <artifactId>parent-pom</artifactId>
+     <artifactId>default-pom</artifactId>
      <version>3</version>
   </parent>
 

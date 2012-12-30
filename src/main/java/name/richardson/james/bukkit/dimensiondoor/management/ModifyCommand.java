@@ -19,6 +19,8 @@
 
 package name.richardson.james.bukkit.dimensiondoor.management;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedList;
 
@@ -55,7 +57,8 @@ public class ModifyCommand extends AbstractCommand {
     SPAWN_ANIMALS,
     PVP,
     KEEP_SPAWN_IN_MEMORY,
-    ISOLATED_CHAT
+    ISOLATED_CHAT,
+    TEXTURE_PACK
   }
   
   public ModifyCommand(final DimensionDoor plugin) {
@@ -124,6 +127,13 @@ public class ModifyCommand extends AbstractCommand {
         guidence.deleteCharAt(guidence.length() - 2);
         throw new CommandArgumentException(this.getLocalisation().getMessage(this, "must-specify-valid-game-mode"), this.getLocalisation().getMessage(this, "choose-between", guidence.toString()));
       }
+    case TEXTURE_PACK:
+      try {
+        final URL url = new URL(value);
+        world.setTexturePack(url.toString());
+      } catch (MalformedURLException e) {
+      	throw new CommandArgumentException(this.getLocalisation().getMessage(this, "invalid-url"), null);
+			}
     }
     this.plugin.getWorldManager().save();
     final Object[] arguments = { this.attribute.toString(), this.value, world.getName() };

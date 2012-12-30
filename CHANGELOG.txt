@@ -1,8 +1,7 @@
 Changelog for DimensionDoor (v2.1.4-SNAPSHOT)
 
+2012-11-18 15:16:50 +0000    update localisation key and fix #26 (James Richardson)
 2012-11-18 15:04:32 +0000    persist keep_spawn_in_memory fixes #25 (James Richardson)
-
-v2.1.3
 2012-10-25 21:53:35 +0100    preparing to release (James Richardson)
 2012-10-25 21:51:58 +0100    life is too short to fix this dependency problem (James Richardson)
 2012-10-25 21:50:10 +0100    update changelog (James Richardson)
