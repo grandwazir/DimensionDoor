@@ -1,14 +1,16 @@
 package name.richardson.james.bukkit.dimensiondoor;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import org.bukkit.GameMode;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.inventory.PlayerInventory;
@@ -49,6 +51,7 @@ public class WorldManager extends LoggableListener {
       }
       i++;
     }
+    plugin.getServer().getPluginManager().registerEvents(this, plugin);
     this.getLogger().debug(this, "configured-worlds",i, this.worlds.size());
   }
   
@@ -88,6 +91,13 @@ public class WorldManager extends LoggableListener {
       }
     }
     final String texturePack = this.worlds.get(event.getTo().getWorld().getName()).getTexturePack();
+    event.getPlayer().setTexturePack(texturePack);
+  }
+  
+  @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true) 
+  public void onPlayerJoin(PlayerJoinEvent event) {
+    final String texturePack = this.worlds.get(event.getPlayer().getWorld().getName()).getTexturePack();
+    Logger.getLogger("Minecraft").info(texturePack);
     event.getPlayer().setTexturePack(texturePack);
   }
   

@@ -1,5 +1,6 @@
 Changelog for DimensionDoor (v2.1.4-SNAPSHOT)
 
+2012-12-30 04:55:00 +0000    add ability to set per world texture packs. Fixes #27. (James Richardson)
 2012-11-18 15:16:50 +0000    update localisation key and fix #26 (James Richardson)
 2012-11-18 15:04:32 +0000    persist keep_spawn_in_memory fixes #25 (James Richardson)
 2012-10-25 21:53:35 +0100    preparing to release (James Richardson)
