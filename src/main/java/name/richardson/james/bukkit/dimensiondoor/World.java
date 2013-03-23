@@ -152,6 +152,8 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
     this.worldType = this.world.getWorldType();
     this.worldUUID = this.world.getUID();
     this.setPermission();
+    // this is to prevent people getting trapped in THE_END
+    if (this.environment == Environment.THE_END) this.playerRespawn = false;
     this.plugin.getServer().getPluginManager().registerEvents(this, plugin);
   }
 
