@@ -34,7 +34,7 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 8551768503578434301L;
-
+  
   /**
    * Deserialize a world into a new object.
    * 
@@ -55,6 +55,7 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
     world.generatorPluginName = ((String) map.get("generator-plugin-name"));
     world.isolatedChat = ((Boolean) map.get("isolated-chat"));
     world.keepSpawnInMemory = ((Boolean) map.get("keep-spawn-in-memory"));
+    world.playerRespawn = ((Boolean) map.get("player-respawn-in-world"));
     world.pvp = ((Boolean) map.get("pvp"));
     world.seed = Long.parseLong(String.valueOf(map.get("seed")));
 	  world.texturePack = (String) map.get("texture-pack");
@@ -126,6 +127,11 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
 
   /** Get the unique ID for this world. */
   private UUID worldUUID;
+
+  /** Should players respawn on death in this world?
+   *  Vanilla behaviour is for players to return to the main world
+   */
+  private boolean playerRespawn = true;
 
   /**
    * Instantiates a new world and base the attributes of the world provided.
@@ -267,6 +273,10 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
   public boolean isMainWorld() {
     return (this.plugin.getServer().getWorlds().get(0) == this.world);
   }
+  
+  public boolean isPlayerRespawning() {
+    return this.playerRespawn;
+  }
 
   public boolean isPVP() {
     return this.pvp;
@@ -316,7 +326,7 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
 
   @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
   public void onPlayerRespawnEvent(final PlayerRespawnEvent event) {
-    if (this.environment == Environment.THE_END) {
+    if (!this.playerRespawn) {
       return;
     }
     if (event.getPlayer().getWorld() == this.world) {
@@ -390,7 +400,6 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
    * @return the map
    */
   public Map<String, Object> serialize() {
-
     final Map<String, Object> map = new LinkedHashMap<String, Object>();
     map.put("world-name", this.worldName);
     map.put("enabled", this.enabled);
@@ -405,6 +414,7 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
     map.put("isolated-chat", this.isolatedChat);
     map.put("keep-spawn-in-memory", this.keepSpawnInMemory);
     map.put("pvp", this.pvp);
+    map.put("player-respawn-in-world", this.playerRespawn);
     map.put("seed", this.seed);
     map.put("texture-pack", this.texturePack.toString());
     map.put("world-type", this.worldType.toString());
@@ -552,6 +562,15 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
     }
   }
 
+  /**
+   * Sets if the player should respawn on death in this world.
+   * 
+   * @param respawn the new value
+   */
+  public void setPlayerRespawn(boolean respawn) {
+    this.playerRespawn = respawn;
+  }
+  
   /**
    * Sets if PvP should be allowed in this world.
    * 
@@ -750,5 +769,7 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
     plugin.getPermissionManager().addPermission(permission, false);
     this.permission = permission;
   }
+
+
 
 }

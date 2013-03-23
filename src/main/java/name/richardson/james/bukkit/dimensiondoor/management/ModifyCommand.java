@@ -59,7 +59,8 @@ public class ModifyCommand extends AbstractCommand {
     PVP,
     KEEP_SPAWN_IN_MEMORY,
     ISOLATED_CHAT,
-    TEXTURE_PACK
+    TEXTURE_PACK,
+    RESPAWN
   }
   
   public ModifyCommand(final DimensionDoor plugin) {
@@ -140,6 +141,10 @@ public class ModifyCommand extends AbstractCommand {
       } catch (MalformedURLException e) {
       	throw new CommandArgumentException(this.getLocalisation().getMessage(this, "invalid-url"), null);
 			}
+    case RESPAWN:
+      world.setPlayerRespawn(Boolean.parseBoolean(this.value));
+      this.value = Boolean.toString(Boolean.parseBoolean(this.value));
+      break;
     }
     this.plugin.getWorldManager().save();
     final Object[] arguments = { this.attribute.toString(), this.value, world.getName() };
