@@ -1,8 +1,6 @@
 package name.richardson.james.bukkit.dimensiondoor;
 
 import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;

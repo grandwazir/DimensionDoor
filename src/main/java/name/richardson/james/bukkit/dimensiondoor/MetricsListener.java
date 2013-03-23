@@ -33,6 +33,12 @@ public final class MetricsListener implements Listener {
 
   private final WorldManager manager;
 
+  private int survival = 0;
+
+  private int creative = 0;;
+  
+  private int adventure = 0;
+
   public MetricsListener(DimensionDoor plugin) throws IOException {
     this.metrics = new Metrics(plugin);
     this.manager = plugin.getWorldManager();
@@ -52,6 +58,9 @@ public final class MetricsListener implements Listener {
     this.flatType = 0;
     this.customType = 0;
     this.largeBiomesType = 0;
+    this.survival = 0;
+    this.creative = 0;
+    this.adventure = 0;
     for (World world : this.manager.getWorlds().values()) {
       // set statistic for world environment
       switch (world.getEnvironment()) {
@@ -83,6 +92,17 @@ public final class MetricsListener implements Listener {
         break;
       case LARGE_BIOMES:
         this.largeBiomesType++;
+        break;
+      }
+      switch (world.getGameMode()) {
+      case SURVIVAL:
+        this.survival++;
+        break;
+      case ADVENTURE:
+        this.adventure++;
+        break;
+      case CREATIVE:
+        this.creative++;
         break;
       }
     }
@@ -151,6 +171,28 @@ public final class MetricsListener implements Listener {
       @Override
       public int getValue() {
         int i = normalType;
+        return i;
+      }
+    });
+    Graph graph2 = this.metrics.createGraph("World GameMode Statistics");
+    graph2.addPlotter(new Plotter("Survival") {
+      @Override
+      public int getValue() {
+        int i = survival;
+        return i;
+      }
+    });
+    graph2.addPlotter(new Plotter("Creative") {
+      @Override
+      public int getValue() {
+        int i = creative;
+        return i;
+      }
+    });
+    graph2.addPlotter(new Plotter("Adventure") {
+      @Override
+      public int getValue() {
+        int i = adventure;
         return i;
       }
     });
