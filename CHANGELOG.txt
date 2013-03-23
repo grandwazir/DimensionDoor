@@ -1,5 +1,7 @@
 Changelog for DimensionDoor (v2.1.4-SNAPSHOT)
 
+2013-03-23 13:32:56 +0000    delete debugging messages (James Richardson)
+2013-03-23 13:31:44 +0000    fixes #28 worlds are now removed correctly (James Richardson)
 2013-03-23 13:14:02 +0000    added player respawning status to info command (James Richardson)
 2013-03-23 13:10:12 +0000    prevent prompt when setting default packs (James Richardson)
 2013-03-23 13:08:21 +0000    NPE check for people upgrading (James Richardson)

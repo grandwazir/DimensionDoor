@@ -259,6 +259,7 @@ public class CreateCommand extends AbstractCommand {
       world.setEnvironment(Environment.valueOf(context.getSessionData("environment").toString().toUpperCase()));
       world.setWorldType(WorldType.valueOf(context.getSessionData("world-type").toString().toUpperCase()));
       world.setSeed(Long.parseLong(context.getSessionData("seed").toString()));
+      world.setGenerateStructures(Boolean.parseBoolean(context.getSessionData("generate-structures").toString()));
       if (context.getSessionData("generator-plugin") != null) {
         String pluginName = (String) context.getSessionData("generator-plugin");
         world.setGeneratorPluginName(pluginName);
