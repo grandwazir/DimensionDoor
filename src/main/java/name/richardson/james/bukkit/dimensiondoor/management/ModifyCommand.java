@@ -145,6 +145,7 @@ public class ModifyCommand extends AbstractCommand {
       } catch (MalformedURLException e) {
       	throw new CommandArgumentException(this.getLocalisation().getMessage(this, "invalid-url"), null);
 			}
+      break;
     case RESPAWN:
       world.setPlayerRespawn(Boolean.parseBoolean(this.value));
       this.value = Boolean.toString(Boolean.parseBoolean(this.value));

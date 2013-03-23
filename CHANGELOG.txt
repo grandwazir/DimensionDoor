@@ -1,5 +1,13 @@
-Changelog for DimensionDoor (v2.1.4-SNAPSHOT)
+Changelog for DimensionDoor (v2.2.1-SNAPSHOT)
 
+2013-03-23 14:19:25 +0000    fix a issue where packs where being set on every teleport (James Richardson)
+2013-03-23 14:17:55 +0000    fix non-fatal NPE on upgrading (James Richardson)
+
+v2.2.0
+2013-03-23 13:46:15 +0000    organise imports (James Richardson)
+2013-03-23 13:45:21 +0000    added metrics for game modes (James Richardson)
+2013-03-23 13:38:40 +0000    remove stray configuration value (James Richardson)
+2013-03-23 13:37:53 +0000    fix issue where generate structures was always set to true (James Richardson)
 2013-03-23 13:32:56 +0000    delete debugging messages (James Richardson)
 2013-03-23 13:31:44 +0000    fixes #28 worlds are now removed correctly (James Richardson)
 2013-03-23 13:14:02 +0000    added player respawning status to info command (James Richardson)
