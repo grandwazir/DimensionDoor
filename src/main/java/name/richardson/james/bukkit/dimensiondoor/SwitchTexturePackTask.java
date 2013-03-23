@@ -18,20 +18,32 @@
  ******************************************************************************/
 package name.richardson.james.bukkit.dimensiondoor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.entity.Player;
 
 public class SwitchTexturePackTask implements Runnable {
   
-  private final Player player;
+  private final List<Player> players = new ArrayList<Player>();
   private final String texturePack;
 
+
+  public SwitchTexturePackTask(List<Player> players, String texturePack) {
+    this.players.addAll(players);
+    this.texturePack = texturePack;
+  }
+  
+  
   public SwitchTexturePackTask(Player player, String texturePack) {
-    this.player = player;
+    this.players.add(player);
     this.texturePack = texturePack;
   }
   
   public void run() {
-    this.player.setTexturePack(texturePack);
+    for (Player player : players) {
+      player.setTexturePack(texturePack);
+    }
   }
   
 }

@@ -31,6 +31,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
 import name.richardson.james.bukkit.dimensiondoor.DimensionDoor;
+import name.richardson.james.bukkit.dimensiondoor.SwitchTexturePackTask;
 import name.richardson.james.bukkit.dimensiondoor.World;
 import name.richardson.james.bukkit.utilities.command.AbstractCommand;
 import name.richardson.james.bukkit.utilities.command.CommandArgumentException;
@@ -131,6 +132,11 @@ public class ModifyCommand extends AbstractCommand {
       try {
         final URL url = new URL(value);
         world.setTexturePack(url.toString());
+        if (world.isLoaded()) {
+          SwitchTexturePackTask task = new SwitchTexturePackTask(plugin.getServer().getWorld(world.getName()).getPlayers(), world.getTexturePack());
+          this.plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, task, 10L);
+        }
+        
       } catch (MalformedURLException e) {
       	throw new CommandArgumentException(this.getLocalisation().getMessage(this, "invalid-url"), null);
 			}
