@@ -33,10 +33,6 @@ public class DimensionDoorConfiguration extends PluginConfiguration {
     return this.getConfiguration().getBoolean("creative-world-transfer-settings.clear-inventories");
   }
   
-  public boolean isVanillaSpawningEnabled() {
-    return this.getConfiguration().getBoolean("respawn-in-main-world-on-death");
-  }
-
   public boolean isDebugging() {
     return this.getConfiguration().getBoolean("debugging");
   }
