@@ -116,21 +116,6 @@ public class WorldManager extends LoggableListener {
   }
   
   /**
-   * Removes a configured world.
-   *
-   * @param name the name
-   */
-  public void removeWorld(String name) {
-    World world = this.getWorld(name);
-    if (world != null) {
-      world.unload();
-      world.unregisterEvents();
-      this.worlds.remove(name);
-      this.save();
-    }
-  }
-  
-  /**
    * Save all worlds to the backing storage.
    */
   public void save() {
@@ -147,7 +132,12 @@ public class WorldManager extends LoggableListener {
   }
 
   public void removeWorld(World world) {
+    if (world.isLoaded()) {
+      world.unload();
+      world.unregisterEvents();
+    }
     this.worlds.remove(world.getName());
+    this.save();
   }
 
   public Map<String, World> getWorlds() {

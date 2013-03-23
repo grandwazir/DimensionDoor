@@ -638,6 +638,7 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
       throw new IllegalStateException("You may not unload the main world.");
     }
     this.removePlayers();
+    this.world = null;
     this.plugin.getServer().unloadWorld(this.worldName, true);
   }
 

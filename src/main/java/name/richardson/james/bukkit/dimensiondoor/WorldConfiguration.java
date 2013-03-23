@@ -3,6 +3,7 @@ package name.richardson.james.bukkit.dimensiondoor;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -42,6 +43,12 @@ public class WorldConfiguration extends AbstractYAMLStorage {
   public void setWorlds(Map<String, World> worlds) {
     for (World world : worlds.values()) {
       this.section.set(world.getName(), world);
+      Logger.getLogger("Minecraft").info("Saving world " + world.getName());
+    }
+    // check for deleted worlds
+    for (String key : this.section.getKeys(false)) {
+      if (!worlds.containsKey(key)) section.set(key, null);
+      Logger.getLogger("Minecraft").info("Checking for removed worlds " + key);
     }
     this.save();
   }
