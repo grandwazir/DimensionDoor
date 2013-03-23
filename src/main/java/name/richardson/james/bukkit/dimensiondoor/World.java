@@ -55,7 +55,7 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
     world.generatorPluginName = ((String) map.get("generator-plugin-name"));
     world.isolatedChat = ((Boolean) map.get("isolated-chat"));
     world.keepSpawnInMemory = ((Boolean) map.get("keep-spawn-in-memory"));
-    world.playerRespawn = ((Boolean) map.get("player-respawn-in-world"));
+    if (map.get("player-respawn-in-world") != null) world.playerRespawn = ((Boolean) map.get("player-respawn-in-world"));
     world.pvp = ((Boolean) map.get("pvp"));
     world.seed = Long.parseLong(String.valueOf(map.get("seed")));
 	  world.texturePack = (String) map.get("texture-pack");
