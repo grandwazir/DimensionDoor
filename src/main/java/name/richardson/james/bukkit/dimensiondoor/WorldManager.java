@@ -91,14 +91,15 @@ public class WorldManager extends LoggableListener {
       }
     }
     final String texturePack = this.worlds.get(event.getTo().getWorld().getName()).getTexturePack();
-    event.getPlayer().setTexturePack(texturePack);
+    final SwitchTexturePackTask task = new SwitchTexturePackTask(event.getPlayer(), texturePack);
+    this.plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, task, 10L);
   }
   
   @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true) 
   public void onPlayerJoin(PlayerJoinEvent event) {
     final String texturePack = this.worlds.get(event.getPlayer().getWorld().getName()).getTexturePack();
-    Logger.getLogger("Minecraft").info(texturePack);
-    event.getPlayer().setTexturePack(texturePack);
+    final SwitchTexturePackTask task = new SwitchTexturePackTask(event.getPlayer(), texturePack);
+    this.plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, task, 10L);
   }
   
   public void addWorld(World world) {
