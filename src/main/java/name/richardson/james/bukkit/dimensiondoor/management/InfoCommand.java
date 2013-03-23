@@ -53,6 +53,7 @@ public class InfoCommand extends AbstractCommand {
       sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "gamemode"), world.getGameMode()));
       sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "generate_structures"), world.isGeneratingStructures()));
       sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "isolated_chat"), world.isChatIsolated()));
+      sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "player-respawn"), world.isPlayerRespawning()));  
       sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "pvp"), world.isPVP()));
       sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "spawn_animals"), world.isSpawningAnimals()));
       sender.sendMessage(this.getLocalisation().getMessage(this, "list-item", this.getLocalisation().getMessage(this, "spawn_monsters"), world.isSpawningMonsters()));

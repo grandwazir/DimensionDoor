@@ -1,5 +1,7 @@
 Changelog for DimensionDoor (v2.1.4-SNAPSHOT)
 
+2013-03-23 13:10:12 +0000    prevent prompt when setting default packs (James Richardson)
+2013-03-23 13:08:21 +0000    NPE check for people upgrading (James Richardson)
 2013-03-23 13:06:25 +0000    prevent people getting trapped in THE_END by default (James Richardson)
 2013-03-23 13:03:55 +0000    toggle respawning in a world on death (James Richardson)
 2013-03-23 12:49:07 +0000    remove double register (James Richardson)
