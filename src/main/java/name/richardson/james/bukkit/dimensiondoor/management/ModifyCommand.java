@@ -131,9 +131,13 @@ public class ModifyCommand extends AbstractCommand {
       }
     case TEXTURE_PACK:
       try {
-        final URL url = new URL(value);
-        world.setTexturePack(url.toString());
-        if (world.isLoaded()) {
+        if (value.equalsIgnoreCase("default")) {
+          world.setTexturePack(null);
+        } else {
+          final URL url = new URL(value);
+          world.setTexturePack(url.toString());
+        }
+        if (world.isLoaded() && world.getTexturePack() != null) {
           SwitchTexturePackTask task = new SwitchTexturePackTask(plugin.getServer().getWorld(world.getName()).getPlayers(), world.getTexturePack());
           this.plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, task, 10L);
         }

@@ -87,15 +87,19 @@ public class WorldManager extends LoggableListener {
       }
     }
     final String texturePack = this.worlds.get(event.getTo().getWorld().getName()).getTexturePack();
-    final SwitchTexturePackTask task = new SwitchTexturePackTask(event.getPlayer(), texturePack);
-    this.plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, task, 10L);
+    if (texturePack != null) {
+      final SwitchTexturePackTask task = new SwitchTexturePackTask(event.getPlayer(), texturePack);
+      this.plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, task, 10L);
+    }
   }
   
   @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true) 
   public void onPlayerJoin(PlayerJoinEvent event) {
     final String texturePack = this.worlds.get(event.getPlayer().getWorld().getName()).getTexturePack();
-    final SwitchTexturePackTask task = new SwitchTexturePackTask(event.getPlayer(), texturePack);
-    this.plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, task, 10L);
+    if (texturePack != null) {
+      final SwitchTexturePackTask task = new SwitchTexturePackTask(event.getPlayer(), texturePack);
+      this.plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, task, 10L);
+    }
   }
   
   public void addWorld(World world) {

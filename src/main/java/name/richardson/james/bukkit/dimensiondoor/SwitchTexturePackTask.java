@@ -41,7 +41,6 @@ public class SwitchTexturePackTask implements Runnable {
   }
   
   public void run() {
-    if (texturePack.equalsIgnoreCase("Default")) return;
     for (Player player : players) {
       player.setTexturePack(texturePack);
     }

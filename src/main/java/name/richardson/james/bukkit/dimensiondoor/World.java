@@ -112,7 +112,7 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
   private long seed = 0;
   
   /** The address of the texture pack for this world */
-  private String texturePack = "Default";
+  private String texturePack;
 
   /** The loaded world. */
   private org.bukkit.World world;
@@ -416,7 +416,7 @@ public class World implements ConfigurationSerializable, Serializable, Listener 
     map.put("pvp", this.pvp);
     map.put("player-respawn-in-world", this.playerRespawn);
     map.put("seed", this.seed);
-    map.put("texture-pack", this.texturePack.toString());
+    map.put("texture-pack", this.texturePack);
     map.put("world-type", this.worldType.toString());
     return map;
   }
