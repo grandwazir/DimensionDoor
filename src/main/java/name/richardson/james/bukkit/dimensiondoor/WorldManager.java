@@ -51,7 +51,6 @@ public class WorldManager extends LoggableListener {
       }
       i++;
     }
-    plugin.getServer().getPluginManager().registerEvents(this, plugin);
     this.getLogger().debug(this, "configured-worlds",i, this.worlds.size());
   }
   
