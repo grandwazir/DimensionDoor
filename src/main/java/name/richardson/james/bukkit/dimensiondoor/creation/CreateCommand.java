@@ -24,8 +24,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.WorldType;
 import org.bukkit.World.Environment;
+import org.bukkit.WorldType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.Conversable;
 import org.bukkit.conversations.ConversationContext;

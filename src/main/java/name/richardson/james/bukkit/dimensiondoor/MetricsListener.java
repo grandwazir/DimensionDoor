@@ -93,6 +93,8 @@ public final class MetricsListener implements Listener {
       case LARGE_BIOMES:
         this.largeBiomesType++;
         break;
+      default:
+        break;
       }
       switch (world.getGameMode()) {
       case SURVIVAL:
