@@ -87,7 +87,7 @@ public class WorldManager extends LoggableListener {
       }
     }
     final String texturePack = this.worlds.get(event.getTo().getWorld().getName()).getTexturePack();
-    if (texturePack != null) {
+    if (texturePack != null && (event.getFrom().getWorld() != event.getTo().getWorld())) {
       final SwitchTexturePackTask task = new SwitchTexturePackTask(event.getPlayer(), texturePack);
       this.plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, task, 10L);
     }
