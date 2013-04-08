@@ -1,7 +1,0 @@
-debugging: false
-automatic-updates:
-  enabled: true
-  method: notify
-  branch: stable
-creative-world-transfer-settings:
-  clear-inventories: true
