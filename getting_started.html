@@ -1,0 +1,315 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Getting started</title>
+    <meta name="description" content="">
+    <meta name="author" content="James Richardson">
+
+    <!-- Enable responsive viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Import bootstrap .js -->
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="/assets/themes/twitter/bootstrap/js/bootstrap.js"></script>
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.2.2.2.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+
+    <!-- atom & rss feed -->
+    <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    <link href="/rss.xml" type="application/rss+xml" rel="alternate" title="Sitewide RSS Feed">
+
+  </head>
+
+  <body data-spy="scroll" data-target="#scrollspy" class="extra-padding">
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-narrow">
+          <a class="brand" href="/">DimensionDoor</a>
+          <ul class="nav">
+            
+            
+            
+
+
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/download.html">Download</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/features.html">Features</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li class="active"><a href="/getting_started.html" class="active">Getting started</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+
+
+
+
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add a secondary bar if necessary -->
+    
+    <div id="scrollspy" class="navbar navbar-inverse navbar-fixed-top navbar-secondary">
+      <div class="navbar-inner">
+        <div class="container-narrow">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <div class="nav-collapse">       
+            <ul class="nav">
+              
+                
+                  <li><a href="#creating_a_world">Creating a world</a></li>
+                
+              
+                
+                  <li><a href="#managing_worlds">Managing worlds</a></li>
+                
+              
+                
+                  <li><a href="#teleporting_to_worlds">Teleporting to worlds</a></li>
+                
+              
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="container-narrow scroll-adjust">
+
+      <div class="content">
+        
+
+<div class="page-header">
+  <h1>Getting started </h1>
+</div>
+
+<div class="row-fluid">
+  <div class="span12">
+    <p class='lead'>Getting started with DimensionDoor couldn't be easier. Just download and drag it into your plugins folder and away you go. Still stuck? Read on.</p>
+<h2 id='creating_a_world'>Creating a world</h2>
+
+<p>You can create extra worlds easily with DimensionDoor. Each world needs to have an Environment. There is a list of Environment types available in the <a href='http://jd.bukkit.org/apidocs/org/bukkit/World.Environment.html'>Bukkit documentation</a>. For our example we will create a new nether world, and import an existing normal world called mining.</p>
+
+<ul>
+<li><code>/dd create nether e:NETHER</code> creates a nether world.</li>
+
+<li><code>/dd create mining e:NORMAL</code> creates a normal world.</li>
+
+<li><code>/dd teleport nether</code> teleports you to the nether world you just made.</li>
+</ul>
+
+<h3 id='create_a_world_using_a_seed'>Create a world using a seed</h3>
+
+<p>We can also create worlds using seeds. Seeds can either be words or numbers depending on what you want to use. DimensionDoor will do the conversion for you. We do the same technique that Notch uses so words you use to generate worlds in singleplayer will generating the same worlds on your server. To specify a seed we need to prefix it with <code>s:</code>; for example <code>/dd create myWorld e:NORMAL s:sausages</code></p>
+
+<h3 id='create_a_world_using_a_custom_chunk_generator'>Create a world using a custom chunk generator</h3>
+
+<p>Instead of creating a world based on the 3 built in environments you can now use custom chunk generators. These allow developers to change everything about how a world is created, from creating ocean worlds to flat land; nearly anything is possible.</p>
+
+<p>DimensionDoor does not have any custom chunk generators of it&#8217;s own. You will need to <a href='http://plugins.bukkit.org/#ti=&amp;ta=WGEN&amp;au=&amp;subm=false&amp;pno=0'>download some</a> before you will be able to take advantage of this feature. The rest of these examples assume the plugins are already downloaded and enabled.</p>
+
+<p>For our first example we are going to create a completely empty world, using the plugin <a href='http://forums.bukkit.org/threads/wgen-nullterrain-v0-4-1-generate-empty-worlds-1000.27362/'>NullTerrain</a>. To specify a custom chunk generator we need to prefix our argument with g: and the plugin name. So in this case we need to type <code>/dd create emptyWorld e:NORMAL g:NullTerrain</code>.</p>
+
+<p>Some chunk generators also accept additional arguments. This could be anything from what material you want the world to be made out of, to how many caves you want per chunk depending on the plugin. DimensionDoor supports this also.</p>
+
+<p>For this example we are going to create a world using the <a href='http://forums.bukkit.org/threads/wgen-cleanroomgenerator-v0-0-4-clean-room-flat-world-multilayer-chunk-generator-1000.24791/'>CleanroomGenerator</a>. This is like the first plugin but instead of creating an empty world we can create a world made out of completely one type of block.</p>
+
+<p>In the following example I am going to create a world where the base height is 64 and made completely of stone. We specific these extra arguments by adding another : after we have provided the plugin name. <code>/dd create emptyWorld e:NORMAL g:CleanroomGenerator:64,stone</code> would create a world with those settings.</p>
+
+<p>Different generators work in different ways so make sure to check the documentation for which ever one you are going to use. Regardless of what plugin and arguments you use DimensionDoor will remember your settings so your worlds always load the same way, automatically when the server starts.</p>
+
+<h4 id='beware_when_importing_existing_worlds'>Beware when importing existing worlds</h4>
+
+<p>If you make a mistake and choose the wrong Environment when importing your world it will be deleted and replaced with a new world. There is no way for the plugin to detect the Environment of an unloaded world until it is fully loaded. This in the only scenario when you can lose your world data using DimensionDoor.</p>
+
+<h2 id='managing_worlds'>Managing worlds</h2>
+
+<p>DimensionDoor includes several commands to help you manage your worlds.</p>
+
+<h3 id='deleting_a_world'>Deleting a world</h3>
+
+<p>If you get bored with a world you can delete it. For the example I am going to remove the world Trev: <code>/dd remove Trev</code></p>
+
+<p>The world will be unloaded from memory and players will no longer be able to use it. DimensionDoor will also forget all about it and not automatically load it next time your server starts. If you wanted to create a new world with the same name, make sure to delete the world data first from your server directory.</p>
+
+<h3 id='loading_and_unloading_worlds'>Loading and unloading worlds</h3>
+
+<p>You can also load and unload worlds to your heart&#8217;s content. DimensionDoor will only load worlds it already knows about. If you want to import an existing world use the create command instead. In the following example I am going to load the world fantastic and unload dreary.</p>
+
+<ul>
+<li><code>/dd load fantastic</code></li>
+
+<li><code>/dd unload dreary</code></li>
+</ul>
+
+<p>The difference between unloading a world and removing it that unloading a world keeps the world specific settings intact. The plugin will still automatically load the world next time the server starts.</p>
+
+<h3 id='listing_managed_worlds'>Listing managed worlds</h3>
+
+<p>A managed world is a world that DimensionDoor knows about and has configuration saved for. It may not be the same as the number of worlds you have in your server directory (but usually is once you have imported them all). You can list all the worlds that DimensionDoor knows about by typing <code>/dd list</code></p>
+
+<p>Worlds in green are currently loaded, while worlds in red are not.</p>
+
+<h2 id='changing_world_settings'>Changing world settings</h2>
+
+<p>DimensionDoor allows you to set a number of world specific settings. With the exception of one setting, these all mirror normal world properties. For my example below I am going to turn pvp on for my main world, while stopping anything spawning in my creative world.</p>
+
+<ul>
+<li><code>/dd modify world pvp true</code></li>
+
+<li><code>/dd modify creative spawnMonsters false</code></li>
+
+<li><code>/dd modify creative spawnAnimals false</code></li>
+</ul>
+
+<p>You can also set the difficulty of a world, together with your desired game mode. This can be useful if you want to create creative worlds for example. Game mode changes will apply to <strong>all</strong> players in the specified world.</p>
+
+<ul>
+<li><code>/dd modify creative gamemode creative</code></li>
+
+<li><code>/dd modify creative difficulty peaceful</code></li>
+</ul>
+
+<p>We can check the results by inspecting the configuration for our creative world by typing <code>/dd info creative</code></p>
+
+<h3 id='world_specific_chat'>World specific chat</h3>
+
+<p>An additional feature offered by the plugin is the ability to turn on world specific chat. This allows you to segregated your chat and keep it within individual worlds. For example let us say we have three worlds on our server; armathia, elysium and lethe.</p>
+
+<p>In this scenario I want players in armathia and elysium to be able to talk to each other but keep the chat in lethe separate because it is a roleplay world. We can do this by issuing the following command <code>/dd modify lethe isolatedChat true</code></p>
+
+<p>The easy way to remember how this works if isolatedChat is true players in that world can only chat with players in the same world. If it is off they can chat with players in any world where isolatedChat is false.</p>
+
+<p>Chat messages are preserved exactly as they are sent when isolatedChat is on. You might find it helpful to get another plugin to add a world prefix if you have lots of worlds.</p>
+
+<p>Regardless of the setting chatting through commands, for example /whisper in commandbook, will always work.</p>
+
+<h3 id='world_specific_texture_packs'>World specific texture packs</h3>
+
+<p>New in version 2.2.0 is the ability to set world specific texture packs. These works exactly the same as if you had specified it in your server.properties. To do this you first need a publicly accessible location to download your texture pack from. Once you have done that you apply it to a world using the following command: <code>/dd modify world TEXTURE_PACK http://example.com/texture.pack</code></p>
+
+<h3 id='additional_settings_for_creative_worlds'>Additional settings for creative worlds</h3>
+
+<p>In version 1.8 of DimensionDoor there are now extra settings for managing how your players use creative worlds. These settings apply to all creative worlds and are set by editing the configuration file at: plugins/DimensionDoor/inventory_protection_configuration.yml.</p>
+
+<h4 id='preventing_items_from_spawning_in_creative_worlds'>Preventing items from spawning in creative worlds</h4>
+
+<p>This setting prevents any items from spawning in creative worlds. This includes, but is not limited to, drops from when blocks are broken, items when dropped on the floor and items fired from dispensers.</p>
+
+<pre><code>world-settings:
+    preventItemsSpawning: true</code></pre>
+
+<p>If this is not enabled players will be able to drop items on the floor and then pick them up into their inventory and use them on their return.</p>
+
+<h4 id='preventing_people_bringing_items_back_from_creative_worlds'>Preventing people bringing items back from creative worlds</h4>
+
+<p>There are two new settings to help you manage what people bring back from creative worlds. If enabled they will check every time a player returns a creative world to a survival world.</p>
+
+<p>The first clears whatever is in a player&#8217;s hand. The second clears all items from a player&#8217;s action bar. The third stops players placing items into a chest and then placing those items into their inventory. If you absolutely do not want players to bring anything back through you will need to all three of these plus the option above.</p>
+
+<pre><code>inventory-settings:
+    deleteActionBar: true
+    deleteItemInHand: true
+world-settings:
+    preventContainerBlocks: true</code></pre>
+
+<h3 id='setting_new_spawn_locations'>Setting new spawn locations</h3>
+
+<p>DimensionDoor manages the respawning of players so by default they will always respawn in the world they died in; either to their bed or back to the initial spawn location. You can change the spawn location a world by walking to where you want it to be and typing <code>/dd spawn</code>.</p>
+
+<p>You can disable this functionality completely on a world basis by using the following command. In this situation DimensionDoor does not interfere with respawning at all. To do this type <code>/dd modify world respawn false</code>.</p>
+
+<h2 id='teleporting_to_worlds'>Teleporting to worlds</h2>
+
+<p>As a convenience feature for setting up new worlds you can teleport to any loaded world by using the teleport command. I am going to teleport to fantastic by typing <code>/dd teleport fantastic</code>. You will always be teleported to that world&#8217;s initial spawn location.</p>
+
+<p>It is tempting to give players this command but I would recommend you instead look into creating portals to each world using another plugin such as Stargate. This has the added bonus of you being able to control which worlds players can access.</p>
+  </div>
+</div>
+
+
+      </div>
+      <hr>
+      <footer>
+        <p class="text-center"><small>&copy; 2013 James Richardson
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+          </small>
+        </p>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
+
